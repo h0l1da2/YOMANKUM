@@ -1,1 +1,17 @@
+version: '1'
 services:
+  db:
+    image: 'mysql:latest'
+    restart: 'unless-stopped'
+    ports:
+      - '3307:3306'
+    volumes:
+      - mysql_yomankum:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=in8282
+      - MYSQL_PASSWORD=in8282
+      - MYSQL_DATABASE=yomankum
+
+volumes:
+  mysql_yomankum:
+    external: true
