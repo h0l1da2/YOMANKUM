@@ -1,6 +1,7 @@
 package com.account.yomankum.controller;
 
 import com.account.yomankum.domain.dto.UserSignUpDto;
+import com.account.yomankum.exception.UserDuplicateException;
 import com.account.yomankum.service.SignUpService;
 import com.account.yomankum.web.Response;
 import jakarta.validation.Valid;
@@ -18,7 +19,7 @@ public class SignUpController {
     private final SignUpService signUpService;
 
     @GetMapping
-    public ResponseEntity<Response> signUpMain(@Valid UserSignUpDto userSignUpDto) {
+    public ResponseEntity<Response> signUpMain(@Valid UserSignUpDto userSignUpDto) throws UserDuplicateException {
 
         // 회원가입
         signUpService.signUp(userSignUpDto);
