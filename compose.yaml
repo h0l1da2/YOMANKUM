@@ -3,7 +3,7 @@ services:
   db:
     container_name: mysql_yomankum
     image: 'mysql:latest'
-    restart: 'unless-stopped'
+    restart: always
     volumes:
       - mysql_yomankum:/var/lib/mysql
     environment:
