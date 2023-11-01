@@ -22,8 +22,12 @@ public class SignUpServiceImpl implements SignUpService {
         String username = userSignUpDto.getUsername();
         String password = userSignUpDto.getPassword();
 
-        userRepository.findByUsername(username)
-                .orElseThrow(UserDuplicateException::new);
+        User findUser = userRepository.findByUsername(username)
+                .orElse(null);
+
+        if (findUser != null) {
+            throw new UserDuplicateException();
+        }
 
         String encodePwd = passwordEncoder.encode(password);
 
