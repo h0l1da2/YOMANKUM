@@ -10,12 +10,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.MySQLContainer;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+@Transactional
+@ActiveProfiles("test")
 @SpringBootTest
 class SignUpServiceImplTest {
 
@@ -23,6 +26,8 @@ class SignUpServiceImplTest {
     private UserRepository userRepository;
     @Autowired
     private SignUpService signUpService;
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
 
     @BeforeEach
     void clean() {
@@ -38,26 +43,17 @@ class SignUpServiceImplTest {
         signUpService.signUp(userSignUpDto);
 
         User findUser = userRepository.findByUsername(userSignUpDto.getUsername()).orElse(null);
+
+        boolean pwdMatches = passwordEncoder.matches(userSignUpDto.getPassword(), findUser.getPassword());
+
         assertThat(findUser).isNotNull();
         assertThat(findUser.getUsername()).isEqualTo(userSignUpDto.getUsername());
-        assertThat(findUser.getPassword()).isEqualTo(userSignUpDto.getPassword());
+        assertThat(pwdMatches).isTrue();
     }
 
     @Test
     @DisplayName("실패 : 중복 회원")
     void 회원가입_실패_중복회원() throws Exception {
-
-        GenericContainer<?> ubuntuContainer = new MySQLContainer<>("mysql:latest")
-                .withExposedPorts(3306)
-                .withEnv("MYSQL_ROOT_PASSWORD", "in8282")
-                .withEnv("MYSQL_DATABASE", "yomankum")
-                .withEnv("MYSQL_USER", "yomankum")
-                .withEnv("MYSQL_PASSWORD", "in8282")
-                .withDatabaseName("mysql_yomankum")
-                .withUsername("yomankum")
-                .withPassword("in8282");
-
-        ubuntuContainer.start();
 
 
         UserSignUpDto userSignUpDtoA = getUserSignUpDto();
@@ -65,8 +61,6 @@ class SignUpServiceImplTest {
 
         signUpService.signUp(userSignUpDtoA);
         assertThrows(UserDuplicateException.class, () -> signUpService.signUp(userSignUpDtoB));
-
-        ubuntuContainer.stop();
 
     }
 
