@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,7 +20,12 @@ public class SignUpController {
     private final SignUpService signUpService;
 
     @GetMapping
-    public ResponseEntity<Response> signUpMain(@Valid UserSignUpDto userSignUpDto) throws UserDuplicateException {
+    public ResponseEntity<Response> signUpMain() {
+        return Response.ok();
+    }
+
+    @PostMapping
+    public ResponseEntity<Response> signUp(@Valid UserSignUpDto userSignUpDto) throws UserDuplicateException {
 
         // 회원가입
         signUpService.signUp(userSignUpDto);
