@@ -4,7 +4,7 @@ import com.account.yomankum.domain.User;
 import com.account.yomankum.domain.dto.UserSignUpDto;
 import com.account.yomankum.exception.UserDuplicateException;
 import com.account.yomankum.repository.UserRepository;
-import com.account.yomankum.service.SignUpService;
+import com.account.yomankum.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,12 +18,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 @SpringBootTest
-class SignUpServiceImplTest {
+class UserServiceImplTest {
 
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private SignUpService signUpService;
+    private UserService userService;
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
@@ -38,7 +38,7 @@ class SignUpServiceImplTest {
 
         UserSignUpDto userSignUpDto = getUserSignUpDto();
 
-        signUpService.signUp(userSignUpDto);
+        userService.signUp(userSignUpDto);
 
         User findUser = userRepository.findByUsername(userSignUpDto.getUsername()).orElse(null);
 
@@ -57,8 +57,8 @@ class SignUpServiceImplTest {
         UserSignUpDto userSignUpDtoA = getUserSignUpDto();
         UserSignUpDto userSignUpDtoB = getUserSignUpDto();
 
-        signUpService.signUp(userSignUpDtoA);
-        assertThrows(UserDuplicateException.class, () -> signUpService.signUp(userSignUpDtoB));
+        userService.signUp(userSignUpDtoA);
+        assertThrows(UserDuplicateException.class, () -> userService.signUp(userSignUpDtoB));
 
     }
 
