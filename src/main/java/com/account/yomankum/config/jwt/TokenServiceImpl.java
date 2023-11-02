@@ -16,6 +16,11 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
+    public String createRefreshToken() {
+        return tokenProvider.createRefreshToken();
+    }
+
+    @Override
     public String reCreateToken(String token) {
         Long id = tokenParser.getId(token);
         String username = tokenParser.getUsername(token);

@@ -1,6 +1,5 @@
 package com.account.yomankum.config.jwt;
 
-import com.account.yomankum.domain.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -20,6 +19,9 @@ public class TokenProvider {
     // 토큰 유효 시간
     @Value("${token.valid.time}")
     private int tokenValidTime;
+    // 리프레쉬 토큰 유효 시간
+    @Value("${token.refresh.valid.time}")
+    private int refreshTokenValidTime;
 
     private Key key;
 
@@ -28,7 +30,12 @@ public class TokenProvider {
     }
 
     public String createToken(Long id, String username, String role) {
-        Claims claims = getClaims(id, username, role);
+
+        Claims claims = getClaims("accessToken");
+
+        claims.put("id", id.toString());
+        claims.put("username", username);
+        claims.put("role", role);
 
         return Jwts.builder()
                 .setHeaderParam("typ", "Bearer")
@@ -37,18 +44,33 @@ public class TokenProvider {
                 .compact();
     }
 
-    private Claims getClaims(Long id, String username, String role) {
+    public String createRefreshToken() {
+
+        Claims claims = getClaims("refreshToken");
+
+        return Jwts.builder()
+                .claims(claims)
+                .signWith(key, SignatureAlgorithm.HS512)
+                .compact();
+    }
+
+    private Claims getClaims(String tokenType) {
         Date now = new Date();
+        int tokenTime = 0;
+
+        if (tokenType.equals("accessToken")) {
+            tokenTime = tokenValidTime;
+        }
+        if (tokenType.equals("refreshToken")) {
+            tokenTime = refreshTokenValidTime;
+        }
 
         Claims claims = Jwts.claims()
-                .setSubject("accessToken")
-                .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + tokenValidTime))
+                .subject(tokenType)
+                .issuedAt(now)
+                .expiration(new Date(now.getTime() + tokenTime))
                 .build();
 
-        claims.put("id", id.toString());
-        claims.put("username", username);
-        claims.put("role", role);
         return claims;
     }
 }
