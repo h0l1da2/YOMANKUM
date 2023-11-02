@@ -1,7 +1,10 @@
 package com.account.yomankum.service.impl;
 
+import com.account.yomankum.domain.Name;
 import com.account.yomankum.domain.User;
+import com.account.yomankum.domain.dto.LoginDto;
 import com.account.yomankum.domain.dto.UserSignUpDto;
+import com.account.yomankum.exception.IncorrectLoginException;
 import com.account.yomankum.exception.UserDuplicateException;
 import com.account.yomankum.repository.UserRepository;
 import com.account.yomankum.service.UserService;
@@ -12,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -46,7 +51,7 @@ class UserServiceImplTest {
 
         assertThat(findUser).isNotNull();
         assertThat(findUser.getUsername()).isEqualTo(userSignUpDto.getUsername());
-        assertThat(findUser.getRole().getRole()).isEqualTo("ROLE_USER");
+        assertThat(findUser.getRole().getName()).isEqualTo(Name.ROLE_USER);
         assertThat(pwdMatches).isTrue();
     }
 
@@ -61,6 +66,58 @@ class UserServiceImplTest {
         userService.signUp(userSignUpDtoA);
         assertThrows(UserDuplicateException.class, () -> userService.signUp(userSignUpDtoB));
 
+    }
+
+    @Test
+    @DisplayName("성공 : 로그인")
+    void 로그인_성공() throws Exception {
+
+        UserSignUpDto userSignUpDto = getUserSignUpDto();
+        userService.signUp(userSignUpDto);
+
+        LoginDto loginDto = getLoginDto(userSignUpDto);
+        Map<String, String> tokenMap = userService.login(loginDto);
+
+        String accessToken = tokenMap.get("accessToken");
+        String refreshToken = tokenMap.get("refreshToken");
+
+        assertThat(accessToken).isNotNull();
+        assertThat(refreshToken).isNotNull();
+    }
+
+    @Test
+    @DisplayName("실패 : 아이디 없는 사용자")
+    void 로그인_실패_아이디없음() {
+
+        LoginDto loginDto = LoginDto.builder()
+                .username("username")
+                .password("password")
+                .build();
+
+        assertThrows(IncorrectLoginException.class, () -> userService.login(loginDto));
+    }
+
+    @Test
+    @DisplayName("실패 : 비밀번호 오류")
+    void 로그인_실패_비밀번호오류() throws Exception {
+
+        UserSignUpDto userSignUpDto = getUserSignUpDto();
+        userService.signUp(userSignUpDto);
+
+        LoginDto loginDto = LoginDto.builder()
+                .username(userSignUpDto.getUsername())
+                .password("asd232112")
+                .build();
+
+        assertThrows(IncorrectLoginException.class, () -> userService.login(loginDto));
+
+    }
+
+    private LoginDto getLoginDto(UserSignUpDto userSignUpDto) {
+        return LoginDto.builder()
+                .username(userSignUpDto.getUsername())
+                .password(userSignUpDto.getPassword())
+                .build();
     }
 
     private UserSignUpDto getUserSignUpDto() {
