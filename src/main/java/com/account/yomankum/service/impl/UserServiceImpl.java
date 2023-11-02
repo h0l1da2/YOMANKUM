@@ -1,7 +1,9 @@
 package com.account.yomankum.service.impl;
 
 import com.account.yomankum.domain.User;
+import com.account.yomankum.domain.dto.LoginDto;
 import com.account.yomankum.domain.dto.UserSignUpDto;
+import com.account.yomankum.exception.IncorrectLoginException;
 import com.account.yomankum.exception.UserDuplicateException;
 import com.account.yomankum.repository.UserRepository;
 import com.account.yomankum.service.UserService;
@@ -37,5 +39,25 @@ public class UserServiceImpl implements UserService {
                 .build();
 
         userRepository.save(user);
+    }
+
+    @Override
+    public void login(LoginDto loginDto) throws IncorrectLoginException {
+
+        String username = loginDto.getUsername();
+        String password = loginDto.getPassword();
+
+        User findUser = userRepository.findByUsername(username)
+                .orElseThrow(IncorrectLoginException::new);
+
+        boolean pwdMatches = passwordEncoder.matches(password, findUser.getPassword());
+
+        if (!pwdMatches) {
+            throw new IncorrectLoginException();
+        }
+
+        // 맞다면, JWT 발급
+
+
     }
 }
