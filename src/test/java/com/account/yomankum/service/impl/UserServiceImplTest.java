@@ -40,12 +40,13 @@ class UserServiceImplTest {
 
         userService.signUp(userSignUpDto);
 
-        User findUser = userRepository.findByUsername(userSignUpDto.getUsername()).orElse(null);
+        User findUser = userRepository.findByUsernameFetchRole(userSignUpDto.getUsername()).orElse(null);
 
         boolean pwdMatches = passwordEncoder.matches(userSignUpDto.getPassword(), findUser.getPassword());
 
         assertThat(findUser).isNotNull();
         assertThat(findUser.getUsername()).isEqualTo(userSignUpDto.getUsername());
+        assertThat(findUser.getRole().getRole()).isEqualTo("ROLE_USER");
         assertThat(pwdMatches).isTrue();
     }
 
