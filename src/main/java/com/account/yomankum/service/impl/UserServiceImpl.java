@@ -1,5 +1,6 @@
 package com.account.yomankum.service.impl;
 
+import com.account.yomankum.domain.Role;
 import com.account.yomankum.domain.User;
 import com.account.yomankum.domain.dto.LoginDto;
 import com.account.yomankum.domain.dto.UserSignUpDto;
@@ -32,10 +33,10 @@ public class UserServiceImpl implements UserService {
         }
 
         String encodePwd = passwordEncoder.encode(password);
-
         User user = User.builder()
                 .username(username)
                 .password(encodePwd)
+                .role(new Role("ROLE_USER"))
                 .build();
 
         userRepository.save(user);
