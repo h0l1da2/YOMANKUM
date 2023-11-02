@@ -62,7 +62,7 @@ class SignUpServiceImplTest {
 
     }
 
-    UserSignUpDto getUserSignUpDto() {
+    private UserSignUpDto getUserSignUpDto() {
         return UserSignUpDto.builder()
                 .username("username")
                 .password("password")
