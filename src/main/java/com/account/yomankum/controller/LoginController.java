@@ -1,6 +1,8 @@
 package com.account.yomankum.controller;
 
 import com.account.yomankum.domain.dto.LoginDto;
+import com.account.yomankum.exception.IncorrectLoginException;
+import com.account.yomankum.exception.UserDuplicateException;
 import com.account.yomankum.service.UserService;
 import com.account.yomankum.web.Response;
 import jakarta.validation.Valid;
@@ -10,6 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,10 +28,10 @@ public class LoginController {
     }
 
     @PostMapping
-    public ResponseEntity<Response> login(@Valid LoginDto loginDto) {
+    public ResponseEntity<Response> login(@Valid LoginDto loginDto) throws UserDuplicateException, IncorrectLoginException {
 
-        userService.login(loginDto);
+        Map<String, String> tokens = userService.login(loginDto);
 
-        return Response.ok();
+        return Response.ok(tokens);
     }
 }

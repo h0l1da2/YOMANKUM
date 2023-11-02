@@ -5,7 +5,9 @@ import com.account.yomankum.domain.dto.UserSignUpDto;
 import com.account.yomankum.exception.IncorrectLoginException;
 import com.account.yomankum.exception.UserDuplicateException;
 
+import java.util.Map;
+
 public interface UserService {
     void signUp(UserSignUpDto userSignUpDto) throws UserDuplicateException;
-    void login(LoginDto loginDto) throws UserDuplicateException, IncorrectLoginException;
+    Map<String, String> login(LoginDto loginDto) throws UserDuplicateException, IncorrectLoginException;
 }
