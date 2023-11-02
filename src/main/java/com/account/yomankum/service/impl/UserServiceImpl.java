@@ -1,6 +1,7 @@
 package com.account.yomankum.service.impl;
 
 import com.account.yomankum.config.jwt.TokenService;
+import com.account.yomankum.domain.Name;
 import com.account.yomankum.domain.Role;
 import com.account.yomankum.domain.User;
 import com.account.yomankum.domain.dto.LoginDto;
@@ -41,7 +42,7 @@ public class UserServiceImpl implements UserService {
         User user = User.builder()
                 .username(username)
                 .password(encodePwd)
-                .role(new Role("ROLE_USER"))
+                .role(new Role(Name.ROLE_USER))
                 .build();
 
         userRepository.save(user);
@@ -63,7 +64,7 @@ public class UserServiceImpl implements UserService {
         }
 
         // 맞다면, JWT 발급
-        String accessToken = tokenService.creatToken(findUser.getId(), findUser.getUsername(), findUser.getRole().getRole());
+        String accessToken = tokenService.creatToken(findUser.getId(), findUser.getUsername(), findUser.getRole().getName());
         String refreshToken = tokenService.createRefreshToken();
 
         Map<String, String> tokenMap = new HashMap<>();

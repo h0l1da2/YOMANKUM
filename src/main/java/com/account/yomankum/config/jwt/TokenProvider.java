@@ -1,5 +1,6 @@
 package com.account.yomankum.config.jwt;
 
+import com.account.yomankum.domain.Name;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -29,13 +30,9 @@ public class TokenProvider {
         key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String createToken(Long id, String username, String role) {
+    public String createToken(Long id, String username, Name name) {
 
-        Claims claims = getClaims("accessToken");
-
-        claims.put("id", id.toString());
-        claims.put("username", username);
-        claims.put("role", role);
+        Claims claims = getClaims("accessToken", id, username, name);
 
         return Jwts.builder()
                 .setHeaderParam("typ", "Bearer")
@@ -56,19 +53,25 @@ public class TokenProvider {
 
     private Claims getClaims(String tokenType) {
         Date now = new Date();
-        int tokenTime = 0;
-
-        if (tokenType.equals("accessToken")) {
-            tokenTime = tokenValidTime;
-        }
-        if (tokenType.equals("refreshToken")) {
-            tokenTime = refreshTokenValidTime;
-        }
 
         Claims claims = Jwts.claims()
                 .subject(tokenType)
                 .issuedAt(now)
-                .expiration(new Date(now.getTime() + tokenTime))
+                .expiration(new Date(now.getTime() + refreshTokenValidTime))
+                .build();
+
+        return claims;
+    }
+    private Claims getClaims(String tokenType, Long id, String username, Name name) {
+        Date now = new Date();
+
+        Claims claims = Jwts.claims()
+                .subject(tokenType)
+                .issuedAt(now)
+                .expiration(new Date(now.getTime() + tokenValidTime))
+                .add("id", id.toString())
+                .add("username", username)
+                .add("role", name)
                 .build();
 
         return claims;

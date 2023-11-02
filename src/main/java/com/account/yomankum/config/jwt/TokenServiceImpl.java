@@ -1,5 +1,6 @@
 package com.account.yomankum.config.jwt;
 
+import com.account.yomankum.domain.Name;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,8 +12,8 @@ public class TokenServiceImpl implements TokenService {
     private final TokenParser tokenParser;
 
     @Override
-    public String creatToken(Long id, String username, String role) {
-        return tokenProvider.createToken(id, username, role);
+    public String creatToken(Long id, String username, Name name) {
+        return tokenProvider.createToken(id, username, name);
     }
 
     @Override
@@ -25,7 +26,14 @@ public class TokenServiceImpl implements TokenService {
         Long id = tokenParser.getId(token);
         String username = tokenParser.getUsername(token);
         String role = tokenParser.getRole(token);
-        return tokenProvider.createToken(id, username, role);
+
+        Name name = Name.ROLE_USER;
+
+        if (role.equals(Name.ROLE_ADMIN)) {
+            name = Name.ROLE_ADMIN;
+        }
+
+        return tokenProvider.createToken(id, username, name);
     }
 
     @Override
