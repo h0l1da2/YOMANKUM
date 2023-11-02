@@ -1,5 +1,6 @@
 package com.account.yomankum.config.jwt;
 
+import com.account.yomankum.domain.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -14,7 +15,7 @@ import java.util.Date;
 
 @Component
 @PropertySource("classpath:application.yml")
-public class JwtProvider {
+public class TokenProvider {
 
     // 토큰 유효 시간
     @Value("${token.valid.time}")
@@ -22,12 +23,12 @@ public class JwtProvider {
 
     private Key key;
 
-    public JwtProvider(@Value("${token.secret.key}") String secretKey) {
+    public TokenProvider(@Value("${token.secret.key}") String secretKey) {
         key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String createToken(Long id, String username) {
-        Claims claims = getClaims(id, username);
+    public String createToken(Long id, String username, String role) {
+        Claims claims = getClaims(id, username, role);
 
         return Jwts.builder()
                 .setHeaderParam("typ", "Bearer")
@@ -36,7 +37,7 @@ public class JwtProvider {
                 .compact();
     }
 
-    private Claims getClaims(Long id, String username) {
+    private Claims getClaims(Long id, String username, String role) {
         Date now = new Date();
 
         Claims claims = Jwts.claims()
@@ -47,7 +48,7 @@ public class JwtProvider {
 
         claims.put("id", id.toString());
         claims.put("username", username);
-        claims.put("role", "[ROLE_USER]");
+        claims.put("role", role);
         return claims;
     }
 }
