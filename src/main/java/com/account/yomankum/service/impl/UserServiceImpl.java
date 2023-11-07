@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,6 +44,7 @@ public class UserServiceImpl implements UserService {
                 .username(username)
                 .password(encodePwd)
                 .role(new Role(Name.ROLE_USER))
+                .pwdChangeDate(LocalDateTime.now())
                 .build();
 
         userRepository.save(user);
