@@ -1,7 +1,7 @@
 # (가제) 요만큼
 ---
 
-[자세한 건 **여기**를 클릭해주세요!](https://hyuil.notion.site/36b7aad87e3a4e78b85bafd76b81ee8e?pvs=4)
+[자세한 건 **여기**를 클릭해주세요!](https://larshavin.notion.site/a42a9b4cfa1f4555bb4fd2dd2e009119?pvs=4)
 
 
 ---
