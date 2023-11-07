@@ -3,6 +3,8 @@ package com.account.yomankum.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Builder
@@ -17,4 +19,7 @@ public class User {
     private String password;
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Role role;
+    private LocalDateTime pwdChangeDate;
+    private LocalDateTime stopDate;
+    private LocalDateTime removeDate;
 }
