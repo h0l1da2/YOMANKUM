@@ -42,7 +42,7 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public String usernameByToken(String token) {
+    public String getUsernameByToken(String token) {
         return tokenParser.getUsername(token);
     }
 

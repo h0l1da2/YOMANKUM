@@ -8,6 +8,6 @@ public interface TokenService {
     String createRefreshToken();
     String reCreateToken(String token);
     boolean tokenValid(String token);
-    String usernameByToken(String token);
+    String getUsernameByToken(String token);
     Long getIdByToken(String token);
 }
