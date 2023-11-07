@@ -5,5 +5,5 @@ import com.account.yomankum.domain.dto.AccountWriteDto;
 import java.util.List;
 
 public interface AccountBookService {
-    void write(List<AccountWriteDto> accountWriteDto);
+    void write(List<AccountWriteDto> accountWriteDtoList);
 }
