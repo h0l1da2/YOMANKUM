@@ -32,12 +32,29 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        boolean validToken = tokenService.tokenValid(authorizationToken);
+        boolean accessTokenValid = tokenService.tokenValid(authorizationToken);
 
-        if (!validToken) {
-            filterChain.doFilter(request, response);
-            return;
+        if (!accessTokenValid) {
+
+            Cookie[] cookies = request.getCookies();
+            for (Cookie cookie : cookies) {
+
+                String cookieName = cookie.getName();
+
+                if (cookieName.equals("refreshToken")) {
+
+                    String refreshToken = cookie.getValue();
+                    boolean refreshTokenValid = tokenService.tokenValid(refreshToken);
+
+                    if (!refreshTokenValid) {
+                        filterChain.doFilter(request, response);
+                        return;
+                    }
+                }
+            }
         }
+
+
 
         String token = tokenService.reCreateToken(authorizationToken);
         String refreshToken = tokenService.createRefreshToken();
