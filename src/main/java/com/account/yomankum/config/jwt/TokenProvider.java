@@ -62,7 +62,7 @@ public class TokenProvider {
 
         return claims;
     }
-    private Claims getClaims(String tokenType, Long id, String username, Name name) {
+    private Claims getClaims(String tokenType, Long id, String nickname, Name name) {
         Date now = new Date();
 
         Claims claims = Jwts.claims()
@@ -70,7 +70,7 @@ public class TokenProvider {
                 .issuedAt(now)
                 .expiration(new Date(now.getTime() + tokenValidTime))
                 .add("id", id.toString())
-                .add("username", username)
+                .add("nickname", nickname)
                 .add("role", name)
                 .build();
 

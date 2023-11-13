@@ -12,8 +12,8 @@ public class TokenServiceImpl implements TokenService {
     private final TokenParser tokenParser;
 
     @Override
-    public String creatToken(Long id, String username, Name name) {
-        return tokenProvider.createToken(id, username, name);
+    public String creatToken(Long id, String nickname, Name name) {
+        return tokenProvider.createToken(id, nickname, name);
     }
 
     @Override
@@ -24,7 +24,7 @@ public class TokenServiceImpl implements TokenService {
     @Override
     public String reCreateToken(String token) {
         Long id = tokenParser.getId(token);
-        String username = tokenParser.getUsername(token);
+        String nickname = tokenParser.getNickname(token);
         String role = tokenParser.getRole(token);
 
         Name name = Name.ROLE_USER;
@@ -33,7 +33,7 @@ public class TokenServiceImpl implements TokenService {
             name = Name.ROLE_ADMIN;
         }
 
-        return tokenProvider.createToken(id, username, name);
+        return tokenProvider.createToken(id, nickname, name);
     }
 
     @Override
@@ -42,8 +42,8 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public String getUsernameByToken(String token) {
-        return tokenParser.getUsername(token);
+    public String getNicknameByToken(String token) {
+        return tokenParser.getNickname(token);
     }
 
     @Override

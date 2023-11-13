@@ -34,9 +34,9 @@ public class TokenParser {
         return Long.parseLong(claims.get("id", String.class));
     }
 
-    public String getUsername(String token) {
+    public String getNickname(String token) {
         Claims claims = getClaims(token);
-        return claims.get("username", String.class);
+        return claims.get("nickname", String.class);
     }
 
     public String getRole(String token) {
