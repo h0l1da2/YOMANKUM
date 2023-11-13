@@ -45,12 +45,12 @@ class UserServiceImplTest {
 
         userService.signUp(userSignUpDto);
 
-        User findUser = userRepository.findByUsernameFetchRole(userSignUpDto.getUsername()).orElse(null);
+        User findUser = userRepository.findByEmailFetchRole(userSignUpDto.getEmail()).orElse(null);
 
         boolean pwdMatches = passwordEncoder.matches(userSignUpDto.getPassword(), findUser.getPassword());
 
         assertThat(findUser).isNotNull();
-        assertThat(findUser.getUsername()).isEqualTo(userSignUpDto.getUsername());
+        assertThat(findUser.getEmail()).isEqualTo(userSignUpDto.getEmail());
         assertThat(findUser.getRole().getName()).isEqualTo(Name.ROLE_USER);
         assertThat(pwdMatches).isTrue();
     }
@@ -105,7 +105,7 @@ class UserServiceImplTest {
         userService.signUp(userSignUpDto);
 
         LoginDto loginDto = LoginDto.builder()
-                .username(userSignUpDto.getUsername())
+                .username(userSignUpDto.getEmail())
                 .password("asd232112")
                 .build();
 
@@ -115,14 +115,14 @@ class UserServiceImplTest {
 
     private LoginDto getLoginDto(UserSignUpDto userSignUpDto) {
         return LoginDto.builder()
-                .username(userSignUpDto.getUsername())
+                .username(userSignUpDto.getEmail())
                 .password(userSignUpDto.getPassword())
                 .build();
     }
 
     private UserSignUpDto getUserSignUpDto() {
         return UserSignUpDto.builder()
-                .username("username")
+                .email("email")
                 .password("password")
                 .build();
     }

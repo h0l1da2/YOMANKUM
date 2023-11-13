@@ -53,10 +53,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public Map<String, String> login(LoginDto loginDto) throws IncorrectLoginException {
 
-        String username = loginDto.getUsername();
+        String email = loginDto.getEmail();
         String password = loginDto.getPassword();
 
-        User findUser = userRepository.findByEmailFetchRole(username)
+        User findUser = userRepository.findByEmailFetchRole(email)
                 .orElseThrow(IncorrectLoginException::new);
 
         boolean pwdMatches = passwordEncoder.matches(password, findUser.getPassword());
@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService {
         }
 
         // 맞다면, JWT 발급
-        String accessToken = tokenService.creatToken(findUser.getId(), findUser.getEmail(), findUser.getRole().getName());
+        String accessToken = tokenService.creatToken(findUser.getId(), findUser.getNickname(), findUser.getRole().getName());
         String refreshToken = tokenService.createRefreshToken();
 
         Map<String, String> tokenMap = new HashMap<>();
