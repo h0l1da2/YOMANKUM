@@ -20,6 +20,7 @@ public class User {
     private String password;
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Role role;
+    private String nickname;
 
     private Date birthday;
     @Enumerated(EnumType.STRING)

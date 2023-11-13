@@ -29,10 +29,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public void signUp(UserSignUpDto userSignUpDto) throws UserDuplicateException {
 
-        String username = userSignUpDto.getUsername();
+        String email = userSignUpDto.getEmail();
         String password = userSignUpDto.getPassword();
 
-        User findUser = userRepository.findByUsername(username)
+        User findUser = userRepository.findByEmail(email)
                 .orElse(null);
 
         if (findUser != null) {
@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
 
         String encodePwd = passwordEncoder.encode(password);
         User user = User.builder()
-                .username(username)
+                .email(email)
                 .password(encodePwd)
                 .role(new Role(Name.ROLE_USER))
                 .pwdChangeDate(LocalDateTime.now())
@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
         String username = loginDto.getUsername();
         String password = loginDto.getPassword();
 
-        User findUser = userRepository.findByUsernameFetchRole(username)
+        User findUser = userRepository.findByEmailFetchRole(username)
                 .orElseThrow(IncorrectLoginException::new);
 
         boolean pwdMatches = passwordEncoder.matches(password, findUser.getPassword());
@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService {
         }
 
         // 맞다면, JWT 발급
-        String accessToken = tokenService.creatToken(findUser.getId(), findUser.getUsername(), findUser.getRole().getName());
+        String accessToken = tokenService.creatToken(findUser.getId(), findUser.getEmail(), findUser.getRole().getName());
         String refreshToken = tokenService.createRefreshToken();
 
         Map<String, String> tokenMap = new HashMap<>();

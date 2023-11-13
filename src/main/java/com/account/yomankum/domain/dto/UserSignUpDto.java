@@ -11,11 +11,10 @@ import lombok.Data;
 public class UserSignUpDto {
 
     @NotBlank
-    @Size(min = 4, max = 15)
-    @Pattern(regexp = "^[a-z0-9]+$")
-    private String username;
+    @Pattern(regexp = "^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$")
+    private String email;
     @NotBlank
-    @Size(min = 6, max = 15)
+    @Size(min = 6, max = 20)
     @Pattern(regexp = "^[a-zA-Z0-9]+$")
     private String password;
 }
