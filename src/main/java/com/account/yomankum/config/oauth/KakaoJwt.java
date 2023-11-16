@@ -1,14 +1,16 @@
 package com.account.yomankum.config.oauth;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
+@Getter
 @Component
 @PropertySource("classpath:application.yml")
-@Getter
-public class KakaoJwk implements JwtValue {
+@NoArgsConstructor
+public class KakaoJwt implements JwtValue {
 
     @Value("${token.keys.kakao.kid.first}")
     private String kidFirst;
@@ -43,10 +45,7 @@ public class KakaoJwk implements JwtValue {
     private String n;
     private String e;
 
-    public KakaoJwk() {
-
-    }
-
+    @Override
     public void jwkSetting(String seq) {
 
         if (seq.equals("first")) {
@@ -65,5 +64,45 @@ public class KakaoJwk implements JwtValue {
             this.n = nSecond;
             this.e = eSecond;
         }
+    }
+
+    @Override
+    public String getFirstKid() {
+        return this.kidFirst;
+    }
+
+    @Override
+    public String getSecondKid() {
+        return this.kidSecond;
+    }
+
+    @Override
+    public String getKid() {
+        return this.kid;
+    }
+
+    @Override
+    public String getKty() {
+        return this.kty;
+    }
+
+    @Override
+    public String getAlg() {
+        return this.alg;
+    }
+
+    @Override
+    public String getUse() {
+        return this.use;
+    }
+
+    @Override
+    public String getN() {
+        return this.n;
+    }
+
+    @Override
+    public String getE() {
+        return this.e;
     }
 }

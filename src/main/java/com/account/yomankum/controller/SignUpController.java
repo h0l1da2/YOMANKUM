@@ -19,6 +19,8 @@ public class SignUpController {
 
     private final UserService userService;
 
+    // TODO 이메일 인증 코드 기능 필요
+
     @GetMapping
     public ResponseEntity<Response> signUpMain() {
         return Response.ok();

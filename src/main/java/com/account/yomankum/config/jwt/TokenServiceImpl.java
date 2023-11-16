@@ -1,15 +1,22 @@
 package com.account.yomankum.config.jwt;
 
+import com.account.yomankum.config.oauth.GoogleJwt;
+import com.account.yomankum.config.oauth.JwtValue;
+import com.account.yomankum.config.oauth.KakaoJwt;
+import com.account.yomankum.config.oauth.Sns;
 import com.account.yomankum.domain.Name;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TokenServiceImpl implements TokenService {
 
     private final TokenProvider tokenProvider;
     private final TokenParser tokenParser;
+    private JwtValue jwtValue;
 
     @Override
     public String creatToken(Long id, String nickname, Name name) {
@@ -51,5 +58,34 @@ public class TokenServiceImpl implements TokenService {
         return tokenParser.getId(token);
     }
 
+    @Override
+    public String getSnsUUID(String sns, String token) {
+
+        String kid = tokenParser.getSnsTokenSecret(token, "header", "kid");
+
+        // kid First인지 Second인지 확인하고, 해당 객체 쓰기
+        if (sns.equals(Sns.KAKAO.name())) {
+            jwtValue = new KakaoJwt();
+        }
+        if (sns.equals(Sns.GOOGLE.name())) {
+            jwtValue = new GoogleJwt();
+        }
+
+        if (kid.equals(jwtValue.getFirstKid())) {
+            jwtValue.jwkSetting("first");
+        } else if (kid.equals(jwtValue.getSecondKid())) {
+            jwtValue.jwkSetting("second");
+        } else {
+            log.error("error : {} 공개 키 안 맞음", sns);
+        }
+
+
+        return tokenParser.getSnsUUID(jwtValue, token);
+    }
+
+    private String[] splitToken(String token) {
+        String[] jwt = token.split("\\.");
+        return jwt;
+    }
 
 }

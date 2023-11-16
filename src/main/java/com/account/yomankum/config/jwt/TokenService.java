@@ -10,4 +10,5 @@ public interface TokenService {
     boolean tokenValid(String token);
     String getNicknameByToken(String token);
     Long getIdByToken(String token);
+    String getSnsUUID(String sns, String token);
 }
