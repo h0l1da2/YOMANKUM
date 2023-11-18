@@ -34,7 +34,7 @@ public class CustomDefaultOAuth2UserService extends DefaultOAuth2UserService {
         String uuidKey = userInfo.getUUIDKey();
         String email = userInfo.getEmail();
         Sns sns = userInfo.getSnsName();
-        SnsUser user = snsUserService.loginCheck(email);
+        SnsUser user = snsUserService.loginCheck(sns, email, uuidKey);
 
         // 기존 가입 멤버가 아니라면 ?
         if (user == null) {
