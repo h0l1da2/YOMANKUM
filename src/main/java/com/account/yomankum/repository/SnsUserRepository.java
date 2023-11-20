@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface SnsUserRepository extends JpaRepository<SnsUser, Long> {
-    Optional<SnsUser> findByEmailAndUAndUuidKeyAndSns(Sns sns, String email, String uuidKey);
+    Optional<SnsUser> findByEmailAndUuidKeyAndSns(Sns sns, String email, String uuidKey);
 }

@@ -19,7 +19,7 @@ public class SnsUserServiceImpl implements SnsUserService {
 
     @Override
     public SnsUser loginCheck(Sns sns, String email, String uuidKey) {
-        return snsUserRepository.findByEmailAndUAndUuidKeyAndSns(sns, email, uuidKey).orElse(null);
+        return snsUserRepository.findByEmailAndUuidKeyAndSns(sns, email, uuidKey).orElse(null);
     }
 
     @Override
