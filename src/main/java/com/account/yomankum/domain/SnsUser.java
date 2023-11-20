@@ -1,5 +1,6 @@
 package com.account.yomankum.domain;
 
+import com.account.yomankum.config.oauth.Sns;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,11 +17,14 @@ public class SnsUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String uuidKey;
     private String email;
     private String password;
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Role role;
     private String nickname;
+    @Enumerated(EnumType.STRING)
+    private Sns sns;
 
     private Date birthday;
     @Enumerated(EnumType.STRING)
