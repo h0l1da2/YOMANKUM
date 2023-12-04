@@ -125,3 +125,6 @@ token:
       time: ENC(8U+v/B6+HM/9LEJQNE08bQ==) # 30일
   secret:
     key: ENC(BMicTjYyhaqYR52nqX/xH0My/7rlkWlcdwCBUZMp9Xm7wDywILk2GbmzWni5kGbLSNLYtjmoWqc7lAZLeFqtcMWuMF4vC4BPxDq2Qtg9HXy5ge+5RI1nK6Z6cjwLJXQUuNHUt+WEM+XJu/a3EMOYe7KNcLTWmyiTYamSKNe1iNMIQs0GBIj0GYK4vDksRLYjQmuH9DnqfFs8d6QcWPXEDXaR4YcJBdFmIxf8uiX5r+1clmu+82FU6mdkTNqm5U3H601Yql3aph3DLl0EswUGzmgmbOq0xGzh6pBRCFXysxMatJFsK6uLbrlB22rjkZljyBx7/+5f9XIm7mj1dG8PA6gOOFHZA5+GBAMwaL8iUB1ylThtAGQi3fdd23JIB2iQ2g22p/hoVK/avUuHdCqZ6BJ/5E87rzquHGOAHpGU47xx6qr+ADPRAPip04fmmB/0nwi6jjw0iEc/2kLp7Q83wELbc23wJJbJbtzptIp2FY8WGpUuF+V4ow==)
+
+mail:
+  id: y0mankum@naver.com
