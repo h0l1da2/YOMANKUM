@@ -58,6 +58,20 @@ spring:
             user-info-uri: https://kapi.kakao.com/v2/user/me
             user-name-attribute: kakao_account
 
+  mail:
+    host: smtp.naver.com
+    port: 465
+    username: ENC(MACWWNC621ZsUq4WDbG4+yMubQlwFFnC)
+    password: ENC(rx6LMXjPzUhnJL1Hstl9nVRhkAccsLop)
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.ssl.enable: true
+      mail.smtp.ssl.trust: smtp.naver.com
+
+    redis:
+      host: localhost
+      port: 6379
+
 jasypt:
   encryptor:
     password: ${JASYPT_ENCRYPTOR_PASSWORD}
