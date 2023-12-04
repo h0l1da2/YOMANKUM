@@ -30,6 +30,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
+	implementation 'org.springframework.data:spring-data-redis:2.7.5'
 	implementation 'org.thymeleaf:thymeleaf:3.0.15.RELEASE'
 
 	implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5'
