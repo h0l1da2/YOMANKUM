@@ -1,2 +1,5 @@
-package com.account.yomankum.domain;public enum Mail {
+package com.account.yomankum.domain;
+
+public enum Mail {
+    JOIN
 }
