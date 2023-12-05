@@ -2,6 +2,7 @@ package com.account.yomankum.service.impl;
 
 import com.account.yomankum.domain.Mail;
 import com.account.yomankum.service.MailService;
+import com.account.yomankum.util.RedisUtil;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -23,24 +24,32 @@ public class MailServiceImpl implements MailService {
 
     private final JavaMailSender mailSender;
     private final SpringTemplateEngine templateEngine;
+    private final RedisUtil redisUtil;
 
     private MimeMessage message;
     @Value("${mail.id}")
     private String fromEmail;
     private String title;
     private String template;
-
+    private long expireCodeTime = 60 * 15L;
     private String randomCode = "";
     private final String charset = "UTF-8";
     private final String html = "html";
 
     @Override
     public String mailSend(Mail mail, String userEmail) throws MessagingException {
+
+        if (redisUtil.existData(userEmail)) {
+            redisUtil.deleteData(userEmail);
+        }
+
         String result = "";
+
         if (mail.equals(Mail.JOIN)) {
             randomCode = createCode();
             result = randomCode;
         }
+
         MimeMessage template = setTemplate(mail, userEmail, randomCode);
         sendMail(template);
         return result;
@@ -83,6 +92,9 @@ public class MailServiceImpl implements MailService {
         message.setSubject(title);
         message.setFrom(fromEmail);
         message.setText(getContext(key, value, template), charset, html);
+
+        redisUtil.setDataExpire(userEmail, randomCode, expireCodeTime);
+
         return message;
     }
 
@@ -95,6 +107,17 @@ public class MailServiceImpl implements MailService {
     @Override
     public void sendMail(MimeMessage message) {
         mailSender.send(message);
+    }
+
+    @Override
+    public boolean verifyEmailCode(String userEmail, String randomCode) {
+        String randomCodeByEmail = redisUtil.getData(userEmail);
+
+        if (randomCodeByEmail == null) {
+            return false;
+        }
+
+        return randomCodeByEmail.equals(randomCode);
     }
 
     private Context setContext(String key, String value) {

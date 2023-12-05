@@ -11,4 +11,5 @@ public interface MailService {
     Message setTemplate(Mail type, String userEmail, String randomCode) throws MessagingException;
     String getContext(String key, String value, String template);
     void sendMail(MimeMessage message);
+    boolean verifyEmailCode(String userEmail, String randomCode);
 }
