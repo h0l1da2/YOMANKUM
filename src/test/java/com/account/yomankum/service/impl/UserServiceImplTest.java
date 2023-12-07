@@ -40,7 +40,6 @@ class UserServiceImplTest {
     @Test
     @DisplayName("성공 : 회원가입 성공")
     void 회원가입_성공() throws Exception {
-
         UserSignUpDto userSignUpDto = getUserSignUpDto();
 
         userService.signUp(userSignUpDto);
@@ -90,7 +89,7 @@ class UserServiceImplTest {
     void 로그인_실패_아이디없음() {
 
         LoginDto loginDto = LoginDto.builder()
-                .username("username")
+                .email("username")
                 .password("password")
                 .build();
 
@@ -105,7 +104,7 @@ class UserServiceImplTest {
         userService.signUp(userSignUpDto);
 
         LoginDto loginDto = LoginDto.builder()
-                .username(userSignUpDto.getEmail())
+                .email(userSignUpDto.getEmail())
                 .password("asd232112")
                 .build();
 
@@ -115,7 +114,7 @@ class UserServiceImplTest {
 
     private LoginDto getLoginDto(UserSignUpDto userSignUpDto) {
         return LoginDto.builder()
-                .username(userSignUpDto.getEmail())
+                .email(userSignUpDto.getEmail())
                 .password(userSignUpDto.getPassword())
                 .build();
     }
