@@ -23,7 +23,7 @@ public class AccountBook {
     // 기본 대분류 태그
     private String tag;
     // 내용
-    private String usage;
+    private String content;
     // 입출금 방법
     private String payment;
     // 소분류 태그

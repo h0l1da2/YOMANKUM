@@ -24,7 +24,7 @@ public class AccountBookServiceImpl implements AccountBookService {
                     .date(accountWriteDto.getDate())
                     .money(accountWriteDto.getMoney())
                     .tag(accountWriteDto.getTag())
-                    .usage(accountWriteDto.getUsage())
+                    .content(accountWriteDto.getUsage())
                     .payment(accountWriteDto.getPayment())
                     .customTag(accountWriteDto.getCustomTag())
                     .build();
