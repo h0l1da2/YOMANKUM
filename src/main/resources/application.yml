@@ -6,14 +6,12 @@ spring:
     password: ENC(7pOexY0QSqvvvuQsG1IrCQ==)
   jpa:
     database: mysql
-
     hibernate:
       use-new-id-generator-mappings: false
       ddl-auto: create
     show-sql: true
     properties:
       format_sql: true
-
   security:
     oauth2:
       client:
@@ -57,17 +55,15 @@ spring:
             token-uri: https://kauth.kakao.com/oauth/token
             user-info-uri: https://kapi.kakao.com/v2/user/me
             user-name-attribute: kakao_account
-
   mail:
     host: smtp.naver.com
     port: 465
-    username: ENC(MACWWNC621ZsUq4WDbG4+yMubQlwFFnC)
-    password: ENC(rx6LMXjPzUhnJL1Hstl9nVRhkAccsLop)
+    username: ENC(XE0yWgA+AB8eLpoXnonZiKP+CcqeiKcd)
+    password: ENC(E4hTgu2cy/CFGfKzq9nWnAljSAg2uEz/)
     properties:
       mail.smtp.auth: true
       mail.smtp.ssl.enable: true
       mail.smtp.ssl.trust: smtp.naver.com
-
   redis:
     host: localhost
     port: 6379
@@ -119,12 +115,13 @@ token:
         first: first
         second: second
   valid:
-    time: ENC(vQYPnJrSLvHrnD2j/dZ83w==)
+    time: ENC(rTCyWpbl2jwQNSF2prYWWA==)
   refresh:
     valid:
       time: ENC(8U+v/B6+HM/9LEJQNE08bQ==) # 30일
   secret:
-    key: ENC(BMicTjYyhaqYR52nqX/xH0My/7rlkWlcdwCBUZMp9Xm7wDywILk2GbmzWni5kGbLSNLYtjmoWqc7lAZLeFqtcMWuMF4vC4BPxDq2Qtg9HXy5ge+5RI1nK6Z6cjwLJXQUuNHUt+WEM+XJu/a3EMOYe7KNcLTWmyiTYamSKNe1iNMIQs0GBIj0GYK4vDksRLYjQmuH9DnqfFs8d6QcWPXEDXaR4YcJBdFmIxf8uiX5r+1clmu+82FU6mdkTNqm5U3H601Yql3aph3DLl0EswUGzmgmbOq0xGzh6pBRCFXysxMatJFsK6uLbrlB22rjkZljyBx7/+5f9XIm7mj1dG8PA6gOOFHZA5+GBAMwaL8iUB1ylThtAGQi3fdd23JIB2iQ2g22p/hoVK/avUuHdCqZ6BJ/5E87rzquHGOAHpGU47xx6qr+ADPRAPip04fmmB/0nwi6jjw0iEc/2kLp7Q83wELbc23wJJbJbtzptIp2FY8WGpUuF+V4ow==)
+    key: ENC(9Kt1awvcH4hXAVFrnCtrH6OOzyPaYZiFkrzmFUw4lO5e6MZyFwDOLFmaWzMikJdiZ5H5Mgec1Sscua5zivXloiHZctp81GiBElApm7DJ2ksAleAJvNZDqRaXsqxMR+Dn6iSBYJE/qDa/11w5zEKdTJlHyUnKkMObimFQpKex4enHOlIybnPDXtfxlWY2tsOq)
 
 mail:
   id: y0mankum@naver.com
+  username: y0mankum
