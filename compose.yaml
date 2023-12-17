@@ -1,18 +1,11 @@
 version: '1'
 services:
   db:
-    container_name: mysql_yomankum
-    image: 'mysql:latest'
+    container_name: yomankum
+    image: 'holidaykang/yomankum:latest'
     restart: always
-    volumes:
-      - mysql_yomankum:/var/lib/mysql
-    environment:
-      - MYSQL_ROOT_PASSWORD=in8282
-      - MYSQL_USER=yomankum
-      - MYSQL_PASSWORD=in8282
-      - MYSQL_DATABASE=yomankum
     ports:
-      - 3307:3306
+      - 8080:80
     networks:
       network:
         aliases:
@@ -23,5 +16,5 @@ networks:
     driver: bridge
 
 volumes:
-  mysql_yomankum:
+  yomankum:
     external: true
