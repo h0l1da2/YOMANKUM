@@ -1,15 +1,19 @@
 version: '1'
 services:
-  db:
-    container_name: yomankum
-    image: 'holidaykang/yomankum:latest'
-    restart: always
+  app:
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - 8080:80
-    networks:
-      network:
-        aliases:
-          - yomankum
+    volumes:
+      - .:/app
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
 
 networks:
   network:
