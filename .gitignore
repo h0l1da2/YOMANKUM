@@ -1,6 +1,6 @@
 HELP.md
 .gradle
-.env
+yomankum.env
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
@@ -39,3 +39,4 @@ out/
 .vscode/
 /src/main/resources/static
 /src/test/resources/
+/src/main/resources/application-dev.yml
