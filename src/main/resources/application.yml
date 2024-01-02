@@ -4,14 +4,6 @@ spring:
     driverClassName: com.mysql.cj.jdbc.Driver
     username: ${DATA_USERNAME}
     password: ${DATA_PASSWORD}
-  jpa:
-    database: mysql
-    hibernate:
-      use-new-id-generator-mappings: false
-      ddl-auto: create
-    show-sql: true
-    properties:
-      format_sql: true
   security:
     oauth2:
       client:
@@ -65,8 +57,9 @@ spring:
       mail.smtp.ssl.enable: true
       mail.smtp.ssl.trust: smtp.naver.com
   redis:
-    host: localhost
-    port: 6379
+    host: ${REDIS_HOST}
+    port: ${REDIS_PORT}
+    password: ${REDIS_PASSWORD}
 
 jasypt:
   encryptor:
@@ -124,3 +117,8 @@ token:
 
 mail:
   id: ${MAIL_ID}
+
+---
+spring:
+  profiles:
+    active: prod

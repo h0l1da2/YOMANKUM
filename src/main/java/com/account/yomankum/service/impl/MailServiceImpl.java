@@ -82,8 +82,7 @@ public class MailServiceImpl implements MailService {
         if (type.equals(Mail.JOIN)) {
             title = "YOMANKUM * 가입 코드 전송";
             template = "email/joinMailForm";
-            // randomCode , template , key=randomCode , value = code
-            key = "randomCode";
+            key = "code";
             value = randomCode;
         }
 
