@@ -1,0 +1,57 @@
+spring:
+  datasource:
+    url: ${DATA_URL}
+    driverClassName: com.mysql.cj.jdbc.Driver
+    username: ${DATA_USERNAME}
+    password: ${DATA_PASSWORD}
+  security:
+    oauth2:
+      client:
+        registration:
+          google: # 도메인 없어서 불가
+            client-id: cliendtId
+            client-secret: cliendtSecret
+            scope:
+              - email
+            redirect-uri: http://localhost:8080/
+          naver:
+            client-id: ${NAVER_CLIENT_ID}
+            client-secret: ${NAVER_CLIENT_SECRET}
+            scope:
+              - name
+              - email
+              - mobile
+            client-name: Naver
+            authorization-grant-type: authorization_code
+            redirect-uri: http://localhost:8080/
+          kakao:
+            client-id: ${KAKAO_CLIENT_ID}
+            client-secret: ${KAKAO_CLIENT_SECRET}
+            scope:
+              - account_email
+            client-name: Kakao
+            authorization-grant-type: authorization_code
+            redirect-uri: http://localhost:8080/
+            client-authentication-method: POST
+
+  mail:
+    host: smtp.naver.com
+    port: 465
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.ssl.enable: true
+      mail.smtp.ssl.trust: smtp.naver.com
+  redis:
+    host: ${REDIS_HOST}
+    port: ${REDIS_PORT}
+
+jasypt:
+  encryptor:
+    password: ${JASYPT_ENCRYPTOR_PASSWORD}
+    algorithm: PBEWithMD5AndDES
+    ivGeneratorClassname: org.jasypt.iv.NoIvGenerator
+
+mail:
+  id: ${MAIL_ID}
