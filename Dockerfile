@@ -45,6 +45,7 @@ ENV MYSQL_PASSWORD in8282
 ENV MYSQL_DATABASE yomankum
 ENV REDIS_HOST cube.3trolls.me
 ENV REDIS_PORT 16379
+ENV REDIS_PASSWORD yomankum1004
 
 # Command to run your Spring Boot application when the container starts
 CMD ["java", "-jar", "-Dspring.profiles.active=prod", "yomankum.jar"]
