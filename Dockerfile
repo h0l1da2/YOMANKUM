@@ -47,4 +47,4 @@ ENV REDIS_HOST cube.3trolls.me
 ENV REDIS_PORT 16379
 
 # Command to run your Spring Boot application when the container starts
-CMD ["java", "-jar", "yomankum.jar"]
+CMD ["java", "-jar", "-Dspring.profiles.active=prod", "yomankum.jar"]
