@@ -1,16 +1,18 @@
 package com.account.yomankum.controller;
 
+import com.account.yomankum.domain.Mail;
+import com.account.yomankum.domain.dto.EmailCodeDto;
+import com.account.yomankum.domain.dto.EmailDto;
 import com.account.yomankum.domain.dto.UserSignUpDto;
 import com.account.yomankum.exception.UserDuplicateException;
+import com.account.yomankum.service.MailService;
 import com.account.yomankum.service.UserService;
 import com.account.yomankum.web.Response;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,8 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class SignUpController {
 
     private final UserService userService;
-
-    // TODO 이메일 인증 코드 기능 필요
+    private final MailService mailService;
 
     @GetMapping
     public ResponseEntity<Response> signUpMain() {
@@ -31,6 +32,26 @@ public class SignUpController {
 
         // 회원가입
         userService.signUp(userSignUpDto);
+
+        return Response.ok();
+    }
+
+    @PostMapping("/email/send")
+    public ResponseEntity<Response> sendEmailCode(@RequestBody EmailDto emailDto) throws MessagingException {
+
+        mailService.mailSend(Mail.JOIN, emailDto.email());
+
+        return Response.ok();
+    }
+
+    @PostMapping("/email/check")
+    public ResponseEntity<Response> checkEmailCode(@RequestBody @Valid EmailCodeDto emailCodeDto) {
+
+        boolean isSuccessMailCode = mailService.verifyEmailCode(emailCodeDto.email(), emailCodeDto.code());
+
+        if (!isSuccessMailCode) {
+            return Response.badRequest("메일 코드가 다름");
+        }
 
         return Response.ok();
     }
