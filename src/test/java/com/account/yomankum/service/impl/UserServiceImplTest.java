@@ -4,8 +4,6 @@ import com.account.yomankum.domain.Name;
 import com.account.yomankum.domain.User;
 import com.account.yomankum.domain.dto.LoginDto;
 import com.account.yomankum.domain.dto.UserSignUpDto;
-import com.account.yomankum.exception.IncorrectLoginException;
-import com.account.yomankum.exception.UserDuplicateException;
 import com.account.yomankum.repository.UserRepository;
 import com.account.yomankum.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -63,7 +61,7 @@ class UserServiceImplTest {
         UserSignUpDto userSignUpDtoB = getUserSignUpDto();
 
         userService.signUp(userSignUpDtoA);
-        assertThrows(UserDuplicateException.class, () -> userService.signUp(userSignUpDtoB));
+        assertThrows(IllegalArgumentException.class, () -> userService.signUp(userSignUpDtoB));
 
     }
 
@@ -93,7 +91,7 @@ class UserServiceImplTest {
                 .password("password")
                 .build();
 
-        assertThrows(IncorrectLoginException.class, () -> userService.login(loginDto));
+        assertThrows(IllegalArgumentException.class, () -> userService.login(loginDto));
     }
 
     @Test
@@ -108,7 +106,7 @@ class UserServiceImplTest {
                 .password("asd232112")
                 .build();
 
-        assertThrows(IncorrectLoginException.class, () -> userService.login(loginDto));
+        assertThrows(IllegalArgumentException.class, () -> userService.login(loginDto));
 
     }
 
