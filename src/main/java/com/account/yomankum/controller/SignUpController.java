@@ -8,6 +8,7 @@ import com.account.yomankum.exception.UserDuplicateException;
 import com.account.yomankum.service.MailService;
 import com.account.yomankum.service.UserService;
 import com.account.yomankum.web.Response;
+import com.nimbusds.jose.shaded.gson.Gson;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -37,11 +38,17 @@ public class SignUpController {
     }
 
     @PostMapping("/email/send")
-    public ResponseEntity<Response> sendEmailCode(@RequestBody EmailDto emailDto) throws MessagingException {
+    public ResponseEntity<Response> sendEmailCode(@RequestBody @Valid EmailDto emailDto) throws MessagingException {
 
-        mailService.mailSend(Mail.JOIN, emailDto.email());
+        String code = mailService.mailSend(Mail.JOIN, emailDto.email());
 
-        return Response.ok();
+        EmailCodeDto emailCodeDto =
+                EmailCodeDto.builder()
+                .email(emailDto.email())
+                .code(code)
+                .build();
+
+        return Response.ok(emailCodeDto);
     }
 
     @PostMapping("/email/check")
