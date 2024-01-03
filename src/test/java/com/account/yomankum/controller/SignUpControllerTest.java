@@ -1,7 +1,10 @@
 package com.account.yomankum.controller;
 
+import com.account.yomankum.domain.dto.EmailCodeDto;
+import com.account.yomankum.domain.dto.EmailDto;
 import com.account.yomankum.domain.dto.UserSignUpDto;
 import com.account.yomankum.repository.UserRepository;
+import com.account.yomankum.util.RedisUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -26,6 +30,8 @@ class SignUpControllerTest {
     private ObjectMapper mapper;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private RedisUtil redisUtil;
 
     @BeforeEach
     void cleanAll() {
@@ -124,6 +130,74 @@ class SignUpControllerTest {
         ).andExpect(status().is2xxSuccessful())
                 .andDo(print());
 
+    }
+
+    @Test
+    @DisplayName("메일 보내기 성공")
+    void 메일_보내기_성공() throws Exception {
+
+        EmailDto emailDto = getEmailDto();
+
+        mockMvc.perform(
+                post("/signUp/email/send")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(emailDto))
+        ).andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$.data").isNotEmpty())
+                .andExpect(jsonPath("$.data.email").value(emailDto.email()))
+                .andDo(print());
+
+    }
+
+    @Test
+    @DisplayName("메일 보내기 실패 : 형식 이상")
+    void 메일_보내기_실패_형식_이상() throws Exception {
+
+        EmailDto emailDto = EmailDto.builder()
+                .email("holicloud.com")
+                .build();
+
+        mockMvc.perform(
+                post("/signUp/email/send")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(emailDto))
+        ).andExpect(status().is4xxClientError())
+                .andDo(print());
+
+    }
+
+    @Test
+    @DisplayName("이메일 코드 확인 성공")
+    void 이메일_코드_확인_후_성공() throws Exception {
+
+        EmailDto emailDto = getEmailDto();
+
+        mockMvc.perform(
+                post("/signUp/email/send")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(emailDto))
+        ).andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$.data.email").value(emailDto.email()))
+                .andExpect(jsonPath("$.data.code")
+                        .value(redisUtil.getData(emailDto.email())))
+                .andExpect(
+                        mvc -> mockMvc.perform(post("/signUp/email/check")
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .content(mapper.writeValueAsString(EmailCodeDto.builder()
+                                        .email(emailDto.email())
+                                        .code(redisUtil.getData(emailDto.email()))
+                                        .build())))
+                                .andExpect(status().is2xxSuccessful())
+                                .andDo(print())
+                )
+                .andDo(print());
+
+    }
+
+    private EmailDto getEmailDto() {
+        return EmailDto.builder()
+                .email("holiday.k1@icloud.com")
+                .build();
     }
 
     private UserSignUpDto getUserSignUpDto() {
