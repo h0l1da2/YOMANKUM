@@ -6,11 +6,10 @@ import com.account.yomankum.domain.Role;
 import com.account.yomankum.domain.User;
 import com.account.yomankum.domain.dto.LoginDto;
 import com.account.yomankum.domain.dto.UserSignUpDto;
-import com.account.yomankum.exception.IncorrectLoginException;
-import com.account.yomankum.exception.UserDuplicateException;
 import com.account.yomankum.repository.UserRepository;
 import com.account.yomankum.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService {
     private final BCryptPasswordEncoder passwordEncoder;
 
     @Override
-    public void signUp(UserSignUpDto userSignUpDto) throws UserDuplicateException {
+    public void signUp(UserSignUpDto userSignUpDto) throws IllegalArgumentException {
 
         String email = userSignUpDto.getEmail();
         String password = userSignUpDto.getPassword();
@@ -36,7 +36,8 @@ public class UserServiceImpl implements UserService {
                 .orElse(null);
 
         if (findUser != null) {
-            throw new UserDuplicateException();
+            log.error("해당 유저 존재하지 않음 : {}", email);
+            throw new IllegalArgumentException();
         }
 
         String encodePwd = passwordEncoder.encode(password);
@@ -51,19 +52,27 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Map<String, String> login(LoginDto loginDto) throws IncorrectLoginException {
+    public Map<String, String> login(LoginDto loginDto) throws IllegalArgumentException {
 
         String email = loginDto.getEmail();
         String password = loginDto.getPassword();
 
         User findUser = userRepository.findByEmailFetchRole(email)
-                .orElseThrow(IncorrectLoginException::new);
+                .orElse(null);
+
+        if (findUser == null) {
+            log.error("가입되지 않은 이메일");
+            throw new IllegalArgumentException();
+        }
 
         boolean pwdMatches = passwordEncoder.matches(password, findUser.getPassword());
 
         if (!pwdMatches) {
-            throw new IncorrectLoginException();
+            log.error("비밀번호가 안 맞음");
+            throw new IllegalArgumentException();
         }
+
+        log.info("아이디 비밀번호 일치 : {}", email);
 
         // 맞다면, JWT 발급
         String accessToken = tokenService.creatToken(findUser.getId(), findUser.getNickname(), findUser.getRole().getName());
