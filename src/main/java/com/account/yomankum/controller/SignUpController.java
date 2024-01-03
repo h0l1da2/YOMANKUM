@@ -28,7 +28,7 @@ public class SignUpController {
     }
 
     @PostMapping
-    public ResponseEntity<Response> signUp(@Valid UserSignUpDto userSignUpDto) throws UserDuplicateException {
+    public ResponseEntity<Response> signUp(@RequestBody @Valid UserSignUpDto userSignUpDto) throws UserDuplicateException {
 
         // 회원가입
         userService.signUp(userSignUpDto);
