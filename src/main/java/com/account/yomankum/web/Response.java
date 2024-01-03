@@ -12,40 +12,56 @@ import java.time.LocalDateTime;
 @Builder
 public class Response {
 
-    String message;
-    HttpStatus status;
+    private String message;
+    private HttpStatus status;
+    private ResponseCode code;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    LocalDateTime timestamp;
-    Object data;
+    private LocalDateTime timestamp;
+    private Object data;
 
     public static ResponseEntity<Response> ok() {
-        return response(HttpStatus.OK, "SUCCESS");
+        return response(HttpStatus.OK);
     }
-    public static ResponseEntity<Response> ok(Object data) {
-        return responseWithData(HttpStatus.OK, "SUCCESS", data);
+    public static ResponseEntity<Response> ok(ResponseCode responseCode) {
+        return response(HttpStatus.OK, responseCode);
+    }
+    public static ResponseEntity<Response> ok(ResponseCode responseCode, Object data) {
+        return responseWithData(HttpStatus.OK, data, responseCode);
     }
 
-    public static ResponseEntity<Response> badRequest(String message) {
-        return response(HttpStatus.BAD_REQUEST, message);
+    public static ResponseEntity<Response> badRequest(ResponseCode responseCode) {
+        return response(HttpStatus.BAD_REQUEST, responseCode);
     }
 
-    private static ResponseEntity<Response> responseWithData(HttpStatus status, String message, Object data) {
+    private static ResponseEntity<Response> responseWithData(HttpStatus status, Object data, ResponseCode responseCode) {
         return ResponseEntity.status(status).body(
                 Response.builder()
                         .status(status)
-                        .message(message)
+                        .message(responseCode.getMessage())
                         .timestamp(LocalDateTime.now())
                         .data(data)
+                        .code(responseCode)
                         .build()
         );
     }
 
-    private static ResponseEntity<Response> response(HttpStatus status, String message) {
+    private static ResponseEntity<Response> response(HttpStatus status, ResponseCode responseCode) {
         return ResponseEntity.status(status).body(
                 Response.builder()
                         .status(status)
-                        .message(message)
+                        .message(responseCode.getMessage())
                         .timestamp(LocalDateTime.now())
+                        .code(responseCode)
+                        .build()
+        );
+    }
+    private static ResponseEntity<Response> response(HttpStatus status) {
+        return ResponseEntity.status(status).body(
+                Response.builder()
+                        .status(status)
+                        .message("200 OK")
+                        .timestamp(LocalDateTime.now())
+                        .code(ResponseCode.OK)
                         .build()
         );
     }
