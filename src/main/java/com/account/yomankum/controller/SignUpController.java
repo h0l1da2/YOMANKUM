@@ -4,17 +4,19 @@ import com.account.yomankum.domain.Mail;
 import com.account.yomankum.domain.dto.EmailCodeDto;
 import com.account.yomankum.domain.dto.EmailDto;
 import com.account.yomankum.domain.dto.UserSignUpDto;
-import com.account.yomankum.exception.UserDuplicateException;
 import com.account.yomankum.service.MailService;
 import com.account.yomankum.service.UserService;
 import com.account.yomankum.web.Response;
-import com.nimbusds.jose.shaded.gson.Gson;
+import com.account.yomankum.web.ResponseCode;
+import com.sun.mail.smtp.SMTPAddressFailedException;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/signUp")
@@ -29,18 +31,29 @@ public class SignUpController {
     }
 
     @PostMapping
-    public ResponseEntity<Response> signUp(@RequestBody @Valid UserSignUpDto userSignUpDto) throws UserDuplicateException {
+    public ResponseEntity<Response> signUp(@RequestBody @Valid UserSignUpDto userSignUpDto) {
 
         // 회원가입
         userService.signUp(userSignUpDto);
 
-        return Response.ok();
+        return Response.ok(ResponseCode.SIGNUP000);
     }
 
     @PostMapping("/email/send")
-    public ResponseEntity<Response> sendEmailCode(@RequestBody @Valid EmailDto emailDto) throws MessagingException {
+    public ResponseEntity<Response> sendEmailCode(@RequestBody @Valid EmailDto emailDto) {
 
-        String code = mailService.mailSend(Mail.JOIN, emailDto.email());
+        String code = null;
+        try {
+            code = mailService.mailSend(Mail.JOIN, emailDto.email());
+        } catch (SMTPAddressFailedException e) {
+            log.error("메일을 보낼 수 없음");
+            e.printStackTrace();
+            return Response.badRequest(ResponseCode.EMAIL002);
+        } catch (MessagingException e) {
+            log.error("메시지 에러");
+            e.printStackTrace();
+            return Response.badRequest(ResponseCode.EMAIL004);
+        }
 
         EmailCodeDto emailCodeDto =
                 EmailCodeDto.builder()
@@ -48,7 +61,10 @@ public class SignUpController {
                 .code(code)
                 .build();
 
-        return Response.ok(emailCodeDto);
+        log.info("이메일 코드 전송 : {}", emailDto.email());
+
+        return Response.ok(
+                ResponseCode.EMAIL000, emailCodeDto);
     }
 
     @PostMapping("/email/check")
@@ -57,9 +73,10 @@ public class SignUpController {
         boolean isSuccessMailCode = mailService.verifyEmailCode(emailCodeDto.email(), emailCodeDto.code());
 
         if (!isSuccessMailCode) {
-            return Response.badRequest("메일 코드가 다름");
+            log.error("입력한 코드가 일치하지 않음 : {}", emailCodeDto.code());
+            return Response.badRequest(ResponseCode.EMAIL004);
         }
 
-        return Response.ok();
+        return Response.ok(ResponseCode.EMAIL000);
     }
 }

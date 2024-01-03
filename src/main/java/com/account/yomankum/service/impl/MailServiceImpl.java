@@ -31,10 +31,10 @@ public class MailServiceImpl implements MailService {
     private String fromEmail;
     private String title;
     private String template;
-    private long expireCodeTime = 60 * 15L;
+    private final long EXPIRE_CODE_TIME = 60 * 15L;
     private String randomCode = "";
-    private final String charset = "UTF-8";
-    private final String html = "html";
+    private final String CHARSET = "UTF-8";
+    private final String HTML = "html";
 
     @Override
     public String mailSend(Mail mail, String userEmail) throws MessagingException {
@@ -90,9 +90,9 @@ public class MailServiceImpl implements MailService {
         message.addRecipients(RecipientType.TO, userEmail);
         message.setSubject(title);
         message.setFrom(fromEmail);
-        message.setText(getContext(key, value, template), charset, html);
+        message.setText(getContext(key, value, template), CHARSET, HTML);
 
-        redisUtil.setDataExpire(userEmail, randomCode, expireCodeTime);
+        redisUtil.setDataExpire(userEmail, randomCode, EXPIRE_CODE_TIME);
 
         return message;
     }
