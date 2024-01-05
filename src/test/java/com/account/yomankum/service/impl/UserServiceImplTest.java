@@ -1,11 +1,11 @@
 package com.account.yomankum.service.impl;
 
-import com.account.yomankum.domain.Name;
+import com.account.yomankum.domain.enums.Name;
 import com.account.yomankum.domain.User;
-import com.account.yomankum.domain.dto.LoginDto;
-import com.account.yomankum.domain.dto.UserSignUpDto;
+import com.account.yomankum.login.domain.LoginDto;
+import com.account.yomankum.login.domain.UserSignUpDto;
 import com.account.yomankum.repository.UserRepository;
-import com.account.yomankum.service.UserService;
+import com.account.yomankum.login.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
