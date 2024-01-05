@@ -83,9 +83,4 @@ public class TokenServiceImpl implements TokenService {
         return tokenParser.getSnsUUID(jwtValue, token);
     }
 
-    private String[] splitToken(String token) {
-        String[] jwt = token.split("\\.");
-        return jwt;
-    }
-
 }
