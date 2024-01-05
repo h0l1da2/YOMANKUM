@@ -1,6 +1,6 @@
 package com.account.yomankum.login.service;
 
-import com.account.yomankum.login.security.jwt.TokenService;
+import com.account.yomankum.security.jwt.TokenService;
 import com.account.yomankum.domain.Name;
 import com.account.yomankum.domain.Role;
 import com.account.yomankum.domain.User;
