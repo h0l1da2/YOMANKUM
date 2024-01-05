@@ -38,13 +38,14 @@ ENV KAKAO_CLIENT_ID de846ae383b9c41af8d14bcc90700379
 ENV KAKAO_CLIENT_SECRET otrfLjd6BmlQkRdBGyVSfsNbFDbD1G8t
 ENV MAIL_USERNAME y0mankum
 ENV MAIL_PASSWORD yomankum1004
-ENV MAIL_ID y0mankum
+ENV MAIL_ID y0mankum@naver.com
 ENV MYSQL_ROOT_PASSWORD in8282
 ENV MYSQL_USER yomankum
 ENV MYSQL_PASSWORD in8282
 ENV MYSQL_DATABASE yomankum
 ENV REDIS_HOST cube.3trolls.me
 ENV REDIS_PORT 16379
+ENV REDIS_PASSWORD yomankum1004
 
 # Command to run your Spring Boot application when the container starts
-CMD ["java", "-jar", "yomankum.jar"]
+CMD ["java", "-jar", "-Dspring.profiles.active=prod", "yomankum.jar"]

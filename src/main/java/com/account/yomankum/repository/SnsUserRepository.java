@@ -1,6 +1,6 @@
 package com.account.yomankum.repository;
 
-import com.account.yomankum.config.oauth.Sns;
+import com.account.yomankum.security.oauth.Sns;
 import com.account.yomankum.domain.SnsUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 

@@ -1,5 +1,6 @@
 package com.account.yomankum.domain;
 
+import com.account.yomankum.domain.enums.Name;
 import jakarta.persistence.*;
 import lombok.*;
 
