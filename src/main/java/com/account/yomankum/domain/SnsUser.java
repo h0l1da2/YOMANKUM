@@ -1,5 +1,7 @@
 package com.account.yomankum.domain;
 
+import com.account.yomankum.domain.enums.Gender;
+import com.account.yomankum.domain.enums.Job;
 import com.account.yomankum.security.oauth.Sns;
 import jakarta.persistence.*;
 import lombok.*;

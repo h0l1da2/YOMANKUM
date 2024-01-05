@@ -1,6 +1,6 @@
 package com.account.yomankum.security.jwt;
 
-import com.account.yomankum.domain.Name;
+import com.account.yomankum.domain.enums.Name;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

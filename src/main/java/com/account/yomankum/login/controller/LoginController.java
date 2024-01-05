@@ -2,8 +2,8 @@ package com.account.yomankum.login.controller;
 
 import com.account.yomankum.login.domain.LoginDto;
 import com.account.yomankum.login.service.UserService;
-import com.account.yomankum.web.Response;
-import com.account.yomankum.web.ResponseCode;
+import com.account.yomankum.web.response.Response;
+import com.account.yomankum.web.response.ResponseCode;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

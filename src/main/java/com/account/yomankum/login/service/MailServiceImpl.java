@@ -1,6 +1,6 @@
 package com.account.yomankum.login.service;
 
-import com.account.yomankum.domain.Mail;
+import com.account.yomankum.domain.enums.Mail;
 import com.account.yomankum.util.RedisUtil;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;

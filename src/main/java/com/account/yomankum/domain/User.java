@@ -1,5 +1,7 @@
 package com.account.yomankum.domain;
 
+import com.account.yomankum.domain.enums.Gender;
+import com.account.yomankum.domain.enums.Job;
 import jakarta.persistence.*;
 import lombok.*;
 

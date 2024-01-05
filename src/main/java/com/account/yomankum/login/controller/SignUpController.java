@@ -1,13 +1,13 @@
 package com.account.yomankum.login.controller;
 
-import com.account.yomankum.domain.Mail;
+import com.account.yomankum.domain.enums.Mail;
 import com.account.yomankum.login.domain.EmailCodeDto;
 import com.account.yomankum.login.domain.EmailDto;
 import com.account.yomankum.login.domain.UserSignUpDto;
 import com.account.yomankum.login.service.MailService;
 import com.account.yomankum.login.service.UserService;
-import com.account.yomankum.web.Response;
-import com.account.yomankum.web.ResponseCode;
+import com.account.yomankum.web.response.Response;
+import com.account.yomankum.web.response.ResponseCode;
 import com.sun.mail.smtp.SMTPAddressFailedException;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;

@@ -4,7 +4,7 @@ import com.account.yomankum.security.oauth.GoogleJwt;
 import com.account.yomankum.security.oauth.JwtValue;
 import com.account.yomankum.security.oauth.KakaoJwt;
 import com.account.yomankum.security.oauth.Sns;
-import com.account.yomankum.domain.Name;
+import com.account.yomankum.domain.enums.Name;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
