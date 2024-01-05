@@ -2,7 +2,6 @@ package com.account.yomankum.config.oauth;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
-import lombok.ToString;
 
 @Getter
 public class NaverProfileApiResponse {
