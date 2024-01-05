@@ -74,7 +74,6 @@ public class UserServiceImpl implements UserService {
 
         log.info("아이디 비밀번호 일치 : {}", email);
 
-        // 맞다면, JWT 발급
         String accessToken = tokenService.creatToken(findUser.getId(), findUser.getNickname(), findUser.getRole().getName());
         String refreshToken = tokenService.createRefreshToken();
 

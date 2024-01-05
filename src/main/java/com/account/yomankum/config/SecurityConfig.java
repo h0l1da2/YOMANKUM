@@ -36,18 +36,6 @@ class SecurityConfig {
                         .anyRequest().permitAll())
 
                 .addFilterBefore(new JwtFilter(tokenService, userDetailsService), UsernamePasswordAuthenticationFilter.class)
-
-                // OAuth2
-//                .addFilterBefore(new CustomOAuth2AuthorizationCodeGrantFilter(clientRegistrationRepository, oAuth2AuthorizedClientRepository, authenticationManager(authenticationConfiguration()), customDefaultOAuth2UserService, snsInfo), OAuth2LoginAuthenticationFilter.class)
-//                .addFilterAfter(new OAuth2JwtTokenFilter(webService, jwtTokenService, jwtTokenParser, memberJoinService, snsInfo, kakaoJwk, googleJwk), OAuth2LoginAuthenticationFilter.class)
-//                .exceptionHandling(exception -> exception.authenticationEntryPoint(new CustomAuthenticationEntryPoint())
-//                        .accessDeniedHandler(new CustomAccessDeniedHandler()))
-
-//                .oauth2Login(oauth -> oauth.loginPage("/loginForm")
-//                        .authorizationEndpoint(end -> end.authorizationRequestResolver(customOAuth2AuthorizationRequestResolver))
-//                        .userInfoEndpoint(userInfo -> userInfo.userService(customDefaultOAuth2UserService))
-//                        .successHandler(new CustomOAuth2SuccessHandler(jwtTokenService, memberJoinService)))
-
                 .logout(logout -> logout.logoutSuccessUrl("/login").permitAll())
                 .build();
     }
