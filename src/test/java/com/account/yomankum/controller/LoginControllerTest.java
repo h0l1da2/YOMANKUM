@@ -1,9 +1,9 @@
 package com.account.yomankum.controller;
 
-import com.account.yomankum.domain.dto.LoginDto;
-import com.account.yomankum.domain.dto.UserSignUpDto;
+import com.account.yomankum.login.domain.LoginDto;
+import com.account.yomankum.login.domain.UserSignUpDto;
 import com.account.yomankum.repository.UserRepository;
-import com.account.yomankum.service.UserService;
+import com.account.yomankum.login.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

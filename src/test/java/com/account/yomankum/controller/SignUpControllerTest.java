@@ -1,8 +1,8 @@
 package com.account.yomankum.controller;
 
-import com.account.yomankum.domain.dto.EmailCodeDto;
-import com.account.yomankum.domain.dto.EmailDto;
-import com.account.yomankum.domain.dto.UserSignUpDto;
+import com.account.yomankum.login.domain.EmailCodeDto;
+import com.account.yomankum.login.domain.EmailDto;
+import com.account.yomankum.login.domain.UserSignUpDto;
 import com.account.yomankum.repository.UserRepository;
 import com.account.yomankum.util.RedisUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
