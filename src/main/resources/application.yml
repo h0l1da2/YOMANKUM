@@ -118,7 +118,18 @@ token:
 mail:
   id: ${MAIL_ID}
 
+springdoc:
+  packages-to-scan: com.wim.crm
+  default-consumes-media-type: application/json;charset=UTF-8
+  default-produces-media-type: application/json;charset=UTF-8
+  swagger-ui:
+    path: /yomankum/api-docs
+    disable-swagger-default-url: true
+    display-request-duration: true
+    operations-sorter: alpha
+
 ---
 spring:
   profiles:
-    active: prod
+    active: dev
+#    active: prod
