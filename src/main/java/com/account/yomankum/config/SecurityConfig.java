@@ -1,7 +1,7 @@
 package com.account.yomankum.config;
 
-import com.account.yomankum.config.jwt.JwtFilter;
-import com.account.yomankum.config.jwt.TokenService;
+import com.account.yomankum.login.security.jwt.JwtFilter;
+import com.account.yomankum.login.security.jwt.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
