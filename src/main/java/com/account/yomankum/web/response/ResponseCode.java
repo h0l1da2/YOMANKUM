@@ -1,4 +1,4 @@
-package com.account.yomankum.web;
+package com.account.yomankum.web.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
