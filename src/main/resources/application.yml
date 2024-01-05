@@ -119,7 +119,7 @@ mail:
   id: ${MAIL_ID}
 
 springdoc:
-  packages-to-scan: com.wim.crm
+  packages-to-scan: com.account.yomankum
   default-consumes-media-type: application/json;charset=UTF-8
   default-produces-media-type: application/json;charset=UTF-8
   swagger-ui:
