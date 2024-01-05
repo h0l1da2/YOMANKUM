@@ -9,7 +9,7 @@ import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @PropertySource("classpath:application.yml")
 @EnableRedisRepositories
 public class RedisConfig {
