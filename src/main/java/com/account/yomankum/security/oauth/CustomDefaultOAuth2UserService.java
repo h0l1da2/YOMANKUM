@@ -2,7 +2,11 @@ package com.account.yomankum.security.oauth;
 
 import com.account.yomankum.security.CustomUserDetails;
 import com.account.yomankum.domain.SnsUser;
-import com.account.yomankum.login.service.SnsUserService;
+import com.account.yomankum.security.domain.GoogleUserInfo;
+import com.account.yomankum.security.domain.Sns;
+import com.account.yomankum.security.domain.SnsUserInfo;
+import com.account.yomankum.security.domain.NaverUserInfo;
+import com.account.yomankum.security.service.SnsUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -34,10 +38,11 @@ public class CustomDefaultOAuth2UserService extends DefaultOAuth2UserService {
         String uuidKey = userInfo.getUUIDKey();
         String email = userInfo.getEmail();
         Sns sns = userInfo.getSnsName();
-        SnsUser user = snsUserService.loginCheck(sns, email, uuidKey);
+        SnsUser user = snsUserService.login(sns, uuidKey);
 
         // 기존 가입 멤버가 아니라면 ?
         if (user == null) {
+            log.info("{} 유저 가입 : {}", sns, uuidKey);
             user = snsUserService.signUp(sns, email, uuidKey);
         }
         return new CustomUserDetails(user, oAuth2User.getAttributes());

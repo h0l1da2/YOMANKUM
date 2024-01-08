@@ -1,5 +1,6 @@
 package com.account.yomankum.security.oauth;
 
+import com.account.yomankum.security.domain.SnsInfo;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +15,6 @@ import java.util.UUID;
 @Slf4j
 public class CustomOAuth2AuthorizationRequestResolver implements OAuth2AuthorizationRequestResolver {
     private final String SNS_REQUEST_URI = "/oauth2/authorization/";
-    private final String BASE_URL = "http://localhost:8080/";
     private SnsInfo snsInfo;
 
     @Override
