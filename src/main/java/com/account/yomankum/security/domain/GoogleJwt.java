@@ -1,5 +1,6 @@
-package com.account.yomankum.security.oauth;
+package com.account.yomankum.security.domain;
 
+import com.account.yomankum.security.domain.JwtValue;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,35 +11,34 @@ import org.springframework.stereotype.Component;
 @Component
 @PropertySource("classpath:application.yml")
 @NoArgsConstructor
-public class KakaoJwt implements JwtValue {
+public class GoogleJwt implements JwtValue {
 
-    @Value("${token.keys.kakao.kid.first}")
+    @Value("${token.keys.google.kid.first}")
     private String kidFirst;
-    @Value("${token.keys.kakao.kty.first}")
+    @Value("${token.keys.google.kty.first}")
     private String ktyFirst;
-    @Value("${token.keys.kakao.alg.first}")
+    @Value("${token.keys.google.alg.first}")
     private String algFirst;
-    @Value("${token.keys.kakao.use.first}")
+    @Value("${token.keys.google.use.first}")
     private String useFirst;
-    @Value("${token.keys.kakao.n.first}")
+    @Value("${token.keys.google.n.first}")
     private String nFirst;
-    @Value("${token.keys.kakao.e.first}")
+    @Value("${token.keys.google.e.first}")
     private String eFirst;
 
-    @Value("${token.keys.kakao.kid.second}")
+    @Value("${token.keys.google.kid.second}")
     private String kidSecond;
-    @Value("${token.keys.kakao.kty.second}")
+    @Value("${token.keys.google.kty.second}")
     private String ktySecond;
-    @Value("${token.keys.kakao.alg.second}")
+    @Value("${token.keys.google.alg.second}")
     private String algSecond;
-    @Value("${token.keys.kakao.use.second}")
+    @Value("${token.keys.google.use.second}")
     private String useSecond;
-    @Value("${token.keys.kakao.n.second}")
+    @Value("${token.keys.google.n.second}")
     private String nSecond;
-    @Value("${token.keys.kakao.e.second}")
-    private String eSecond;
+    @Value("${token.keys.google.e.second}")
+    private String eSecond;private String kid;
 
-    private String kid;
     private String kty;
     private String alg;
     private String use;

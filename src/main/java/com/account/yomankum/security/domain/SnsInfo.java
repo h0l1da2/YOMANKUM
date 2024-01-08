@@ -1,4 +1,4 @@
-package com.account.yomankum.security.oauth;
+package com.account.yomankum.security.domain;
 
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
