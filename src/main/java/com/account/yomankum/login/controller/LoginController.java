@@ -6,9 +6,12 @@ import com.account.yomankum.web.response.Response;
 import com.account.yomankum.web.response.ResponseCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,16 +28,20 @@ public class LoginController {
 
     @PostMapping
     @Operation(summary = "일반 회원 로그인", description = "일반 회원용 로그인")
-    public ResponseEntity<Response> login(@RequestBody @Valid LoginDto loginDto) {
+    public ResponseEntity<Response> login(@RequestBody @Valid LoginDto loginDto, HttpServletResponse response) {
 
-        Map<String, String> tokens = null;
         try {
-            tokens = userService.login(loginDto);
+
+            Map<String, String> tokens = userService.login(loginDto);
+
+            response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + tokens.get("accessToken"));
+            response.addCookie(new Cookie("refreshToken", tokens.get("refreshToken")));
+
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
             return Response.badRequest(ResponseCode.LOGIN004);
         }
 
-        return Response.ok(ResponseCode.LOGIN000, tokens);
+        return Response.ok(ResponseCode.LOGIN000);
     }
 }
