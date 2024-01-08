@@ -21,7 +21,6 @@ public class SnsUser {
     private Long id;
     private String uuidKey;
     private String email;
-    private String password;
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Role role;
     private String nickname;

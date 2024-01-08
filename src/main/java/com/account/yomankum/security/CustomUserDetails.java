@@ -2,7 +2,6 @@ package com.account.yomankum.security;
 
 import com.account.yomankum.domain.SnsUser;
 import com.account.yomankum.domain.User;
-import lombok.AllArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -13,7 +12,6 @@ import java.util.Map;
 
 import static java.time.LocalDateTime.*;
 
-@AllArgsConstructor
 public class CustomUserDetails implements UserDetails, OAuth2User {
 
     private User user;
@@ -94,8 +92,8 @@ public class CustomUserDetails implements UserDetails, OAuth2User {
     @Override
     public String getName() {
         if (snsUser == null) {
-            return user.getEmail();
+            return user.getNickname();
         }
-        return snsUser.getEmail();
+        return snsUser.getNickname();
     }
 }
