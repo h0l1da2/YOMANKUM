@@ -1,6 +1,6 @@
 package com.account.yomankum.security.service;
 
-import com.account.yomankum.security.oauth.Sns;
+import com.account.yomankum.security.domain.Sns;
 import com.account.yomankum.domain.SnsUser;
 
 public interface SnsUserService {

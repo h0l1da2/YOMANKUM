@@ -4,7 +4,7 @@ import com.account.yomankum.domain.Role;
 import com.account.yomankum.domain.SnsUser;
 import com.account.yomankum.domain.enums.Name;
 import com.account.yomankum.repository.SnsUserRepository;
-import com.account.yomankum.security.oauth.Sns;
+import com.account.yomankum.security.domain.Sns;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
