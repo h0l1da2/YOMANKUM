@@ -1,6 +1,6 @@
 package com.account.yomankum.security.jwt;
 
-import com.account.yomankum.security.oauth.JwtValue;
+import com.account.yomankum.security.domain.JwtValue;
 import com.nimbusds.jose.shaded.gson.JsonObject;
 import com.nimbusds.jose.shaded.gson.JsonParser;
 import io.jsonwebtoken.*;
