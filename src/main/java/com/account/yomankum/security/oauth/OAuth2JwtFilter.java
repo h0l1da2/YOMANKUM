@@ -1,9 +1,15 @@
 package com.account.yomankum.security.oauth;
 
-import com.account.yomankum.security.CustomUserDetails;
+import com.account.yomankum.domain.SnsUser;
+import com.account.yomankum.security.domain.NaverProfileApiResponse;
+import com.account.yomankum.security.domain.Sns;
+import com.account.yomankum.security.domain.SnsInfo;
+import com.account.yomankum.security.domain.TokenResponse;
+import com.account.yomankum.security.service.SnsUserService;
 import com.account.yomankum.security.jwt.TokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +39,7 @@ public class OAuth2JwtFilter extends OncePerRequestFilter {
 
     private final SnsInfo snsInfo;
     private final TokenService tokenService;
+    private final SnsUserService snsUserService;
     private final ClientRegistrationRepository clientRegistrationRepository;
     private final CustomDefaultOAuth2UserService customDefaultOAuth2UserService;
 
@@ -43,16 +50,16 @@ public class OAuth2JwtFilter extends OncePerRequestFilter {
                 (TokenResponse) request.getAttribute("tokenResponse");
         String sns = String.valueOf(request.getAttribute("sns"));
 
-        String memberId = "";
+        Sns snsEnum = null;
         String token = "";
-        String snsUUID = "";
+        String snsUuidKey = "";
 
         if (tokenResponse != null && StringUtils.hasText(sns)) {
             /**
              * - 토큰 파싱을 위해서는 발급자(--sns) 가 필요
              * iss : sns (발급자)
              * sub : 식별자
-             * KAKAO : nickname , email
+             * KAKAO : nickname , email(필요한데 서비스 오픈해야 받을 수 있음..)
              * NAVER : email
              * GOOGLE : email , name
              */
@@ -74,54 +81,53 @@ public class OAuth2JwtFilter extends OncePerRequestFilter {
                                 httpEntity, NaverProfileApiResponse.class);
 
                 NaverProfileApiResponse profileResponse = responseEntity.getBody();
-                snsUUID = profileResponse.getResponse().getId();
+                snsUuidKey = profileResponse.getResponse().getId();
+                snsEnum = Sns.NAVER;
 
             }
-
             // KAKAO 일 경우 작업
-            if (sns.equals(Sns.KAKAO.name()) | sns.equals(Sns.GOOGLE.name())) {
+            else if (sns.equals(Sns.KAKAO.name())) {
                 token = tokenResponse.getIdToken();
-                snsUUID = tokenService.getSnsUUID(sns, token);
+                snsUuidKey = tokenService.getSnsUUID(sns, token);
+                // 카카오는 서비스 오픈 안 하면 이메일은 가져올 수 없음
+                snsEnum = Sns.KAKAO;
 
             }
 
         }
 
+        // authentication 생성 후, SpringContext에 저장하는 작업
+        ClientRegistration clientRegistration =
+                clientRegistrationRepository.findByRegistrationId(sns.toLowerCase());
+        OAuth2AccessToken oAuth2AccessToken = getOAuth2AccessToken(tokenResponse);
 
+        OAuth2UserRequest oAuth2UserRequest = new OAuth2UserRequest(clientRegistration, oAuth2AccessToken);
 
-            // authentication 생성 후, SpringContext에 저장하는 작업
-            ClientRegistration clientRegistration =
-                    clientRegistrationRepository.findByRegistrationId(sns.toLowerCase());
-            OAuth2AccessToken oAuth2AccessToken = getOAuth2AccessToken(tokenResponse);
+        OAuth2User oAuth2User = customDefaultOAuth2UserService.loadUser(oAuth2UserRequest);
 
-            OAuth2UserRequest oAuth2UserRequest = new OAuth2UserRequest(clientRegistration, oAuth2AccessToken);
+        // 토큰 만들기
+        SnsUser snsUser = snsUserService.login(snsEnum, snsUuidKey);
+        String accessToken = tokenService.creatToken(snsUser.getId(), snsUser.getNickname(), snsUser.getRole().getName());
+        String refreshToken = tokenService.createRefreshToken();
 
-            OAuth2User oAuth2User = customDefaultOAuth2UserService.loadUser(oAuth2UserRequest);
-            CustomUserDetails cu = (CustomUserDetails) oAuth2User;
+        setAuthenticationSpringContext(oAuth2User, accessToken);
 
-//            // 토큰 만들기
-//            Member member = memberJoinService.findMyAccount(cu.getId());
-//            String accessToken = "";
-//            if (member != null) {
-//                Map<TokenName, String> tokens =
-//                        jwtTokenService.getTokens(member.getId(), member.getRole().getName());
-//                accessToken = tokens.get(TokenName.ACCESS_TOKEN);
-//                String refreshToken = tokens.get(TokenName.REFRESH_TOKEN);
-//                request.setAttribute(TokenName.ACCESS_TOKEN.name(), accessToken);
-//                jwtTokenService.saveRefreshToken(member.getId(), refreshToken);
-//
-//            }
-//
-//            setAuthenticationSpringContext(oAuth2User, accessToken);
-//
-//            String redirectUri = "/loginForm?redirect="+request.getRequestURI()+"&token="+accessToken;
-//            response.sendRedirect(redirectUri);
-//
-//            webService.sessionSetMember(member, request);
-//
-//        }
-//        filterChain.doFilter(request, response);
+        setTokensAtReponse(response, accessToken, refreshToken);
+        setIdAndNicknameAtSession(request, snsUser.getId(), snsUser.getNickname());
 
+        response.sendRedirect("/");
+
+        filterChain.doFilter(request, response);
+    }
+
+    private void setTokensAtReponse(HttpServletResponse response, String accessToken, String refreshToken) {
+        response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
+        response.addCookie(new Cookie("refreshToken", refreshToken));
+    }
+
+    private void setIdAndNicknameAtSession(HttpServletRequest request, Long id, String nickname) {
+        request.getSession().setAttribute("id", id);
+        request.getSession().setAttribute("nickname", nickname);
     }
 
     private void setAuthenticationSpringContext(OAuth2User oAuth2User, String accessToken) {

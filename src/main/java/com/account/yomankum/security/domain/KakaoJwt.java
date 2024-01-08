@@ -1,4 +1,4 @@
-package com.account.yomankum.security.oauth;
+package com.account.yomankum.security.domain;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,34 +10,35 @@ import org.springframework.stereotype.Component;
 @Component
 @PropertySource("classpath:application.yml")
 @NoArgsConstructor
-public class GoogleJwt implements JwtValue {
+public class KakaoJwt implements JwtValue {
 
-    @Value("${token.keys.google.kid.first}")
+    @Value("${token.keys.kakao.kid.first}")
     private String kidFirst;
-    @Value("${token.keys.google.kty.first}")
+    @Value("${token.keys.kakao.kty.first}")
     private String ktyFirst;
-    @Value("${token.keys.google.alg.first}")
+    @Value("${token.keys.kakao.alg.first}")
     private String algFirst;
-    @Value("${token.keys.google.use.first}")
+    @Value("${token.keys.kakao.use.first}")
     private String useFirst;
-    @Value("${token.keys.google.n.first}")
+    @Value("${token.keys.kakao.n.first}")
     private String nFirst;
-    @Value("${token.keys.google.e.first}")
+    @Value("${token.keys.kakao.e.first}")
     private String eFirst;
 
-    @Value("${token.keys.google.kid.second}")
+    @Value("${token.keys.kakao.kid.second}")
     private String kidSecond;
-    @Value("${token.keys.google.kty.second}")
+    @Value("${token.keys.kakao.kty.second}")
     private String ktySecond;
-    @Value("${token.keys.google.alg.second}")
+    @Value("${token.keys.kakao.alg.second}")
     private String algSecond;
-    @Value("${token.keys.google.use.second}")
+    @Value("${token.keys.kakao.use.second}")
     private String useSecond;
-    @Value("${token.keys.google.n.second}")
+    @Value("${token.keys.kakao.n.second}")
     private String nSecond;
-    @Value("${token.keys.google.e.second}")
-    private String eSecond;private String kid;
+    @Value("${token.keys.kakao.e.second}")
+    private String eSecond;
 
+    private String kid;
     private String kty;
     private String alg;
     private String use;

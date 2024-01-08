@@ -1,8 +1,11 @@
-package com.account.yomankum.security.oauth;
+package com.account.yomankum.security.domain;
+
+import com.account.yomankum.security.domain.Sns;
+import com.account.yomankum.security.domain.SnsUserInfo;
 
 import java.util.Map;
 
-public class GoogleUserInfo implements SnsUserInfo{
+public class GoogleUserInfo implements SnsUserInfo {
 
     private final Map<String, Object> attributes;
 

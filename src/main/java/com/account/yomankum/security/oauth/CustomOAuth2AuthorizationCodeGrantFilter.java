@@ -1,5 +1,8 @@
 package com.account.yomankum.security.oauth;
 
+import com.account.yomankum.security.domain.Sns;
+import com.account.yomankum.security.domain.SnsInfo;
+import com.account.yomankum.security.domain.TokenResponse;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,7 +31,7 @@ public class CustomOAuth2AuthorizationCodeGrantFilter extends OAuth2Authorizatio
 
     private final SnsInfo snsInfo;
 
-    public CustomOAuth2AuthorizationCodeGrantFilter(ClientRegistrationRepository clientRegistrationRepository, OAuth2AuthorizedClientRepository authorizedClientRepository, AuthenticationManager authenticationManager, SnsInfo snsInfo) {
+    public CustomOAuth2AuthorizationCodeGrantFilter(final ClientRegistrationRepository clientRegistrationRepository, final OAuth2AuthorizedClientRepository authorizedClientRepository, final AuthenticationManager authenticationManager, SnsInfo snsInfo) {
         super(clientRegistrationRepository, authorizedClientRepository, authenticationManager);
         this.snsInfo = snsInfo;
     }
@@ -47,7 +50,7 @@ public class CustomOAuth2AuthorizationCodeGrantFilter extends OAuth2Authorizatio
         }
 
         String requestURI = request.getRequestURL().toString();
-        HttpSession session = request.getSession();
+        HttpSession session = request.getSession(false);
 
         if (session != null) {
             String myState = String.valueOf(session.getAttribute("state"));
