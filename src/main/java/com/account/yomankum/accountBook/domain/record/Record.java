@@ -1,6 +1,8 @@
-package com.account.yomankum.domain;
+package com.account.yomankum.accountBook.domain.record;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -15,19 +17,17 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class AccountBook {
+public class Record {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private LocalDateTime date;
-    // 기본 대분류 태그
-    private String tag;
-    // 내용
     private String content;
-    // 입출금 방법
     private String payment;
-    // 소분류 태그
-    private String customTag;
+    private String tag; // 대분류
+    private String customTag; // 소분류
+    @Enumerated(value =  EnumType.STRING)
+    private RecordType recordType;
     private int money;
+    private LocalDateTime date;
 
 }

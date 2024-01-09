@@ -1,4 +1,4 @@
-package com.account.yomankum.accountbook.domain;
+package com.account.yomankum.accountBook.service.dto.write;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class AccountWriteDto {
+public class RecordWriteDto {
 
     @DateTimeFormat(pattern = "yyyy-MM-dd EEE")
     private LocalDateTime date;
@@ -33,4 +33,5 @@ public class AccountWriteDto {
     private String customTag;
     @Size(min = 10)
     private int money;
+
 }
