@@ -13,8 +13,10 @@ public enum ResponseCode {
 
     EMAIL_CODE_NOT_MATCHED("이메일 코드가 다릅니다."),
     EMAIL_ERROR("메일을 보낼 수 없습니다."),
+    EMAIL_NOT_FOUND("이메일을 찾을 수 없음."),
 
-    NOT_VALID("형식을 확인하세요.");
+
+    NOT_VALID("형식을 확인하세요."), ;
 
 
     private String message;

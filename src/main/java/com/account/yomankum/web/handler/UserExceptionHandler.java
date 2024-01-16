@@ -16,6 +16,7 @@ public class UserExceptionHandler {
     @ExceptionHandler(UserNotFoundException.class)
     @ResponseBody
     public ResponseEntity<Response> userNotFoundHandler(UserNotFoundException e) {
+        e.printStackTrace();
         return Response.badRequest(e.getResponseCode());
     }
 

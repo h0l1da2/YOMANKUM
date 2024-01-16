@@ -19,8 +19,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseBody
     public ResponseEntity<Response> invalidRequestHandler(MethodArgumentNotValidException e) {
-        JsonObject invalid = new JsonObject();
+        e.printStackTrace();
 
+        JsonObject invalid = new JsonObject();
         for (FieldError error : e.getFieldErrors()) {
             invalid.addProperty(error.getField(), error.getDefaultMessage());
         }

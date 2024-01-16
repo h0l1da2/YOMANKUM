@@ -1,6 +1,8 @@
 package com.account.yomankum.login.controller;
 
 import com.account.yomankum.domain.enums.Mail;
+import com.account.yomankum.exception.CodeNotFoundException;
+import com.account.yomankum.exception.CodeNotValidException;
 import com.account.yomankum.exception.UserNotFoundException;
 import com.account.yomankum.login.domain.EmailCodeDto;
 import com.account.yomankum.login.domain.EmailDto;
@@ -45,28 +47,15 @@ public class SignUpController {
 
         String code = mailService.mailSend(Mail.JOIN, emailDto.email());
 
-        EmailCodeDto emailCodeDto =
-                EmailCodeDto.builder()
-                .email(emailDto.email())
-                .code(code)
-                .build();
-
-        log.info("이메일 코드 전송 : {}", emailDto.email());
-
         return Response.ok(
-                ResponseCode.OK, emailCodeDto);
+                ResponseCode.OK, code);
     }
 
     @PostMapping("/email/check")
     @Operation(summary = "메일 인증 코드 체크", description = "메일 인증 코드 체크")
-    public ResponseEntity<Response> checkEmailCode(@RequestBody @Valid EmailCodeDto emailCodeDto) {
+    public ResponseEntity<Response> checkEmailCode(@RequestBody @Valid EmailCodeDto emailCodeDto) throws CodeNotFoundException, CodeNotValidException {
 
-        boolean isSuccessMailCode = mailService.verifyEmailCode(emailCodeDto.email(), emailCodeDto.code());
-
-        if (!isSuccessMailCode) {
-            log.error("입력한 코드가 일치하지 않음 : {}", emailCodeDto.code());
-            return Response.badRequest(ResponseCode.EMAIL_CODE_NOT_MATCHED);
-        }
+        mailService.verifyEmailCode(emailCodeDto.email(), emailCodeDto.code());
 
         return Response.ok(ResponseCode.OK);
     }

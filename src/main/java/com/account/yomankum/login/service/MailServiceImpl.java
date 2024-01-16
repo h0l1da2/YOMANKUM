@@ -1,10 +1,15 @@
 package com.account.yomankum.login.service;
 
 import com.account.yomankum.domain.enums.Mail;
+import com.account.yomankum.exception.CodeNotFoundException;
+import com.account.yomankum.exception.CodeNotValidException;
 import com.account.yomankum.util.RedisUtil;
+import com.account.yomankum.web.response.Response;
+import com.account.yomankum.web.response.ResponseCode;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -16,6 +21,7 @@ import java.util.Random;
 
 import static jakarta.mail.Message.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @PropertySource("classpath:application.yml")
@@ -45,6 +51,8 @@ public class MailServiceImpl implements MailService {
 
         MimeMessage template = setTemplate(mail, userEmail, randomCode);
         sendMail(template);
+
+        log.info("이메일 코드 전송 : {}", userEmail);
         return result;
     }
 
@@ -98,14 +106,18 @@ public class MailServiceImpl implements MailService {
     }
 
     @Override
-    public boolean verifyEmailCode(String userEmail, String randomCode) {
+    public void verifyEmailCode(String userEmail, String randomCode) throws CodeNotFoundException, CodeNotValidException {
         String randomCodeByEmail = redisUtil.getData(userEmail);
 
         if (randomCodeByEmail == null) {
-            return false;
+            log.error("입력한 코드가 일치하지 않음 : {}", randomCode);
+            throw new CodeNotFoundException(ResponseCode.EMAIL_NOT_FOUND);
         }
 
-        return randomCodeByEmail.equals(randomCode);
+        if (!randomCodeByEmail.matches(randomCode)) {
+            log.error("입력한 코드가 일치하지 않음 : {}", randomCode);
+            throw new CodeNotValidException(ResponseCode.EMAIL_CODE_NOT_MATCHED);
+        }
     }
 
     private MimeMessage setMimeMessage(String userEmail, String key, String value, String title, String template) throws MessagingException {
