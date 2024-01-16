@@ -25,15 +25,8 @@ public class MailServiceImpl implements MailService {
     private final SpringTemplateEngine templateEngine;
     private final RedisUtil redisUtil;
 
-    private MimeMessage message;
     @Value("${mail.id}")
     private String fromEmail;
-    private String title;
-    private String template;
-    private final long EXPIRE_CODE_TIME = 60 * 15L;
-    private String randomCode = "";
-    private final String CHARSET = "UTF-8";
-    private final String HTML = "html";
 
     @Override
     public String mailSend(Mail mail, String userEmail) throws MessagingException {
@@ -43,6 +36,7 @@ public class MailServiceImpl implements MailService {
         }
 
         String result = "";
+        String randomCode = "";
 
         if (mail.equals(Mail.JOIN)) {
             randomCode = createCode();
@@ -62,10 +56,6 @@ public class MailServiceImpl implements MailService {
         Random random = new Random();
         StringBuilder builder = new StringBuilder();
 
-        /**
-         * values 길이 안에서 랜덤한 숫자를 가져오고
-         * 랜덤 숫자를 values 의 인덱스로 가져와서 builder 로 String 에 추가함.
-         */
         for (int i = 0; i < codeLength; i++) {
             int randomIndex = random.nextInt(values.length());
             builder.append(values.charAt(randomIndex));
@@ -77,6 +67,9 @@ public class MailServiceImpl implements MailService {
 
         String key = "";
         String value = "";
+        String title = "";
+        String template = "";
+
 
         if (type.equals(Mail.JOIN)) {
             title = "YOMANKUM * 가입 코드 전송";
@@ -85,12 +78,9 @@ public class MailServiceImpl implements MailService {
             value = randomCode;
         }
 
-        message = mailSender.createMimeMessage();
-        message.addRecipients(RecipientType.TO, userEmail);
-        message.setSubject(title);
-        message.setFrom(fromEmail);
-        message.setText(getContext(key, value, template), CHARSET, HTML);
+        MimeMessage message = setMimeMessage(userEmail, key, value, title, template);
 
+        final long EXPIRE_CODE_TIME = 60 * 15L;
         redisUtil.setDataExpire(userEmail, randomCode, EXPIRE_CODE_TIME);
 
         return message;
@@ -116,6 +106,18 @@ public class MailServiceImpl implements MailService {
         }
 
         return randomCodeByEmail.equals(randomCode);
+    }
+
+    private MimeMessage setMimeMessage(String userEmail, String key, String value, String title, String template) throws MessagingException {
+        String charset = "UTF-8";
+        String html = "html";
+
+        MimeMessage message = mailSender.createMimeMessage();
+        message.addRecipients(RecipientType.TO, userEmail);
+        message.setSubject(title);
+        message.setFrom(fromEmail);
+        message.setText(getContext(key, value, template), charset, html);
+        return message;
     }
 
     private Context setContext(String key, String value) {
