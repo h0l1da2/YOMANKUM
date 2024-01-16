@@ -1,7 +1,8 @@
 package com.account.yomankum.accountBook.controller;
 
-import com.account.yomankum.accountBook.service.dto.read.AccountBookSimpleDto;
-import com.account.yomankum.accountBook.service.dto.write.AccountBookWriteDto;
+import com.account.yomankum.accountBook.dto.request.RecordWriteDto;
+import com.account.yomankum.accountBook.dto.response.AccountBookSimpleDto;
+import com.account.yomankum.accountBook.dto.request.AccountBookWriteDto;
 import com.account.yomankum.accountBook.service.AccountBookService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

@@ -2,6 +2,7 @@ package com.account.yomankum.security;
 
 import com.account.yomankum.domain.User;
 import com.account.yomankum.repository.UserRepository;
+import com.account.yomankum.web.response.ResponseCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -17,12 +18,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         long id = Long.parseLong(username);
-        User findUser = userRepository.findById(id).orElse(null);
-
-        if (findUser == null) {
-            throw new UsernameNotFoundException("유저를 찾을 수 없음");
-        }
-
+        User findUser = userRepository.findById(id).orElseThrow(()->new RuntimeException(ResponseCode.EMAIL000.toString()));
         return new CustomUserDetails(findUser);
     }
 

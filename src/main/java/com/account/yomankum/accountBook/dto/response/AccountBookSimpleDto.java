@@ -1,4 +1,4 @@
-package com.account.yomankum.accountBook.service.dto.read;
+package com.account.yomankum.accountBook.dto.response;
 
 import com.account.yomankum.accountBook.domain.AccountBook;
 import lombok.Builder;
