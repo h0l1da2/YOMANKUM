@@ -1,5 +1,6 @@
 package com.account.yomankum.security.oauth;
 
+import com.account.yomankum.exception.UserNotFoundException;
 import com.account.yomankum.security.CustomUserDetails;
 import com.account.yomankum.domain.SnsUser;
 import com.account.yomankum.security.domain.GoogleUserInfo;
@@ -8,6 +9,7 @@ import com.account.yomankum.security.domain.SnsUserInfo;
 import com.account.yomankum.security.domain.NaverUserInfo;
 import com.account.yomankum.security.service.SnsUserService;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -24,6 +26,7 @@ public class CustomDefaultOAuth2UserService extends DefaultOAuth2UserService {
 
     private final SnsUserService snsUserService;
 
+    @SneakyThrows(UserNotFoundException.class)
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         log.info("유저 서비스 시작");
@@ -38,7 +41,7 @@ public class CustomDefaultOAuth2UserService extends DefaultOAuth2UserService {
         String uuidKey = userInfo.getUUIDKey();
         String email = userInfo.getEmail();
         Sns sns = userInfo.getSnsName();
-        SnsUser user = snsUserService.login(sns, uuidKey);
+        SnsUser user = snsUserService.login(sns, uuidKey); // throws UserNotFoundException
 
         // 기존 가입 멤버가 아니라면 ?
         if (user == null) {

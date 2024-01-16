@@ -1,6 +1,7 @@
 package com.account.yomankum.security.oauth;
 
 import com.account.yomankum.domain.SnsUser;
+import com.account.yomankum.exception.UserNotFoundException;
 import com.account.yomankum.security.domain.NaverProfileApiResponse;
 import com.account.yomankum.security.domain.Sns;
 import com.account.yomankum.security.domain.SnsInfo;
@@ -13,6 +14,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -43,6 +45,7 @@ public class OAuth2JwtFilter extends OncePerRequestFilter {
     private final ClientRegistrationRepository clientRegistrationRepository;
     private final CustomDefaultOAuth2UserService customDefaultOAuth2UserService;
 
+    @SneakyThrows(UserNotFoundException.class)
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
@@ -106,7 +109,7 @@ public class OAuth2JwtFilter extends OncePerRequestFilter {
         OAuth2User oAuth2User = customDefaultOAuth2UserService.loadUser(oAuth2UserRequest);
 
         // 토큰 만들기
-        SnsUser snsUser = snsUserService.login(snsEnum, snsUuidKey);
+        SnsUser snsUser = snsUserService.login(snsEnum, snsUuidKey); // throws UserNotFoundException
         String accessToken = tokenService.creatToken(snsUser.getId(), snsUser.getNickname(), snsUser.getRole().getName());
         String refreshToken = tokenService.createRefreshToken();
 

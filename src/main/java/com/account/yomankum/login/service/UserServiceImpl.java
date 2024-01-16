@@ -1,5 +1,6 @@
 package com.account.yomankum.login.service;
 
+import com.account.yomankum.exception.UserNotFoundException;
 import com.account.yomankum.security.jwt.TokenService;
 import com.account.yomankum.domain.enums.Name;
 import com.account.yomankum.domain.Role;
@@ -7,6 +8,7 @@ import com.account.yomankum.domain.User;
 import com.account.yomankum.login.domain.LoginDto;
 import com.account.yomankum.login.domain.UserSignUpDto;
 import com.account.yomankum.repository.UserRepository;
+import com.account.yomankum.web.response.ResponseCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -26,20 +28,16 @@ public class UserServiceImpl implements UserService {
     private final BCryptPasswordEncoder passwordEncoder;
 
     @Override
-    public void signUp(UserSignUpDto userSignUpDto) throws IllegalArgumentException {
+    public void signUp(UserSignUpDto userSignUpDto) throws UserNotFoundException {
 
         String email = userSignUpDto.getEmail();
         String password = userSignUpDto.getPassword();
 
-        User findUser = userRepository.findByEmail(email)
-                .orElse(null);
-
-        if (findUser != null) {
-            log.error("해당 유저 존재하지 않음 : {}", email);
-            throw new IllegalArgumentException();
-        }
+        userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException(ResponseCode.USER_NOT_FOUND));
 
         String encodePwd = passwordEncoder.encode(password);
+
         User user = User.builder()
                 .email(email)
                 .password(encodePwd)
@@ -51,24 +49,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Map<String, String> login(LoginDto loginDto) throws IllegalArgumentException {
+    public Map<String, String> login(LoginDto loginDto) throws UserNotFoundException {
 
         String email = loginDto.getEmail();
         String password = loginDto.getPassword();
 
         User findUser = userRepository.findByEmailFetchRole(email)
-                .orElse(null);
+                .orElseThrow(() -> new UserNotFoundException(ResponseCode.USER_NOT_FOUND));
+        String findUserPassword = findUser.getPassword();
 
-        if (findUser == null) {
-            log.error("가입되지 않은 이메일");
-            throw new IllegalArgumentException();
-        }
-
-        boolean pwdMatches = passwordEncoder.matches(password, findUser.getPassword());
+        boolean pwdMatches = passwordEncoder.matches(password, findUserPassword);
 
         if (!pwdMatches) {
             log.error("비밀번호가 안 맞음");
-            throw new IllegalArgumentException();
+            throw new UserNotFoundException(ResponseCode.USER_NOT_FOUND);
         }
 
         log.info("아이디 비밀번호 일치 : {}", email);
