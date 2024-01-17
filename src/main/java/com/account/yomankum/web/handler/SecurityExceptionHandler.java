@@ -19,6 +19,7 @@ public class SecurityExceptionHandler {
     @ResponseBody
     public ResponseEntity<Response> snsExceptionHandler(SnsException e) {
         log.error("SNS 에러 : {}", e.getMessage());
+        log.error("SNS 에러 : {}", e.getResponseCode());
         e.printStackTrace();
         return Response.badRequest(e.getResponseCode());
     }

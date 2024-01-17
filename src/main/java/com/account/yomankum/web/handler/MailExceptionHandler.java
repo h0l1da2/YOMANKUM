@@ -33,6 +33,7 @@ public class MailExceptionHandler {
     @ExceptionHandler(CodeNotFoundException.class)
     @ResponseBody
     public ResponseEntity<Response> messagingHandler(CodeNotFoundException e) {
+        log.error("메일 에러 : {}", e.getMessage());
         e.printStackTrace();
         return Response.badRequest(ResponseCode.EMAIL_NOT_FOUND);
     }
@@ -41,6 +42,7 @@ public class MailExceptionHandler {
     @ExceptionHandler(CodeNotValidException.class)
     @ResponseBody
     public ResponseEntity<Response> messagingHandler(CodeNotValidException e) {
+        log.error("메일 에러 : {}", e.getMessage());
         e.printStackTrace();
         return Response.badRequest(ResponseCode.EMAIL_CODE_NOT_MATCHED);
     }
