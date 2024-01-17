@@ -3,6 +3,7 @@ package com.account.yomankum.security.oauth;
 import com.account.yomankum.security.domain.Sns;
 import com.account.yomankum.security.domain.SnsInfo;
 import com.account.yomankum.security.domain.TokenResponse;
+import com.account.yomankum.security.domain.type.Tokens;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -78,7 +79,7 @@ public class CustomOAuth2AuthorizationCodeGrantFilter extends OAuth2Authorizatio
 
 
                 TokenResponse tokenResponse = responseEntity.getBody();
-                request.setAttribute("tokenResponse", tokenResponse);
+                request.setAttribute(Tokens.TOKEN_RESPONSE.name(), tokenResponse);
                 request.setAttribute("sns", sns);
 
             }

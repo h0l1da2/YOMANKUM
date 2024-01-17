@@ -1,6 +1,7 @@
 package com.account.yomankum.login.service;
 
 import com.account.yomankum.exception.UserNotFoundException;
+import com.account.yomankum.security.domain.type.Tokens;
 import com.account.yomankum.security.jwt.TokenService;
 import com.account.yomankum.domain.enums.Name;
 import com.account.yomankum.domain.Role;
@@ -49,7 +50,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Map<String, String> login(LoginDto loginDto) throws UserNotFoundException {
+    public Map<Tokens, String> login(LoginDto loginDto) throws UserNotFoundException {
 
         String email = loginDto.getEmail();
         String password = loginDto.getPassword();
@@ -70,9 +71,9 @@ public class UserServiceImpl implements UserService {
         String accessToken = tokenService.creatToken(findUser.getId(), findUser.getNickname(), findUser.getRole().getName());
         String refreshToken = tokenService.createRefreshToken();
 
-        Map<String, String> tokenMap = new HashMap<>();
-        tokenMap.put("accessToken", accessToken);
-        tokenMap.put("refreshToken", refreshToken);
+        Map<Tokens, String> tokenMap = new HashMap<>();
+        tokenMap.put(Tokens.ACCESS_TOKEN, accessToken);
+        tokenMap.put(Tokens.REFRESH_TOKEN, refreshToken);
 
         return tokenMap;
     }

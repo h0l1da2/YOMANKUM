@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
@@ -32,6 +33,14 @@ public class TokenExceptionHandler {
     @ResponseBody
     public ResponseEntity<Response> invalidKeySpecExceptionHandler(InvalidKeySpecException e) {
         log.error("Token 키스펙이 이상함 : {}", e.getMessage());
+        e.printStackTrace();
+        return Response.badRequest(ResponseCode.TOKEN_NOT_VALID);
+    }
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(InvalidKeyException.class)
+    @ResponseBody
+    public ResponseEntity<Response> invalidKeyExceptionHandler(InvalidKeyException e) {
+        log.error("Token 키가 이상함 : {}", e.getMessage());
         e.printStackTrace();
         return Response.badRequest(ResponseCode.TOKEN_NOT_VALID);
     }

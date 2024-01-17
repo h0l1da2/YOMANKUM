@@ -1,6 +1,7 @@
 package com.account.yomankum.security.jwt;
 
 import com.account.yomankum.exception.ThrowingConsumer;
+import com.account.yomankum.security.domain.type.Tokens;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -42,7 +43,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         setAuthenticationToSecurityContextHolder(token);
 
-        response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + token);
+        response.setHeader(HttpHeaders.AUTHORIZATION, Tokens.BEARER.getRealName() + " " + token);
         setCookieInRefreshToken(response, refreshToken);
 
         filterChain.doFilter(request, response);
@@ -56,8 +57,8 @@ public class JwtFilter extends OncePerRequestFilter {
 
             Arrays.stream(request.getCookies()).toList().stream().forEach(ThrowingConsumer.unchecked(
                     cookie -> {
-                        String cookieName = cookie.getName();
-                        if (cookieName.equals("refreshToken")) {
+                        String cookieName = cookie.getName().toUpperCase();
+                        if (cookieName.equals(Tokens.REFRESH_TOKEN.name())) {
                             String refreshToken = cookie.getValue();
                             boolean refreshTokenValid = tokenService.tokenValid(refreshToken);
 
@@ -71,7 +72,7 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     private void setCookieInRefreshToken(HttpServletResponse response, String refreshToken) {
-        Cookie cookie = new Cookie("refreshToken", refreshToken);
+        Cookie cookie = new Cookie(Tokens.REFRESH_TOKEN.name(), refreshToken);
         cookie.setHttpOnly(true);
         response.addCookie(cookie);
     }

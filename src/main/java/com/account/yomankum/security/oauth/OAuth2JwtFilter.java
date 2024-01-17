@@ -7,6 +7,7 @@ import com.account.yomankum.security.domain.NaverProfileApiResponse;
 import com.account.yomankum.security.domain.Sns;
 import com.account.yomankum.security.domain.SnsInfo;
 import com.account.yomankum.security.domain.TokenResponse;
+import com.account.yomankum.security.domain.type.Tokens;
 import com.account.yomankum.security.jwt.TokenService;
 import com.account.yomankum.security.service.SnsUserService;
 import jakarta.servlet.FilterChain;
@@ -34,6 +35,10 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SignatureException;
+import java.security.spec.InvalidKeySpecException;
 import java.time.Instant;
 
 @Slf4j
@@ -46,13 +51,13 @@ public class OAuth2JwtFilter extends OncePerRequestFilter {
     private final ClientRegistrationRepository clientRegistrationRepository;
     private final CustomDefaultOAuth2UserService customDefaultOAuth2UserService;
 
-    @SneakyThrows({UserNotFoundException.class, SnsException.class})
+    @SneakyThrows({UserNotFoundException.class, SnsException.class, NoSuchAlgorithmException.class, InvalidKeySpecException.class, SignatureException.class, InvalidKeyException.class})
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         log.info("OAuth2JwtFilter 시작");
 
         TokenResponse tokenResponse =
-                (TokenResponse) request.getAttribute("tokenResponse");
+                (TokenResponse) request.getAttribute(Tokens.TOKEN_RESPONSE.name());
         String sns = String.valueOf(
                 request.getAttribute("sns")
         );
@@ -79,6 +84,7 @@ public class OAuth2JwtFilter extends OncePerRequestFilter {
             else if (sns.equals(Sns.KAKAO.name())) {
                 String token = tokenResponse.getIdToken();
                 snsUuidKey = tokenService.getSnsUUID(sns, token);
+
                 // 카카오는 서비스 오픈 안 하면 이메일은 가져올 수 없음
                 snsEnum = Sns.KAKAO;
 
@@ -105,7 +111,7 @@ public class OAuth2JwtFilter extends OncePerRequestFilter {
     private String getNaverUuidkey(TokenResponse tokenResponse) {
         // 헤더 세팅
         HttpHeaders headers = new HttpHeaders();
-        headers.set(HttpHeaders.AUTHORIZATION, "Bearer "+tokenResponse.getAccessToken());
+        headers.set(HttpHeaders.AUTHORIZATION, Tokens.BEARER.getRealName() + " "+tokenResponse.getAccessToken());
         HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(headers);
 
         // https://openapi.naver.com/v1/nid/me 으로 프로필 정보 요청 보내기
@@ -124,8 +130,8 @@ public class OAuth2JwtFilter extends OncePerRequestFilter {
     }
 
     private void setTokensAtReponse(HttpServletResponse response, String accessToken, String refreshToken) {
-        response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
-        response.addCookie(new Cookie("refreshToken", refreshToken));
+        response.setHeader(HttpHeaders.AUTHORIZATION, Tokens.BEARER.getRealName() + " " + accessToken);
+        response.addCookie(new Cookie(Tokens.REFRESH_TOKEN.name(), refreshToken));
     }
 
     private void setIdAndNicknameAtSession(HttpServletRequest request, SnsUser snsUser) {

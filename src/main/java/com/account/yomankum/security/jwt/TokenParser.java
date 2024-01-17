@@ -1,6 +1,7 @@
 package com.account.yomankum.security.jwt;
 
 import com.account.yomankum.security.domain.JwtValue;
+import com.account.yomankum.security.domain.type.Tokens;
 import com.nimbusds.jose.shaded.gson.JsonObject;
 import com.nimbusds.jose.shaded.gson.JsonParser;
 import io.jsonwebtoken.*;
@@ -39,17 +40,17 @@ public class TokenParser {
 
     public Long getId(String token) {
         Claims claims = getClaims(token);
-        return Long.parseLong(claims.get("id", String.class));
+        return Long.parseLong(claims.get(Tokens.ID.name(), String.class));
     }
 
     public String getNickname(String token) {
         Claims claims = getClaims(token);
-        return claims.get("nickname", String.class);
+        return claims.get(Tokens.NICKNAME.name(), String.class);
     }
 
     public String getRole(String token) {
         Claims claims = getClaims(token);
-        return claims.get("role", String.class);
+        return claims.get(Tokens.ROLE.name(), String.class);
     }
 
     public String getSnsTokenSecret(String token, String where, String what) {
@@ -102,13 +103,13 @@ public class TokenParser {
         }
 
         Claims snsClaims = getSnsClaims(token, publicKey);
-        return snsClaims.get("sub", String.class);
+        return snsClaims.get(Tokens.SUB.name(), String.class);
     }
 
     private boolean isSignatureValid(PublicKey publicKey, String token) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
         String[] jwt = splitToken(token);
 
-        Signature verifier = Signature.getInstance("SHA256withRSA");
+        Signature verifier = Signature.getInstance(Tokens.ALGORITHM.getRealName());
         verifier.initVerify(publicKey);
         verifier.update((jwt[0]+"."+jwt[1]).getBytes(StandardCharsets.UTF_8));
 
