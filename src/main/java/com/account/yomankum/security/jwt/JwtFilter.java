@@ -1,5 +1,7 @@
 package com.account.yomankum.security.jwt;
 
+import com.account.yomankum.exception.ThrowingConsumer;
+import com.account.yomankum.security.domain.type.Tokens;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -15,6 +17,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
@@ -32,45 +35,46 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        boolean accessTokenValid = tokenService.tokenValid(authorizationToken);
-
-        if (!accessTokenValid) {
-
-            Cookie[] cookies = request.getCookies();
-            for (Cookie cookie : cookies) {
-
-                String cookieName = cookie.getName();
-
-                if (cookieName.equals("refreshToken")) {
-
-                    String refreshToken = cookie.getValue();
-                    boolean refreshTokenValid = tokenService.tokenValid(refreshToken);
-
-                    if (!refreshTokenValid) {
-                        filterChain.doFilter(request, response);
-                        return;
-                    }
-                }
-            }
-        }
-
+        tokenVerification(request, response, filterChain, authorizationToken);
 
 
         String token = tokenService.reCreateToken(authorizationToken);
         String refreshToken = tokenService.createRefreshToken();
 
-
         setAuthenticationToSecurityContextHolder(token);
 
-
-        response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + token);
-
-        Cookie cookie = new Cookie("refreshToken", refreshToken);
-        cookie.setHttpOnly(true);
-        response.addCookie(cookie);
+        response.setHeader(HttpHeaders.AUTHORIZATION, Tokens.BEARER.getRealName() + " " + token);
+        setCookieInRefreshToken(response, refreshToken);
 
         filterChain.doFilter(request, response);
 
+    }
+
+    private void tokenVerification(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain, String authorizationToken) {
+        boolean accessTokenValid = tokenService.tokenValid(authorizationToken);
+
+        if (!accessTokenValid) {
+
+            Arrays.stream(request.getCookies()).toList().stream().forEach(ThrowingConsumer.unchecked(
+                    cookie -> {
+                        String cookieName = cookie.getName().toUpperCase();
+                        if (cookieName.equals(Tokens.REFRESH_TOKEN.name())) {
+                            String refreshToken = cookie.getValue();
+                            boolean refreshTokenValid = tokenService.tokenValid(refreshToken);
+
+                            if (!refreshTokenValid) {
+                                filterChain.doFilter(request, response);
+                            }
+                        }
+                    }
+            ));
+        }
+    }
+
+    private void setCookieInRefreshToken(HttpServletResponse response, String refreshToken) {
+        Cookie cookie = new Cookie(Tokens.REFRESH_TOKEN.name(), refreshToken);
+        cookie.setHttpOnly(true);
+        response.addCookie(cookie);
     }
 
     private void setAuthenticationToSecurityContextHolder(String token) {

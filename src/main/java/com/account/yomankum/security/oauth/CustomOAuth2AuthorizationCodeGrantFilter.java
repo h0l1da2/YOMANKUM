@@ -3,6 +3,7 @@ package com.account.yomankum.security.oauth;
 import com.account.yomankum.security.domain.Sns;
 import com.account.yomankum.security.domain.SnsInfo;
 import com.account.yomankum.security.domain.TokenResponse;
+import com.account.yomankum.security.domain.type.Tokens;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,7 +32,7 @@ public class CustomOAuth2AuthorizationCodeGrantFilter extends OAuth2Authorizatio
 
     private final SnsInfo snsInfo;
 
-    public CustomOAuth2AuthorizationCodeGrantFilter(final ClientRegistrationRepository clientRegistrationRepository, final OAuth2AuthorizedClientRepository authorizedClientRepository, final AuthenticationManager authenticationManager, SnsInfo snsInfo) {
+    public CustomOAuth2AuthorizationCodeGrantFilter(final ClientRegistrationRepository clientRegistrationRepository, final OAuth2AuthorizedClientRepository authorizedClientRepository, final AuthenticationManager authenticationManager, final SnsInfo snsInfo) {
         super(clientRegistrationRepository, authorizedClientRepository, authenticationManager);
         this.snsInfo = snsInfo;
     }
@@ -54,52 +55,46 @@ public class CustomOAuth2AuthorizationCodeGrantFilter extends OAuth2Authorizatio
 
         if (session != null) {
             String myState = String.valueOf(session.getAttribute("state"));
-            String snsState = request.getParameter("state");
+            String snsSendMeState = request.getParameter("state");
 
-            if (myState == null | snsState == null) {
+            if (myState == null | snsSendMeState == null) {
                 log.error("state 없음.");
                 filterChain.doFilter(request, response);
                 return;
             }
 
-            if (snsState.equals(myState) && StringUtils.hasText(code)) {
-                /**
-                 * 카카오 -
-                 * state가 동일하고, 정상 응답이 왔을 경우(코드 받았음)
-                 */
+            if (snsSendMeState.equals(myState) && StringUtils.hasText(code)) {
                 // state 값이 key 고 value 가 sns 명
-                String sns = String.valueOf(session.getAttribute(snsState));
+                String sns = String.valueOf(session.getAttribute(snsSendMeState));
                 String clientId = snsInfo.clientId(sns);
                 String clientSecret = snsInfo.clientSecret(sns);
                 String tokenUri = snsInfo.tokenUri(sns);
 
-                // 세션 부하를 위해 일단 세션 데이터부터 삭제
                 removeSessionAttributeState(session, myState);
 
-
-                MultiValueMap<String, String> parameters =
-                        setParameters(code, clientId, clientSecret, requestURI);
-                HttpHeaders headers = setHeaders(sns, clientId, clientSecret);
-                HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(parameters, headers);
-
+                HttpEntity<MultiValueMap<String, String>> httpEntity = setHttpEntity
+                        (code, requestURI, sns, clientId, clientSecret);
                 // https://kauth.kakao.com/oauth/token 으로 토큰 요청 보내기
                 ResponseEntity<TokenResponse> responseEntity = sendTokenRequest(tokenUri, httpEntity);
 
 
-                // (토큰) 응답 받기
-                // 카카오, 네이버, 구글이 다 다름 TokenResponse 가
                 TokenResponse tokenResponse = responseEntity.getBody();
-                request.setAttribute("tokenResponse", tokenResponse);
+                request.setAttribute(Tokens.TOKEN_RESPONSE.name(), tokenResponse);
                 request.setAttribute("sns", sns);
 
             }
         }
 
-
-
         filterChain.doFilter(request, response);
 
+    }
 
+    private HttpEntity<MultiValueMap<String, String>> setHttpEntity(String code, String requestURI, String sns, String clientId, String clientSecret) {
+        MultiValueMap<String, String> parameters =
+                setParameters(code, clientId, clientSecret, requestURI);
+        HttpHeaders headers = setHeaders(sns, clientId, clientSecret);
+        HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(parameters, headers);
+        return httpEntity;
     }
 
     private ResponseEntity<TokenResponse> sendTokenRequest(String tokenUri, HttpEntity<MultiValueMap<String, String>> httpEntity) {

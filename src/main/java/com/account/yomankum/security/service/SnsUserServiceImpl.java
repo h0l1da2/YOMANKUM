@@ -3,8 +3,10 @@ package com.account.yomankum.security.service;
 import com.account.yomankum.domain.Role;
 import com.account.yomankum.domain.SnsUser;
 import com.account.yomankum.domain.enums.Name;
+import com.account.yomankum.exception.UserNotFoundException;
 import com.account.yomankum.repository.SnsUserRepository;
 import com.account.yomankum.security.domain.Sns;
+import com.account.yomankum.web.response.ResponseCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,8 +18,8 @@ public class SnsUserServiceImpl implements SnsUserService {
 
     private final SnsUserRepository snsUserRepository;
     @Override
-    public SnsUser login(Sns sns, String uuidKey) {
-        return snsUserRepository.findByUuidKeyAndSns(sns, uuidKey).orElse(null);
+    public SnsUser login(Sns sns, String uuidKey) throws UserNotFoundException {
+        return snsUserRepository.findByUuidKeyAndSns(sns, uuidKey).orElseThrow(() -> new UserNotFoundException(ResponseCode.USER_NOT_FOUND));
     }
 
     @Override

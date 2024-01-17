@@ -1,7 +1,9 @@
 package com.account.yomankum.login.controller;
 
+import com.account.yomankum.exception.UserNotFoundException;
 import com.account.yomankum.login.domain.LoginDto;
 import com.account.yomankum.login.service.UserService;
+import com.account.yomankum.security.domain.type.Tokens;
 import com.account.yomankum.web.response.Response;
 import com.account.yomankum.web.response.ResponseCode;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,16 +27,10 @@ public class LoginController {
 
     @PostMapping
     @Operation(summary = "일반 회원 로그인", description = "일반 회원용 로그인")
-    public ResponseEntity<Response> login(@RequestBody @Valid LoginDto loginDto) {
+    public ResponseEntity<Response> login(@RequestBody @Valid LoginDto loginDto) throws UserNotFoundException {
 
-        Map<String, String> tokens = null;
-        try {
-            tokens = userService.login(loginDto);
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-            return Response.badRequest(ResponseCode.LOGIN004);
-        }
+        Map<Tokens, String> tokens = userService.login(loginDto);
 
-        return Response.ok(ResponseCode.LOGIN000, tokens);
+        return Response.ok(ResponseCode.OK, tokens);
     }
 }

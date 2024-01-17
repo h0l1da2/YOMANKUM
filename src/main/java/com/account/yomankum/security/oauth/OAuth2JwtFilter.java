@@ -1,18 +1,22 @@
 package com.account.yomankum.security.oauth;
 
 import com.account.yomankum.domain.SnsUser;
+import com.account.yomankum.exception.SnsException;
+import com.account.yomankum.exception.UserNotFoundException;
 import com.account.yomankum.security.domain.NaverProfileApiResponse;
 import com.account.yomankum.security.domain.Sns;
 import com.account.yomankum.security.domain.SnsInfo;
 import com.account.yomankum.security.domain.TokenResponse;
-import com.account.yomankum.security.service.SnsUserService;
+import com.account.yomankum.security.domain.type.Tokens;
 import com.account.yomankum.security.jwt.TokenService;
+import com.account.yomankum.security.service.SnsUserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -31,6 +35,10 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SignatureException;
+import java.security.spec.InvalidKeySpecException;
 import java.time.Instant;
 
 @Slf4j
@@ -43,15 +51,18 @@ public class OAuth2JwtFilter extends OncePerRequestFilter {
     private final ClientRegistrationRepository clientRegistrationRepository;
     private final CustomDefaultOAuth2UserService customDefaultOAuth2UserService;
 
+    @SneakyThrows({UserNotFoundException.class, SnsException.class, NoSuchAlgorithmException.class, InvalidKeySpecException.class, SignatureException.class, InvalidKeyException.class})
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        log.info("OAuth2JwtFilter 시작");
 
         TokenResponse tokenResponse =
-                (TokenResponse) request.getAttribute("tokenResponse");
-        String sns = String.valueOf(request.getAttribute("sns"));
+                (TokenResponse) request.getAttribute(Tokens.TOKEN_RESPONSE.name());
+        String sns = String.valueOf(
+                request.getAttribute("sns")
+        );
 
         Sns snsEnum = null;
-        String token = "";
         String snsUuidKey = "";
 
         if (tokenResponse != null && StringUtils.hasText(sns)) {
@@ -66,29 +77,14 @@ public class OAuth2JwtFilter extends OncePerRequestFilter {
 
             // 네이버는 프로필 정보를 요청해야 합니다.
             if (sns.equals(Sns.NAVER.name())) {
-                // 헤더 세팅
-                HttpHeaders headers = new HttpHeaders();
-                headers.set("Authorization", "Bearer "+tokenResponse.getAccessToken());
-                HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(headers);
-
-                // https://openapi.naver.com/v1/nid/me 으로 프로필 정보 요청 보내기
-
-                RestTemplate restTemplate = new RestTemplate();
-
-                String naverProfileApiUri = snsInfo.getNaverProfileApiUri();
-                ResponseEntity<NaverProfileApiResponse> responseEntity =
-                        restTemplate.exchange(naverProfileApiUri, HttpMethod.GET,
-                                httpEntity, NaverProfileApiResponse.class);
-
-                NaverProfileApiResponse profileResponse = responseEntity.getBody();
-                snsUuidKey = profileResponse.getResponse().getId();
+                snsUuidKey = getNaverUuidkey(tokenResponse);
                 snsEnum = Sns.NAVER;
 
             }
-            // KAKAO 일 경우 작업
             else if (sns.equals(Sns.KAKAO.name())) {
-                token = tokenResponse.getIdToken();
+                String token = tokenResponse.getIdToken();
                 snsUuidKey = tokenService.getSnsUUID(sns, token);
+
                 // 카카오는 서비스 오픈 안 하면 이메일은 가져올 수 없음
                 snsEnum = Sns.KAKAO;
 
@@ -96,7 +92,55 @@ public class OAuth2JwtFilter extends OncePerRequestFilter {
 
         }
 
-        // authentication 생성 후, SpringContext에 저장하는 작업
+
+
+        // 토큰 만들기
+        SnsUser snsUser = snsUserService.login(snsEnum, snsUuidKey); // throws UserNotFoundException
+        String accessToken = tokenService.creatToken(snsUser.getId(), snsUser.getNickname(), snsUser.getRole().getName());
+        String refreshToken = tokenService.createRefreshToken();
+
+        setAuthenticationInSpringContext(sns, tokenResponse, accessToken);
+        setTokensAtReponse(response, accessToken, refreshToken);
+        setIdAndNicknameAtSession(request, snsUser);
+
+        response.sendRedirect("/");
+
+        filterChain.doFilter(request, response);
+    }
+
+    private String getNaverUuidkey(TokenResponse tokenResponse) {
+        // 헤더 세팅
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.AUTHORIZATION, Tokens.BEARER.getRealName() + " "+tokenResponse.getAccessToken());
+        HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(headers);
+
+        // https://openapi.naver.com/v1/nid/me 으로 프로필 정보 요청 보내기
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        String naverProfileApiUri = snsInfo.getNaverProfileApiUri();
+        ResponseEntity<NaverProfileApiResponse> responseEntity =
+                restTemplate.exchange(naverProfileApiUri, HttpMethod.GET,
+                        httpEntity, NaverProfileApiResponse.class);
+
+        NaverProfileApiResponse profileResponse = responseEntity.getBody();
+        String snsUuidKey = profileResponse.getResponse().getId();
+
+        return snsUuidKey;
+    }
+
+    private void setTokensAtReponse(HttpServletResponse response, String accessToken, String refreshToken) {
+        response.setHeader(HttpHeaders.AUTHORIZATION, Tokens.BEARER.getRealName() + " " + accessToken);
+        response.addCookie(new Cookie(Tokens.REFRESH_TOKEN.name(), refreshToken));
+    }
+
+    private void setIdAndNicknameAtSession(HttpServletRequest request, SnsUser snsUser) {
+        request.getSession().setAttribute("id", snsUser.getId());
+        request.getSession().setAttribute("nickname", snsUser.getNickname());
+    }
+
+    private void setAuthenticationInSpringContext(String sns, TokenResponse tokenResponse, String accessToken) {
+
         ClientRegistration clientRegistration =
                 clientRegistrationRepository.findByRegistrationId(sns.toLowerCase());
         OAuth2AccessToken oAuth2AccessToken = getOAuth2AccessToken(tokenResponse);
@@ -105,32 +149,6 @@ public class OAuth2JwtFilter extends OncePerRequestFilter {
 
         OAuth2User oAuth2User = customDefaultOAuth2UserService.loadUser(oAuth2UserRequest);
 
-        // 토큰 만들기
-        SnsUser snsUser = snsUserService.login(snsEnum, snsUuidKey);
-        String accessToken = tokenService.creatToken(snsUser.getId(), snsUser.getNickname(), snsUser.getRole().getName());
-        String refreshToken = tokenService.createRefreshToken();
-
-        setAuthenticationSpringContext(oAuth2User, accessToken);
-
-        setTokensAtReponse(response, accessToken, refreshToken);
-        setIdAndNicknameAtSession(request, snsUser.getId(), snsUser.getNickname());
-
-        response.sendRedirect("/");
-
-        filterChain.doFilter(request, response);
-    }
-
-    private void setTokensAtReponse(HttpServletResponse response, String accessToken, String refreshToken) {
-        response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
-        response.addCookie(new Cookie("refreshToken", refreshToken));
-    }
-
-    private void setIdAndNicknameAtSession(HttpServletRequest request, Long id, String nickname) {
-        request.getSession().setAttribute("id", id);
-        request.getSession().setAttribute("nickname", nickname);
-    }
-
-    private void setAuthenticationSpringContext(OAuth2User oAuth2User, String accessToken) {
         UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(oAuth2User, accessToken, oAuth2User.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);

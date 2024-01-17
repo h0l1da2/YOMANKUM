@@ -3,7 +3,6 @@ package com.account.yomankum.accountbook.service;
 import com.account.yomankum.domain.AccountBook;
 import com.account.yomankum.accountbook.domain.AccountWriteDto;
 import com.account.yomankum.repository.AccountBookRepository;
-import com.account.yomankum.accountbook.service.AccountBookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
