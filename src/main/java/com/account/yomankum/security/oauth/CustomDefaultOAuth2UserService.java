@@ -1,13 +1,12 @@
 package com.account.yomankum.security.oauth;
 
+import com.account.yomankum.exception.SnsException;
 import com.account.yomankum.exception.UserNotFoundException;
 import com.account.yomankum.security.CustomUserDetails;
 import com.account.yomankum.domain.SnsUser;
-import com.account.yomankum.security.domain.GoogleUserInfo;
-import com.account.yomankum.security.domain.Sns;
-import com.account.yomankum.security.domain.SnsUserInfo;
-import com.account.yomankum.security.domain.NaverUserInfo;
+import com.account.yomankum.security.domain.*;
 import com.account.yomankum.security.service.SnsUserService;
+import com.account.yomankum.web.response.ResponseCode;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +25,7 @@ public class CustomDefaultOAuth2UserService extends DefaultOAuth2UserService {
 
     private final SnsUserService snsUserService;
 
-    @SneakyThrows(UserNotFoundException.class)
+    @SneakyThrows({UserNotFoundException.class, SnsException.class})
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         log.info("유저 서비스 시작");
@@ -51,18 +50,21 @@ public class CustomDefaultOAuth2UserService extends DefaultOAuth2UserService {
         return new CustomUserDetails(user, oAuth2User.getAttributes());
     }
 
-    private SnsUserInfo clientUserInfoCheck(OAuth2User oAuth2User, String client) {
-        if(client.equals("google")) {
+    private SnsUserInfo clientUserInfoCheck(OAuth2User oAuth2User, String client) throws SnsException {
+
+        String upperCaseSns = client.toUpperCase();
+
+        if(upperCaseSns.equals(Sns.GOOGLE.name())) {
             return new GoogleUserInfo(oAuth2User.getAttributes());
         }
-        if(client.equals("naver")) {
+        if(upperCaseSns.equals(Sns.NAVER.name())) {
             return new NaverUserInfo(
                     (Map<String, Object>) oAuth2User.getAttributes().get("response"));
         }
-        if(client.equals("kakao")) {
-            return new NaverUserInfo(oAuth2User.getAttributes());
+        if(upperCaseSns.equals(Sns.KAKAO.name())) {
+            return new KakaoUserInfo(oAuth2User.getAttributes());
         }
-        return null;
+        else throw new SnsException(ResponseCode.SNS_DOESNT_EXIST);
     }
 
 }

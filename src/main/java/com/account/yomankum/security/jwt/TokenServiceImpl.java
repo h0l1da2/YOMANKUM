@@ -11,6 +11,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SignatureException;
+import java.security.spec.InvalidKeySpecException;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -60,7 +65,7 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public String getSnsUUID(String sns, String token) throws SnsException {
+    public String getSnsUUID(String sns, String token) throws SnsException, NoSuchAlgorithmException, InvalidKeySpecException, SignatureException, InvalidKeyException {
 
         String kid = tokenParser.getSnsTokenSecret(token, "header", "kid");
 
@@ -81,7 +86,7 @@ public class TokenServiceImpl implements TokenService {
         else if (kid.equals(jwtValue.getSecondKid()))
             jwtValue.jwkSetting("second");
 
-        else log.error("error : {} 공개 키 안 맞음", sns);
+        else throw new SnsException(ResponseCode.SNS_KEY_NOT_VALID);
 
 
 

@@ -31,7 +31,7 @@ public class CustomOAuth2AuthorizationCodeGrantFilter extends OAuth2Authorizatio
 
     private final SnsInfo snsInfo;
 
-    public CustomOAuth2AuthorizationCodeGrantFilter(final ClientRegistrationRepository clientRegistrationRepository, final OAuth2AuthorizedClientRepository authorizedClientRepository, final AuthenticationManager authenticationManager, SnsInfo snsInfo) {
+    public CustomOAuth2AuthorizationCodeGrantFilter(final ClientRegistrationRepository clientRegistrationRepository, final OAuth2AuthorizedClientRepository authorizedClientRepository, final AuthenticationManager authenticationManager, final SnsInfo snsInfo) {
         super(clientRegistrationRepository, authorizedClientRepository, authenticationManager);
         this.snsInfo = snsInfo;
     }
@@ -63,17 +63,12 @@ public class CustomOAuth2AuthorizationCodeGrantFilter extends OAuth2Authorizatio
             }
 
             if (snsSendMeState.equals(myState) && StringUtils.hasText(code)) {
-                /**
-                 * 카카오 -
-                 * state가 동일하고, 정상 응답이 왔을 경우(코드 받았음)
-                 */
                 // state 값이 key 고 value 가 sns 명
                 String sns = String.valueOf(session.getAttribute(snsSendMeState));
                 String clientId = snsInfo.clientId(sns);
                 String clientSecret = snsInfo.clientSecret(sns);
                 String tokenUri = snsInfo.tokenUri(sns);
 
-                // 세션 부하를 위해 일단 세션 데이터부터 삭제
                 removeSessionAttributeState(session, myState);
 
                 HttpEntity<MultiValueMap<String, String>> httpEntity = setHttpEntity
@@ -82,8 +77,6 @@ public class CustomOAuth2AuthorizationCodeGrantFilter extends OAuth2Authorizatio
                 ResponseEntity<TokenResponse> responseEntity = sendTokenRequest(tokenUri, httpEntity);
 
 
-                // (토큰) 응답 받기
-                // 카카오, 네이버, 구글이 다 다름 TokenResponse 가
                 TokenResponse tokenResponse = responseEntity.getBody();
                 request.setAttribute("tokenResponse", tokenResponse);
                 request.setAttribute("sns", sns);
