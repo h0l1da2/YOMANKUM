@@ -1,6 +1,7 @@
 package com.account.yomankum.security.jwt;
 
 import com.account.yomankum.domain.enums.Name;
+import com.account.yomankum.exception.SnsException;
 
 public interface TokenService {
 
@@ -10,5 +11,5 @@ public interface TokenService {
     boolean tokenValid(String token);
     String getNicknameByToken(String token);
     Long getIdByToken(String token);
-    String getSnsUUID(String sns, String token);
+    String getSnsUUID(String sns, String token) throws SnsException;
 }

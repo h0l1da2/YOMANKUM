@@ -6,8 +6,8 @@ import com.account.yomankum.security.domain.NaverProfileApiResponse;
 import com.account.yomankum.security.domain.Sns;
 import com.account.yomankum.security.domain.SnsInfo;
 import com.account.yomankum.security.domain.TokenResponse;
-import com.account.yomankum.security.service.SnsUserService;
 import com.account.yomankum.security.jwt.TokenService;
+import com.account.yomankum.security.service.SnsUserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -70,21 +70,7 @@ public class OAuth2JwtFilter extends OncePerRequestFilter {
             // 네이버는 프로필 정보를 요청해야 합니다.
             if (sns.equals(Sns.NAVER.name())) {
                 // 헤더 세팅
-                HttpHeaders headers = new HttpHeaders();
-                headers.set("Authorization", "Bearer "+tokenResponse.getAccessToken());
-                HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(headers);
-
-                // https://openapi.naver.com/v1/nid/me 으로 프로필 정보 요청 보내기
-
-                RestTemplate restTemplate = new RestTemplate();
-
-                String naverProfileApiUri = snsInfo.getNaverProfileApiUri();
-                ResponseEntity<NaverProfileApiResponse> responseEntity =
-                        restTemplate.exchange(naverProfileApiUri, HttpMethod.GET,
-                                httpEntity, NaverProfileApiResponse.class);
-
-                NaverProfileApiResponse profileResponse = responseEntity.getBody();
-                snsUuidKey = profileResponse.getResponse().getId();
+                snsUuidKey = getNaverUuidkey(tokenResponse);
                 snsEnum = Sns.NAVER;
 
             }
@@ -121,6 +107,27 @@ public class OAuth2JwtFilter extends OncePerRequestFilter {
         response.sendRedirect("/");
 
         filterChain.doFilter(request, response);
+    }
+
+    private String getNaverUuidkey(TokenResponse tokenResponse) {
+        // 헤더 세팅
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.AUTHORIZATION, "Bearer "+tokenResponse.getAccessToken());
+        HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(headers);
+
+        // https://openapi.naver.com/v1/nid/me 으로 프로필 정보 요청 보내기
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        String naverProfileApiUri = snsInfo.getNaverProfileApiUri();
+        ResponseEntity<NaverProfileApiResponse> responseEntity =
+                restTemplate.exchange(naverProfileApiUri, HttpMethod.GET,
+                        httpEntity, NaverProfileApiResponse.class);
+
+        NaverProfileApiResponse profileResponse = responseEntity.getBody();
+        String snsUuidKey = profileResponse.getResponse().getId();
+
+        return snsUuidKey;
     }
 
     private void setTokensAtReponse(HttpServletResponse response, String accessToken, String refreshToken) {

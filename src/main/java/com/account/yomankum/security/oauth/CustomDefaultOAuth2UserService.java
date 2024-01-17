@@ -50,7 +50,8 @@ public class CustomDefaultOAuth2UserService extends DefaultOAuth2UserService {
         }
         return new CustomUserDetails(user, oAuth2User.getAttributes());
     }
-    public SnsUserInfo clientUserInfoCheck(OAuth2User oAuth2User, String client) {
+
+    private SnsUserInfo clientUserInfoCheck(OAuth2User oAuth2User, String client) {
         if(client.equals("google")) {
             return new GoogleUserInfo(oAuth2User.getAttributes());
         }

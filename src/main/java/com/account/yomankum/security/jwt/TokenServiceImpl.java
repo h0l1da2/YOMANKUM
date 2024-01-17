@@ -1,10 +1,12 @@
 package com.account.yomankum.security.jwt;
 
+import com.account.yomankum.exception.SnsException;
 import com.account.yomankum.security.domain.GoogleJwt;
 import com.account.yomankum.security.domain.JwtValue;
 import com.account.yomankum.security.domain.KakaoJwt;
 import com.account.yomankum.security.domain.Sns;
 import com.account.yomankum.domain.enums.Name;
+import com.account.yomankum.web.response.ResponseCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,7 +18,6 @@ public class TokenServiceImpl implements TokenService {
 
     private final TokenProvider tokenProvider;
     private final TokenParser tokenParser;
-    private JwtValue jwtValue;
 
     @Override
     public String creatToken(Long id, String nickname, Name name) {
@@ -59,25 +60,29 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public String getSnsUUID(String sns, String token) {
+    public String getSnsUUID(String sns, String token) throws SnsException {
 
         String kid = tokenParser.getSnsTokenSecret(token, "header", "kid");
 
-        // kid First인지 Second인지 확인하고, 해당 객체 쓰기
-        if (sns.equals(Sns.KAKAO.name())) {
-            jwtValue = new KakaoJwt();
-        }
-        if (sns.equals(Sns.GOOGLE.name())) {
-            jwtValue = new GoogleJwt();
-        }
+        JwtValue jwtValue = null;
 
-        if (kid.equals(jwtValue.getFirstKid())) {
+        // kid First인지 Second인지 확인하고, 해당 객체 쓰기
+        if (sns.equals(Sns.KAKAO.name()))
+            jwtValue = new KakaoJwt();
+
+        if (sns.equals(Sns.GOOGLE.name()))
+            jwtValue = new GoogleJwt();
+        else
+            throw new SnsException(ResponseCode.SNS_DOESNT_EXIST);
+
+        if (kid.equals(jwtValue.getFirstKid()))
             jwtValue.jwkSetting("first");
-        } else if (kid.equals(jwtValue.getSecondKid())) {
+
+        else if (kid.equals(jwtValue.getSecondKid()))
             jwtValue.jwkSetting("second");
-        } else {
-            log.error("error : {} 공개 키 안 맞음", sns);
-        }
+
+        else log.error("error : {} 공개 키 안 맞음", sns);
+
 
 
         return tokenParser.getSnsUUID(jwtValue, token);

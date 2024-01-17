@@ -54,21 +54,21 @@ public class CustomOAuth2AuthorizationCodeGrantFilter extends OAuth2Authorizatio
 
         if (session != null) {
             String myState = String.valueOf(session.getAttribute("state"));
-            String snsState = request.getParameter("state");
+            String snsSendMeState = request.getParameter("state");
 
-            if (myState == null | snsState == null) {
+            if (myState == null | snsSendMeState == null) {
                 log.error("state 없음.");
                 filterChain.doFilter(request, response);
                 return;
             }
 
-            if (snsState.equals(myState) && StringUtils.hasText(code)) {
+            if (snsSendMeState.equals(myState) && StringUtils.hasText(code)) {
                 /**
                  * 카카오 -
                  * state가 동일하고, 정상 응답이 왔을 경우(코드 받았음)
                  */
                 // state 값이 key 고 value 가 sns 명
-                String sns = String.valueOf(session.getAttribute(snsState));
+                String sns = String.valueOf(session.getAttribute(snsSendMeState));
                 String clientId = snsInfo.clientId(sns);
                 String clientSecret = snsInfo.clientSecret(sns);
                 String tokenUri = snsInfo.tokenUri(sns);
@@ -76,12 +76,8 @@ public class CustomOAuth2AuthorizationCodeGrantFilter extends OAuth2Authorizatio
                 // 세션 부하를 위해 일단 세션 데이터부터 삭제
                 removeSessionAttributeState(session, myState);
 
-
-                MultiValueMap<String, String> parameters =
-                        setParameters(code, clientId, clientSecret, requestURI);
-                HttpHeaders headers = setHeaders(sns, clientId, clientSecret);
-                HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(parameters, headers);
-
+                HttpEntity<MultiValueMap<String, String>> httpEntity = setHttpEntity
+                        (code, requestURI, sns, clientId, clientSecret);
                 // https://kauth.kakao.com/oauth/token 으로 토큰 요청 보내기
                 ResponseEntity<TokenResponse> responseEntity = sendTokenRequest(tokenUri, httpEntity);
 
@@ -95,11 +91,16 @@ public class CustomOAuth2AuthorizationCodeGrantFilter extends OAuth2Authorizatio
             }
         }
 
-
-
         filterChain.doFilter(request, response);
 
+    }
 
+    private HttpEntity<MultiValueMap<String, String>> setHttpEntity(String code, String requestURI, String sns, String clientId, String clientSecret) {
+        MultiValueMap<String, String> parameters =
+                setParameters(code, clientId, clientSecret, requestURI);
+        HttpHeaders headers = setHeaders(sns, clientId, clientSecret);
+        HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(parameters, headers);
+        return httpEntity;
     }
 
     private ResponseEntity<TokenResponse> sendTokenRequest(String tokenUri, HttpEntity<MultiValueMap<String, String>> httpEntity) {
