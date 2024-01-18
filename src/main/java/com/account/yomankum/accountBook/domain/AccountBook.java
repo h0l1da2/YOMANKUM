@@ -11,10 +11,13 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
 import java.util.List;
 import jdk.jfr.Name;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Builder.Default;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -35,20 +38,32 @@ public class AccountBook extends UserBaseEntity {
             cascade = CascadeType.ALL,
             orphanRemoval = true,
             fetch = FetchType.LAZY)
-    private List<Record> records;
+    @Default
+    private List<Record> records = new ArrayList<>();
 
-    public void updateName(String name) {
+    public void updateName(String name, Long requesterId) {
+        checkAuthorizedUser(requesterId);
         this.name = name;
     }
 
-    public void isAuthorityUser(Long sessionUserId) {
-        if(!getCreateUserId().equals(sessionUserId)){
-            throw new BadRequestException(Exception.ACCOUNT_BOOK_NOT_FOUND);
-        }
-    }
-
-    public void addRecord(Record record) {
+    public void addRecord(Record record, Long requesterId) {
+        checkAuthorizedUser(requesterId);
         records.add(record);
         record.appointAccountBook(this);
+    }
+
+    public void delete(Long requesterId) {
+        checkAuthorizedUser(requesterId);
+    }
+
+    public void deleteRecord(Record record, Long requesterId) {
+        checkAuthorizedUser(requesterId);
+        records.remove(record);
+    }
+
+    public void checkAuthorizedUser(Long requesterId) {
+        if(!getCreateUserId().equals(requesterId)){
+            throw new BadRequestException(Exception.ACCOUNT_BOOK_NOT_FOUND);
+        }
     }
 }

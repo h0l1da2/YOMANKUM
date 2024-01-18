@@ -10,10 +10,10 @@ public enum DefaultCategory {
     WEAR("의류"),
     MONTHLY_PAY("월급");
 
-    private String name;
+    private final String title;
 
-    DefaultCategory(String name){
-        this.name = name;
+    DefaultCategory(String title){
+        this.title = title;
     }
 
 }

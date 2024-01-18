@@ -1,5 +1,7 @@
 package com.account.yomankum.config.jpa;
 
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,5 +20,9 @@ public class JpaConfigure {
         return new AuditorAwareImpl();
     }
 
+    @Bean
+    public JPAQueryFactory jpaQueryFactory(EntityManager entityManager){
+        return new JPAQueryFactory(entityManager);
+    }
 
 }

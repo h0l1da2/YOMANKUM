@@ -1,6 +1,5 @@
 package com.account.yomankum.accountBook.domain;
 
-import com.account.yomankum.accountBook.domain.AccountBook;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 

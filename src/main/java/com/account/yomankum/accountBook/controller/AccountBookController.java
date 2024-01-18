@@ -1,8 +1,8 @@
 package com.account.yomankum.accountBook.controller;
 
-import com.account.yomankum.accountBook.dto.request.RecordWriteDto;
 import com.account.yomankum.accountBook.dto.response.AccountBookSimpleDto;
-import com.account.yomankum.accountBook.dto.request.AccountBookWriteDto;
+import com.account.yomankum.accountBook.dto.request.AccountBookCreateRequest;
+import com.account.yomankum.accountBook.service.AccountBookFinder;
 import com.account.yomankum.accountBook.service.AccountBookService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -21,9 +21,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class AccountBookController {
 
     private final AccountBookService accountBookService;
+    private final AccountBookFinder accountBookFinder;
 
     @PostMapping
-    public Long create(@RequestBody AccountBookWriteDto accountWriteDto){
+    public Long create(@RequestBody AccountBookCreateRequest accountWriteDto){
         return accountBookService.create(accountWriteDto);
     }
 
@@ -39,7 +40,7 @@ public class AccountBookController {
 
     @GetMapping
     public List<AccountBookSimpleDto> get(){
-        return accountBookService.findByUser();
+        return accountBookFinder.findByUser();
     }
 
 }
