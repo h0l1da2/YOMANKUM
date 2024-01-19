@@ -17,10 +17,7 @@ public class SessionService {
 
     public Long getSessionUserId(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long id = Long.parseLong(((UserDetails) authentication.getPrincipal()).getUsername());
-
-        return userRepository.findById(id)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + id)).getId();
+        return Long.parseLong(((UserDetails) authentication.getPrincipal()).getUsername());
     }
 
 

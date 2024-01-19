@@ -12,11 +12,11 @@ public abstract class UserBaseEntity extends TimeBaseEntity {
     @LastModifiedBy
     private String lastModifyingUser;
 
-    protected Long getCreateUserId(){
+    public Long getCreateUserId(){
         return Long.parseLong(createUser);
     }
 
-    protected Long getLastModifyingUserId(){
+    public Long getLastModifyingUserId(){
         return Long.parseLong(lastModifyingUser);
     }
 }
