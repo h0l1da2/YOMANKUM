@@ -2,7 +2,7 @@ package com.account.yomankum.domain;
 
 import com.account.yomankum.domain.enums.Gender;
 import com.account.yomankum.domain.enums.Job;
-import com.account.yomankum.security.oauth.Sns;
+import com.account.yomankum.security.domain.Sns;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,7 +21,6 @@ public class SnsUser {
     private Long id;
     private String uuidKey;
     private String email;
-    private String password;
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Role role;
     private String nickname;

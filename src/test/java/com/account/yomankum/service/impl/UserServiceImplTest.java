@@ -6,6 +6,7 @@ import com.account.yomankum.login.domain.LoginDto;
 import com.account.yomankum.login.domain.UserSignUpDto;
 import com.account.yomankum.repository.UserRepository;
 import com.account.yomankum.login.service.UserService;
+import com.account.yomankum.security.domain.type.Tokens;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -73,10 +74,10 @@ class UserServiceImplTest {
         userService.signUp(userSignUpDto);
 
         LoginDto loginDto = getLoginDto(userSignUpDto);
-        Map<String, String> tokenMap = userService.login(loginDto);
+        Map<Tokens, String> tokenMap = userService.login(loginDto);
 
-        String accessToken = tokenMap.get("accessToken");
-        String refreshToken = tokenMap.get("refreshToken");
+        String accessToken = tokenMap.get(Tokens.ACCESS_TOKEN);
+        String refreshToken = tokenMap.get(Tokens.REFRESH_TOKEN);
 
         assertThat(accessToken).isNotNull();
         assertThat(refreshToken).isNotNull();

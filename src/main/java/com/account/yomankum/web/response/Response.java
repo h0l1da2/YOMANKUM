@@ -19,9 +19,6 @@ public class Response {
     private LocalDateTime timestamp;
     private Object data;
 
-    public static ResponseEntity<Response> ok() {
-        return response(HttpStatus.OK);
-    }
     public static ResponseEntity<Response> ok(ResponseCode responseCode) {
         return response(HttpStatus.OK, responseCode);
     }
@@ -31,6 +28,10 @@ public class Response {
 
     public static ResponseEntity<Response> badRequest(ResponseCode responseCode) {
         return response(HttpStatus.BAD_REQUEST, responseCode);
+    }
+
+    public static ResponseEntity<Response> badRequest(ResponseCode responseCode, Object data) {
+        return responseWithData(HttpStatus.BAD_REQUEST, data, responseCode);
     }
 
     private static ResponseEntity<Response> responseWithData(HttpStatus status, Object data, ResponseCode responseCode) {
@@ -55,14 +56,5 @@ public class Response {
                         .build()
         );
     }
-    private static ResponseEntity<Response> response(HttpStatus status) {
-        return ResponseEntity.status(status).body(
-                Response.builder()
-                        .status(status)
-                        .message("200 OK")
-                        .timestamp(LocalDateTime.now())
-                        .code(ResponseCode.OK)
-                        .build()
-        );
-    }
+
 }
