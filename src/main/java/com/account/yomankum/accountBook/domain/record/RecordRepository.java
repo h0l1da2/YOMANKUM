@@ -1,5 +1,6 @@
 package com.account.yomankum.accountBook.domain.record;
 
+import com.account.yomankum.accountBook.domain.record.repository.RecordCustomRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**

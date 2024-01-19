@@ -69,4 +69,8 @@ public class Record extends UserBaseEntity {
     public void delete(Long requesterId) {
         accountBook.deleteRecord(this, requesterId);
     }
+
+    public void checkAuthorizedUser(Long userId){
+        accountBook.checkAuthorizedUser(userId);
+    }
 }
