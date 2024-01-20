@@ -1,13 +1,14 @@
 package com.account.yomankum.security.oauth;
 
+import com.account.yomankum.exception.SnsException;
+import com.account.yomankum.exception.UserNotFoundException;
 import com.account.yomankum.security.CustomUserDetails;
 import com.account.yomankum.domain.SnsUser;
-import com.account.yomankum.security.domain.GoogleUserInfo;
-import com.account.yomankum.security.domain.Sns;
-import com.account.yomankum.security.domain.SnsUserInfo;
-import com.account.yomankum.security.domain.NaverUserInfo;
+import com.account.yomankum.security.domain.*;
 import com.account.yomankum.security.service.SnsUserService;
+import com.account.yomankum.web.response.ResponseCode;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -24,6 +25,7 @@ public class CustomDefaultOAuth2UserService extends DefaultOAuth2UserService {
 
     private final SnsUserService snsUserService;
 
+    @SneakyThrows({UserNotFoundException.class, SnsException.class})
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         log.info("유저 서비스 시작");
@@ -38,7 +40,7 @@ public class CustomDefaultOAuth2UserService extends DefaultOAuth2UserService {
         String uuidKey = userInfo.getUUIDKey();
         String email = userInfo.getEmail();
         Sns sns = userInfo.getSnsName();
-        SnsUser user = snsUserService.login(sns, uuidKey);
+        SnsUser user = snsUserService.login(sns, uuidKey); // throws UserNotFoundException
 
         // 기존 가입 멤버가 아니라면 ?
         if (user == null) {
@@ -47,18 +49,22 @@ public class CustomDefaultOAuth2UserService extends DefaultOAuth2UserService {
         }
         return new CustomUserDetails(user, oAuth2User.getAttributes());
     }
-    public SnsUserInfo clientUserInfoCheck(OAuth2User oAuth2User, String client) {
-        if(client.equals("google")) {
+
+    private SnsUserInfo clientUserInfoCheck(OAuth2User oAuth2User, String client) throws SnsException {
+
+        String upperCaseSns = client.toUpperCase();
+
+        if(upperCaseSns.equals(Sns.GOOGLE.name())) {
             return new GoogleUserInfo(oAuth2User.getAttributes());
         }
-        if(client.equals("naver")) {
+        if(upperCaseSns.equals(Sns.NAVER.name())) {
             return new NaverUserInfo(
                     (Map<String, Object>) oAuth2User.getAttributes().get("response"));
         }
-        if(client.equals("kakao")) {
-            return new NaverUserInfo(oAuth2User.getAttributes());
+        if(upperCaseSns.equals(Sns.KAKAO.name())) {
+            return new KakaoUserInfo(oAuth2User.getAttributes());
         }
-        return null;
+        else throw new SnsException(ResponseCode.SNS_DOESNT_EXIST);
     }
 
 }

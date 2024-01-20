@@ -9,26 +9,18 @@ public enum ResponseCode {
 
     OK("200 OK"),
 
-    // 로그인
-    LOGIN000("200 OK"),
-    LOGIN001("JSON DECODE ERROR"),
-    LOGIN002("Unsupported language"),
-    LOGIN003("No language value or Type"),
-    LOGIN004("Invalid data by user"),
+    USER_NOT_FOUND("유저를 찾을 수 없습니다."),
 
-    // 이메일
-    EMAIL000("200 OK"),
-    EMAIL001("JSON DECODE ERROR"),
-    EMAIL002("Unsupported language"),
-    EMAIL003("No language value or Type"),
-    EMAIL004("Invalid data by user"),
+    EMAIL_CODE_NOT_MATCHED("이메일 코드가 다릅니다."),
+    EMAIL_ERROR("메일을 보낼 수 없습니다."),
+    EMAIL_NOT_FOUND("이메일을 찾을 수 없음."),
 
-    // 가입
-    SIGNUP000("200 OK"),
-    SIGNUP001("JSON DECODE ERROR"),
-    SIGNUP002("User Duplicated"),
-    SIGNUP003("No language value or Type"),
-    SIGNUP004("Invalid data by user");
+
+    NOT_VALID("형식을 확인하세요."),
+    
+    SNS_DOESNT_EXIST("존재하지 않는 SNS 입니다."),
+    TOKEN_NOT_VALID("토큰이 정확하지 않음."),
+    SNS_KEY_NOT_VALID("SNS 공개키가 맞지 않음.");
 
     private String message;
 }
