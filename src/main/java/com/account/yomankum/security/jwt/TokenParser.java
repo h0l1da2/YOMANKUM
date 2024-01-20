@@ -1,6 +1,7 @@
 package com.account.yomankum.security.jwt;
 
 import com.account.yomankum.security.domain.JwtValue;
+import com.account.yomankum.security.domain.type.Tokens;
 import com.nimbusds.jose.shaded.gson.JsonObject;
 import com.nimbusds.jose.shaded.gson.JsonParser;
 import io.jsonwebtoken.*;
@@ -39,17 +40,17 @@ public class TokenParser {
 
     public Long getId(String token) {
         Claims claims = getClaims(token);
-        return Long.parseLong(claims.get("id", String.class));
+        return Long.parseLong(claims.get(Tokens.ID.name(), String.class));
     }
 
     public String getNickname(String token) {
         Claims claims = getClaims(token);
-        return claims.get("nickname", String.class);
+        return claims.get(Tokens.NICKNAME.name(), String.class);
     }
 
     public String getRole(String token) {
         Claims claims = getClaims(token);
-        return claims.get("role", String.class);
+        return claims.get(Tokens.ROLE.name(), String.class);
     }
 
     public String getSnsTokenSecret(String token, String where, String what) {
@@ -75,7 +76,6 @@ public class TokenParser {
     }
 
     private Claims getSnsClaims(String idToken, PublicKey publicKey) {
-
         return Jwts.parser()
                 .setSigningKeyResolver(new SigningKeyResolverAdapter() {
                     @Override
@@ -89,60 +89,41 @@ public class TokenParser {
 
 
     }
-    public String getSnsUUID(JwtValue jwtValue, String token) {
+    public String getSnsUUID(JwtValue jwtValue, String token) throws NoSuchAlgorithmException, InvalidKeySpecException, SignatureException, InvalidKeyException {
         String n = jwtValue.getN();
         String e = jwtValue.getE();
         String kty = jwtValue.getKty();
         String alg = jwtValue.getAlg();
 
         PublicKey publicKey = getPublicKey(n, e, kty);
-        boolean signatureValid = isSignatureValid(publicKey, alg, token);
+        boolean signatureValid = isSignatureValid(publicKey, token);
 
         if (!signatureValid) {
             throw new RuntimeException();
         }
 
         Claims snsClaims = getSnsClaims(token, publicKey);
-        return snsClaims.get("sub", String.class);
+        return snsClaims.get(Tokens.SUB.name(), String.class);
     }
 
-    private boolean isSignatureValid(PublicKey publicKey, String alg, String token) {
+    private boolean isSignatureValid(PublicKey publicKey, String token) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
         String[] jwt = splitToken(token);
 
-        try {
+        Signature verifier = Signature.getInstance(Tokens.ALGORITHM.getRealName());
+        verifier.initVerify(publicKey);
+        verifier.update((jwt[0]+"."+jwt[1]).getBytes(StandardCharsets.UTF_8));
 
-            Signature verifier = Signature.getInstance("SHA256withRSA");
-            verifier.initVerify(publicKey);
-            verifier.update((jwt[0]+"."+jwt[1]).getBytes(StandardCharsets.UTF_8));
+        return verifier.verify(Base64.getUrlDecoder().decode(jwt[2]));
 
-            return verifier.verify(Base64.getUrlDecoder().decode(jwt[2]));
-
-        } catch (NoSuchAlgorithmException e) {
-            log.error("알고리즘을 못 찾겠음");
-            throw new RuntimeException(e);
-        } catch (InvalidKeyException e) {
-            log.error("잘못된 키 스펙");
-            throw new RuntimeException(e);
-        } catch (SignatureException e) {
-            log.error("잘못된 서명");
-            throw new RuntimeException(e);
-        }
     }
 
-    private PublicKey getPublicKey(String n, String e, String kty) {
+    private PublicKey getPublicKey(String n, String e, String kty) throws NoSuchAlgorithmException, InvalidKeySpecException {
         BigInteger modulus = new BigInteger(1, Base64.getUrlDecoder().decode(n));
         BigInteger exponent = new BigInteger(1, Base64.getUrlDecoder().decode(e));
         RSAPublicKeySpec spec = new RSAPublicKeySpec(modulus, exponent);
-        try {
-            KeyFactory factory = KeyFactory.getInstance(kty);
-            return factory.generatePublic(spec);
-        } catch (NoSuchAlgorithmException ex) {
-            log.error("알고리즘을 못 찾겠음");
-            throw new RuntimeException(ex);
-        } catch (InvalidKeySpecException ex) {
-            log.error("잘못된 키 스펙");
-            throw new RuntimeException(ex);
-        }
+        KeyFactory factory = KeyFactory.getInstance(kty);
+        return factory.generatePublic(spec);
+
 
     }
 

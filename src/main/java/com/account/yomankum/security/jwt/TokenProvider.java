@@ -1,6 +1,7 @@
 package com.account.yomankum.security.jwt;
 
 import com.account.yomankum.domain.enums.Name;
+import com.account.yomankum.security.domain.type.Tokens;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -32,10 +33,10 @@ public class TokenProvider {
 
     public String createToken(Long id, String username, Name name) {
 
-        Claims claims = getClaims("accessToken", id, username, name);
+        Claims claims = getClaims(Tokens.ACCESS_TOKEN, id, username, name);
 
         return Jwts.builder()
-                .setHeaderParam("typ", "Bearer")
+                .setHeaderParam(Tokens.TYP.getRealName(), Tokens.BEARER.getRealName())
                 .setClaims(claims)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
@@ -43,7 +44,7 @@ public class TokenProvider {
 
     public String createRefreshToken() {
 
-        Claims claims = getClaims("refreshToken");
+        Claims claims = getClaims(Tokens.REFRESH_TOKEN);
 
         return Jwts.builder()
                 .claims(claims)
@@ -51,27 +52,27 @@ public class TokenProvider {
                 .compact();
     }
 
-    private Claims getClaims(String tokenType) {
+    private Claims getClaims(Tokens tokenType) {
         Date now = new Date();
 
         Claims claims = Jwts.claims()
-                .subject(tokenType)
+                .subject(tokenType.toString())
                 .issuedAt(now)
                 .expiration(new Date(now.getTime() + refreshTokenValidTime))
                 .build();
 
         return claims;
     }
-    private Claims getClaims(String tokenType, Long id, String nickname, Name name) {
+    private Claims getClaims(Tokens tokenType, Long id, String nickname, Name name) {
         Date now = new Date();
 
         Claims claims = Jwts.claims()
-                .subject(tokenType)
+                .subject(tokenType.toString())
                 .issuedAt(now)
                 .expiration(new Date(now.getTime() + tokenValidTime))
-                .add("id", id.toString())
-                .add("nickname", nickname)
-                .add("role", name)
+                .add(Tokens.ID.getRealName(), id.toString())
+                .add(Tokens.NICKNAME.getRealName(), nickname)
+                .add(Tokens.ROLE.getRealName(), name)
                 .build();
 
         return claims;
