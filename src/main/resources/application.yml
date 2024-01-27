@@ -126,7 +126,7 @@ springdoc:
     path: /yomankum/api-docs
     disable-swagger-default-url: true
     display-request-duration: true
-    operations-sorter: alpha
+    operations-sorter: method
 
 ---
 spring:
