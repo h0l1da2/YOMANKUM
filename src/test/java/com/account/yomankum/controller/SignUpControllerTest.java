@@ -1,12 +1,11 @@
 package com.account.yomankum.controller;
 
-import com.account.yomankum.login.domain.EmailCodeDto;
-import com.account.yomankum.login.domain.EmailDto;
-import com.account.yomankum.login.domain.UserSignUpDto;
-import com.account.yomankum.repository.UserRepository;
+import com.account.yomankum.user.dto.EmailCodeDto;
+import com.account.yomankum.user.dto.EmailDto;
+import com.account.yomankum.user.dto.UserSignUpDto;
+import com.account.yomankum.user.repository.UserRepository;
 import com.account.yomankum.util.RedisUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;

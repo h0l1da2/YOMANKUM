@@ -1,8 +1,8 @@
 package com.account.yomankum.security.service;
 
-import com.account.yomankum.exception.UserNotFoundException;
-import com.account.yomankum.security.domain.Sns;
-import com.account.yomankum.domain.SnsUser;
+import com.account.yomankum.common.exception.status4xx.UserNotFoundException;
+import com.account.yomankum.security.oauth.type.Sns;
+import com.account.yomankum.user.domain.SnsUser;
 
 public interface SnsUserService {
 
