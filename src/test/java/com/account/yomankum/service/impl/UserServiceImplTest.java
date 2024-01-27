@@ -1,12 +1,12 @@
 package com.account.yomankum.service.impl;
 
-import com.account.yomankum.domain.enums.Name;
-import com.account.yomankum.domain.User;
-import com.account.yomankum.login.domain.LoginDto;
-import com.account.yomankum.login.domain.UserSignUpDto;
-import com.account.yomankum.repository.UserRepository;
-import com.account.yomankum.login.service.UserService;
-import com.account.yomankum.security.domain.type.Tokens;
+import com.account.yomankum.user.domain.type.RoleName;
+import com.account.yomankum.user.domain.User;
+import com.account.yomankum.user.dto.LoginDto;
+import com.account.yomankum.user.dto.UserSignUpDto;
+import com.account.yomankum.user.repository.UserRepository;
+import com.account.yomankum.user.service.UserService;
+import com.account.yomankum.security.oauth.type.Tokens;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -51,7 +51,7 @@ class UserServiceImplTest {
 
         assertThat(findUser).isNotNull();
         assertThat(findUser.getEmail()).isEqualTo(userSignUpDto.getEmail());
-        assertThat(findUser.getRole().getName()).isEqualTo(Name.ROLE_USER);
+        assertThat(findUser.getRole().getRoleName()).isEqualTo(RoleName.ROLE_USER);
         assertThat(pwdMatches).isTrue();
     }
 

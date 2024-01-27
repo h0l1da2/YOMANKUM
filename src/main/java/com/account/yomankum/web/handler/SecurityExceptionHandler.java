@@ -1,6 +1,6 @@
 package com.account.yomankum.web.handler;
 
-import com.account.yomankum.exception.SnsException;
+import com.account.yomankum.common.exception.status4xx.SnsException;
 import com.account.yomankum.web.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

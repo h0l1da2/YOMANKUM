@@ -1,10 +1,9 @@
 package com.account.yomankum.service.impl;
 
-import com.account.yomankum.domain.enums.Mail;
-import com.account.yomankum.login.service.MailService;
+import com.account.yomankum.user.domain.type.Mail;
+import com.account.yomankum.user.service.MailService;
 import com.account.yomankum.util.RedisUtil;
 import jakarta.mail.MessagingException;
-import org.junit.Ignore;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
