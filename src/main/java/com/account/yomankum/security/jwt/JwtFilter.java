@@ -1,7 +1,8 @@
 package com.account.yomankum.security.jwt;
 
-import com.account.yomankum.exception.ThrowingConsumer;
-import com.account.yomankum.security.domain.type.Tokens;
+import com.account.yomankum.common.exception.ThrowingConsumer;
+import com.account.yomankum.security.service.TokenService;
+import com.account.yomankum.security.oauth.type.Tokens;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;

@@ -1,7 +1,7 @@
 package com.account.yomankum.web.handler;
 
-import com.account.yomankum.exception.CodeNotFoundException;
-import com.account.yomankum.exception.CodeNotValidException;
+import com.account.yomankum.common.exception.status4xx.CodeNotFoundException;
+import com.account.yomankum.common.exception.status4xx.CodeNotValidException;
 import com.account.yomankum.web.response.Response;
 import com.account.yomankum.web.response.ResponseCode;
 import jakarta.mail.MessagingException;

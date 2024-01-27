@@ -1,11 +1,11 @@
 package com.account.yomankum.security.service;
 
-import com.account.yomankum.domain.Role;
-import com.account.yomankum.domain.SnsUser;
-import com.account.yomankum.domain.enums.Name;
-import com.account.yomankum.exception.UserNotFoundException;
-import com.account.yomankum.repository.SnsUserRepository;
-import com.account.yomankum.security.domain.Sns;
+import com.account.yomankum.security.oauth.type.Sns;
+import com.account.yomankum.user.domain.Role;
+import com.account.yomankum.user.domain.SnsUser;
+import com.account.yomankum.user.domain.type.RoleName;
+import com.account.yomankum.common.exception.status4xx.UserNotFoundException;
+import com.account.yomankum.user.repository.SnsUserRepository;
 import com.account.yomankum.web.response.ResponseCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,7 +30,7 @@ public class SnsUserServiceImpl implements SnsUserService {
                 .email(email)
                 .pwdChangeDate(now())
                 .sns(sns)
-                .role(new Role(Name.ROLE_USER))
+                .role(new Role(RoleName.ROLE_USER))
                 .build();
 
         return snsUserRepository.save(snsUser);    }
