@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/signUp")
+@RequestMapping("/api/v1/signUp")
 @Tag(name = "(NORMAL) SIGN UP", description = "일반 회원가입 API 명세서")
 public class SignUpController {
 

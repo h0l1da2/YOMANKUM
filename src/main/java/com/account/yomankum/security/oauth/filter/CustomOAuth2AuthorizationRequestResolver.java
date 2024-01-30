@@ -37,11 +37,11 @@ public class CustomOAuth2AuthorizationRequestResolver implements OAuth2Authoriza
         setClientSession(request, state, sns);
 
         SnsInfo snsInfo = new SnsInfo(sns);
-        String clientId = snsInfo.clientId(sns);
-        String authUri = snsInfo.authUri(sns);
+        String clientId = snsInfo.getClientId();
+        String authUri = snsInfo.getAuthUri();
         String redirectUri = "/";
         String responseType = snsInfo.responseType(); // code
-        String[] scopes = snsInfo.scope(sns).toArray(String[]::new);
+        String[] scopes = snsInfo.getScope().toArray(String[]::new);
 
         Map<String, String> clientMap = new HashMap<>();
         clientMap.put(OAuth2ParameterNames.RESPONSE_TYPE, responseType);
