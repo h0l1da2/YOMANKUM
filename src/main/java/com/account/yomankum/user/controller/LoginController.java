@@ -19,7 +19,7 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/login")
+@RequestMapping("/api/v1/login")
 @Tag(name = "LOGIN", description = "로그인 페이지 API 명세서")
 public class LoginController {
 

@@ -36,7 +36,7 @@ class SecurityConfig {
                         .anyRequest().permitAll())
 
                 .addFilterBefore(new JwtFilter(tokenService, userDetailsService), UsernamePasswordAuthenticationFilter.class)
-                .logout(logout -> logout.logoutSuccessUrl("/login").permitAll())
+                .logout(logout -> logout.logoutSuccessUrl("/api/v1/login").permitAll())
                 .build();
     }
 }
