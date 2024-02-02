@@ -4,6 +4,7 @@ import com.account.yomankum.common.annotation.Password;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.text.MessageFormat;
 
@@ -16,7 +17,7 @@ public class PasswordValidator implements ConstraintValidator<Password, String> 
     @Override
     public boolean isValid(String password, ConstraintValidatorContext context) {
 
-        if (password == null ||
+        if (!StringUtils.hasText(password) ||
                 !password.matches(regexPassword)
         ) {
             context.disableDefaultConstraintViolation();

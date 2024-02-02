@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.account.yomankum.user.dto.UserDto.LoginDto;
+import static com.account.yomankum.user.dto.UserDto.UserLoginDto;
 
 @Slf4j
 @Service
@@ -42,10 +42,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Map<Tokens, String> login(LoginDto loginDto) {
+    public Map<Tokens, String> login(UserLoginDto userLoginDto) {
 
-        String email = loginDto.email();
-        String password = loginDto.password();
+        String email = userLoginDto.email();
+        String password = userLoginDto.password();
 
         User findUser = userRepository.findByEmailFetchRole(email)
                 .orElseThrow(() -> new BadRequestException(Exception.USER_NOT_FOUND));
@@ -57,8 +57,6 @@ public class UserServiceImpl implements UserService {
             log.error("비밀번호가 안 맞음");
             throw new BadRequestException(Exception.USER_NOT_FOUND);
         }
-
-        log.info("아이디 비밀번호 일치 : {}", email);
 
         String accessToken = tokenService.creatToken(findUser.getId(), findUser.getNickname(), findUser.getRole().getRoleName());
         String refreshToken = tokenService.createRefreshToken();

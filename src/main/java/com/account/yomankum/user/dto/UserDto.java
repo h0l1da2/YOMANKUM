@@ -33,7 +33,7 @@ public record UserDto() {
     }
 
     @Builder
-    public record LoginDto(
+    public record UserLoginDto(
             @NotBlank
             @Email
             String email,

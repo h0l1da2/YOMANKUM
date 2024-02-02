@@ -8,5 +8,5 @@ import lombok.Getter;
 public enum Job {
     EX("기타");
 
-    private String job;
+    private final String jobName;
 }

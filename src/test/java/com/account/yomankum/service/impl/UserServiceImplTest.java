@@ -75,8 +75,8 @@ class UserServiceImplTest {
         UserSignUpDto userSignUpDto = getUserSignUpDto();
         userService.signUp(userSignUpDto);
 
-        LoginDto loginDto = getLoginDto(userSignUpDto);
-        Map<Tokens, String> tokenMap = userService.login(loginDto);
+        UserLoginDto userLoginDto = getLoginDto(userSignUpDto);
+        Map<Tokens, String> tokenMap = userService.login(userLoginDto);
 
         String accessToken = tokenMap.get(Tokens.ACCESS_TOKEN);
         String refreshToken = tokenMap.get(Tokens.REFRESH_TOKEN);
@@ -89,12 +89,12 @@ class UserServiceImplTest {
     @DisplayName("실패 : 아이디 없는 사용자")
     void 로그인_실패_아이디없음() {
 
-        LoginDto loginDto = LoginDto.builder()
+        UserLoginDto userLoginDto = UserLoginDto.builder()
                 .email("username")
                 .password("password")
                 .build();
 
-        assertThrows(IllegalArgumentException.class, () -> userService.login(loginDto));
+        assertThrows(IllegalArgumentException.class, () -> userService.login(userLoginDto));
     }
 
     @Test
@@ -104,17 +104,17 @@ class UserServiceImplTest {
         UserSignUpDto userSignUpDto = getUserSignUpDto();
         userService.signUp(userSignUpDto);
 
-        LoginDto loginDto = LoginDto.builder()
+        UserLoginDto userLoginDto = UserLoginDto.builder()
                 .email(userSignUpDto.email())
                 .password("asd232112")
                 .build();
 
-        assertThrows(IllegalArgumentException.class, () -> userService.login(loginDto));
+        assertThrows(IllegalArgumentException.class, () -> userService.login(userLoginDto));
 
     }
 
-    private LoginDto getLoginDto(UserSignUpDto userSignUpDto) {
-        return LoginDto.builder()
+    private UserLoginDto getLoginDto(UserSignUpDto userSignUpDto) {
+        return UserLoginDto.builder()
                 .email(userSignUpDto.email())
                 .password(userSignUpDto.password())
                 .build();

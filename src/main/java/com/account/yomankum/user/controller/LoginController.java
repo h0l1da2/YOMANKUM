@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
-import static com.account.yomankum.user.dto.UserDto.LoginDto;
+import static com.account.yomankum.user.dto.UserDto.UserLoginDto;
 
 @Slf4j
 @RestController
@@ -27,7 +27,7 @@ public class LoginController {
 
     @PostMapping
     @Operation(summary = "일반 회원 로그인", description = "일반 회원용 로그인")
-    public Map<Tokens, String> login(@RequestBody @Valid LoginDto loginDto) {
-        return userService.login(loginDto);
+    public Map<Tokens, String> login(@RequestBody @Valid UserLoginDto userLoginDto) {
+        return userService.login(userLoginDto);
     }
 }
