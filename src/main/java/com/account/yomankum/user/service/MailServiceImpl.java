@@ -3,9 +3,10 @@ package com.account.yomankum.user.service;
 import com.account.yomankum.common.exception.BadRequestException;
 import com.account.yomankum.common.exception.Exception;
 import com.account.yomankum.common.exception.InternalErrorException;
-import com.account.yomankum.user.domain.type.Mail;
+import com.account.yomankum.user.domain.type.MailType;
 import com.account.yomankum.util.RedisUtil;
 import com.nimbusds.jose.shaded.gson.Gson;
+import com.nimbusds.jose.shaded.gson.JsonObject;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,6 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import java.util.Random;
 
-import static com.account.yomankum.user.dto.MailDto.*;
 import static jakarta.mail.Message.RecipientType;
 
 @Slf4j
@@ -32,11 +32,17 @@ public class MailServiceImpl implements MailService {
     private final SpringTemplateEngine templateEngine;
     private final RedisUtil redisUtil;
 
+    private final String CODE = "code";
+    private final int CODE_LENGTH = 5;
+    private final String CODE_VALUES = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    private final long EXPIRE_CODE_TIME = 60 * 15L;
+
+
     @Value("${mail.id}")
     private String fromEmail;
 
     @Override
-    public String mailSend(Mail mail, String userEmail) {
+    public String mailSend(String mailTypeStr, String userEmail) {
 
         if (redisUtil.existData(userEmail)) {
             redisUtil.deleteData(userEmail);
@@ -44,18 +50,16 @@ public class MailServiceImpl implements MailService {
 
         String result = "";
         String randomCode = "";
-        Gson gson = new Gson();
+        MailType mailType = MailType.valueOf(mailTypeStr);
 
-        if (mail.equals(Mail.JOIN)) {
-            MailRandomCodeDto mailRandomCodeDto = MailRandomCodeDto.builder()
-                    .randomCode(
-                            createCode()
-                    )
-                    .build();
-            result = gson.toJson(mailRandomCodeDto);
+        if (mailType.equals(MailType.JOIN)) {
+            JsonObject code = new JsonObject();
+            code.addProperty(CODE, createCode());
+
+            result = new Gson().toJson(code.toString());
         }
 
-        MimeMessage template = setTemplate(mail, userEmail, randomCode);
+        MimeMessage template = setTemplate(mailType, userEmail, randomCode);
         sendMail(template);
 
         return result;
@@ -63,20 +67,18 @@ public class MailServiceImpl implements MailService {
 
     @Override
     public String createCode() {
-        String values = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        int codeLength = 5;
 
         Random random = new Random();
         StringBuilder builder = new StringBuilder();
 
-        for (int i = 0; i < codeLength; i++) {
-            int randomIndex = random.nextInt(values.length());
-            builder.append(values.charAt(randomIndex));
+        for (int i = 0; i < CODE_LENGTH; i++) {
+            int randomIndex = random.nextInt(CODE_VALUES.length());
+            builder.append(CODE_VALUES.charAt(randomIndex));
         }
         return builder.toString();
     }
     @Override
-    public MimeMessage setTemplate(Mail type, String userEmail, String randomCode) {
+    public MimeMessage setTemplate(MailType type, String userEmail, String randomCode) {
 
         String key = "";
         String value = "";
@@ -84,16 +86,15 @@ public class MailServiceImpl implements MailService {
         String template = "";
 
 
-        if (type.equals(Mail.JOIN)) {
+        if (type.equals(MailType.JOIN)) {
             title = "YOMANKUM * 가입 코드 전송";
             template = "email/joinMailForm";
-            key = "code";
+            key = CODE;
             value = randomCode;
         }
 
         MimeMessage message = setMimeMessage(userEmail, key, value, title, template);
 
-        final long EXPIRE_CODE_TIME = 60 * 15L;
         redisUtil.setDataExpire(userEmail, randomCode, EXPIRE_CODE_TIME);
 
         return message;
