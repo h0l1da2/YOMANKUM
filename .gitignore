@@ -40,3 +40,4 @@ out/
 /src/main/resources/static
 /src/test/resources/
 /src/main/resources/application-dev.yml
+/src/main/generated/
