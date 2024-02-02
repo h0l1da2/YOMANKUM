@@ -74,7 +74,7 @@ jobs:
       - name: Update Kubernetes resources by yq
         uses: mikefarah/yq@master
         with:
-          cmd: yq --inplace '.spec.template.spec.containers[0].image="${{ env.HARBOR_URL }}/${{ env.HARBOR_PROJECT }}/${{ env.IMAGE_NAME }}:${{ steps.image.outputs.version }}"' ./yomankum-argocd/yomankum/back-app.yaml
+          cmd: yq --inplace '.spec.template.spec.containers[0].image="${{ env.HARBOR_URL }}/${{ env.HARBOR_PROJECT }}/${{ env.IMAGE_NAME }}:${{ steps.image.outputs.version }}"' ./yomankum-argocd/yomankum_back/back-app.yaml
           
       - name: show changed file's detail
         working-directory: ./yomankum-argocd
