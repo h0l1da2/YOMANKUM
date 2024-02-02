@@ -79,12 +79,12 @@ jobs:
       - name: show changed file's detail
         working-directory: ./yomankum-argocd
         run: |
-          cat yomankum/back-app.yaml
+          cat yomankum_back/back-app.yaml
           
       - name: Commit files
         working-directory: ./yomankum-argocd
         run: |
           git config --global user.email "gkdlgkdl@naver.com"
           git config --global user.name "Larshavin"
-          git commit -am "Update image tag as ${{ steps.image.outputs.version }}"
+          git commit -am "Update backend image tag as ${{ steps.image.outputs.version }}"
           git push -u origin main
