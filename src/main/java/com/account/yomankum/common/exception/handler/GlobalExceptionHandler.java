@@ -1,4 +1,4 @@
-package com.account.yomankum.web.handler;
+package com.account.yomankum.common.exception.handler;
 
 import com.nimbusds.jose.shaded.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
