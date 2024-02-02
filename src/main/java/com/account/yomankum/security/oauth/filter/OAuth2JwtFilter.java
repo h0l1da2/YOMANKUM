@@ -1,23 +1,20 @@
 package com.account.yomankum.security.oauth.filter;
 
 import com.account.yomankum.security.oauth.response.NaverProfileApiResponse;
+import com.account.yomankum.security.oauth.response.TokenResponse;
 import com.account.yomankum.security.oauth.service.CustomDefaultOAuth2UserService;
 import com.account.yomankum.security.oauth.type.Sns;
+import com.account.yomankum.security.oauth.type.Tokens;
+import com.account.yomankum.security.oauth.user.SnsInfo;
 import com.account.yomankum.security.service.SnsUserService;
 import com.account.yomankum.security.service.TokenService;
 import com.account.yomankum.user.domain.SnsUser;
-import com.account.yomankum.common.exception.status4xx.SnsException;
-import com.account.yomankum.common.exception.status4xx.UserNotFoundException;
-import com.account.yomankum.security.oauth.user.SnsInfo;
-import com.account.yomankum.security.oauth.response.TokenResponse;
-import com.account.yomankum.security.oauth.type.Tokens;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -36,10 +33,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.SignatureException;
-import java.security.spec.InvalidKeySpecException;
 import java.time.Instant;
 
 @Slf4j
@@ -52,7 +45,6 @@ public class OAuth2JwtFilter extends OncePerRequestFilter {
     private final ClientRegistrationRepository clientRegistrationRepository;
     private final CustomDefaultOAuth2UserService customDefaultOAuth2UserService;
 
-    @SneakyThrows({UserNotFoundException.class, SnsException.class, NoSuchAlgorithmException.class, InvalidKeySpecException.class, SignatureException.class, InvalidKeyException.class})
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         log.info("OAuth2JwtFilter 시작");
@@ -110,7 +102,7 @@ public class OAuth2JwtFilter extends OncePerRequestFilter {
     private String getNaverUuidkey(TokenResponse tokenResponse) {
         // 헤더 세팅
         HttpHeaders headers = new HttpHeaders();
-        headers.set(HttpHeaders.AUTHORIZATION, Tokens.BEARER.getRealName() + " "+tokenResponse.getAccessToken());
+        headers.set(HttpHeaders.AUTHORIZATION, Tokens.BEARER.getRealName() + " " + tokenResponse.getAccessToken());
         HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(headers);
 
         // https://openapi.naver.com/v1/nid/me 으로 프로필 정보 요청 보내기

@@ -1,5 +1,7 @@
 package com.account.yomankum.security.token;
 
+import com.account.yomankum.common.exception.Exception;
+import com.account.yomankum.common.exception.InternalErrorException;
 import com.account.yomankum.security.oauth.type.Tokens;
 import com.account.yomankum.security.oauth.token.JwtValue;
 import com.nimbusds.jose.shaded.gson.JsonObject;
@@ -77,19 +79,14 @@ public class TokenParser {
 
     private Claims getSnsClaims(String idToken, PublicKey publicKey) {
         return Jwts.parser()
-                .setSigningKeyResolver(new SigningKeyResolverAdapter() {
-                    @Override
-                    public Key resolveSigningKey(JwsHeader header, Claims claims) {
-                        return publicKey;
-                    }
-                })
+                .setSigningKeyResolver((SigningKeyResolver) publicKey)
                 .build()
                 .parseClaimsJws(idToken)
                 .getBody();
 
 
     }
-    public String getSnsUUID(JwtValue jwtValue, String token) throws NoSuchAlgorithmException, InvalidKeySpecException, SignatureException, InvalidKeyException {
+    public String getSnsUUID(JwtValue jwtValue, String token) {
         String n = jwtValue.getN();
         String e = jwtValue.getE();
         String kty = jwtValue.getKty();
@@ -106,25 +103,38 @@ public class TokenParser {
         return snsClaims.get(Tokens.SUB.name(), String.class);
     }
 
-    private boolean isSignatureValid(PublicKey publicKey, String token) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+    private boolean isSignatureValid(PublicKey publicKey, String token) {
         String[] jwt = splitToken(token);
 
-        Signature verifier = Signature.getInstance(Tokens.ALGORITHM.getRealName());
-        verifier.initVerify(publicKey);
-        verifier.update((jwt[0]+"."+jwt[1]).getBytes(StandardCharsets.UTF_8));
 
-        return verifier.verify(Base64.getUrlDecoder().decode(jwt[2]));
+        boolean verify = false;
+        try {
+            Signature verifier = Signature.getInstance(Tokens.ALGORITHM.getRealName());
+            verifier.initVerify(publicKey);
+            verifier.update((jwt[0]+"."+jwt[1]).getBytes(StandardCharsets.UTF_8));
+            verify = verifier.verify(Base64.getUrlDecoder().decode(jwt[2]));
+        } catch (SignatureException | NoSuchAlgorithmException | InvalidKeyException e) {
+            log.error("토큰을 파싱하다가 문제가 발생함.");
+            throw new InternalErrorException(Exception.SERVER_ERROR);
+        }
+        return verify;
 
     }
 
-    private PublicKey getPublicKey(String n, String e, String kty) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    private PublicKey getPublicKey(String n, String e, String kty) {
         BigInteger modulus = new BigInteger(1, Base64.getUrlDecoder().decode(n));
         BigInteger exponent = new BigInteger(1, Base64.getUrlDecoder().decode(e));
         RSAPublicKeySpec spec = new RSAPublicKeySpec(modulus, exponent);
-        KeyFactory factory = KeyFactory.getInstance(kty);
-        return factory.generatePublic(spec);
+        PublicKey publicKey = null;
 
-
+        try {
+            KeyFactory factory = KeyFactory.getInstance(kty);
+            publicKey = factory.generatePublic(spec);
+        } catch (InvalidKeySpecException | NoSuchAlgorithmException ex) {
+            log.error("토큰을 파싱하다 문제가 발생함.");
+            throw new InternalErrorException(Exception.SERVER_ERROR);
+        }
+        return publicKey;
     }
 
     private int getWhereTokenBody(String where) {

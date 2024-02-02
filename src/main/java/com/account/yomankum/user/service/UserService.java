@@ -1,13 +1,13 @@
 package com.account.yomankum.user.service;
 
-import com.account.yomankum.common.exception.status4xx.UserNotFoundException;
-import com.account.yomankum.user.dto.LoginDto;
-import com.account.yomankum.user.dto.UserSignUpDto;
 import com.account.yomankum.security.oauth.type.Tokens;
 
 import java.util.Map;
 
+import static com.account.yomankum.user.dto.UserDto.LoginDto;
+import static com.account.yomankum.user.dto.UserDto.UserSignUpDto;
+
 public interface UserService {
-    void signUp(UserSignUpDto userSignUpDto) throws IllegalArgumentException, UserNotFoundException;
-    Map<Tokens, String> login(LoginDto loginDto) throws IllegalArgumentException, UserNotFoundException;
+    void signUp(UserSignUpDto userSignUpDto);
+    Map<Tokens, String> login(LoginDto loginDto);
 }

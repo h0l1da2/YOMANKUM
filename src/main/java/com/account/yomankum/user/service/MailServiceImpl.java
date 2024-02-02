@@ -1,10 +1,11 @@
 package com.account.yomankum.user.service;
 
+import com.account.yomankum.common.exception.BadRequestException;
+import com.account.yomankum.common.exception.Exception;
+import com.account.yomankum.common.exception.InternalErrorException;
 import com.account.yomankum.user.domain.type.Mail;
-import com.account.yomankum.common.exception.status4xx.CodeNotFoundException;
-import com.account.yomankum.common.exception.status4xx.CodeNotValidException;
 import com.account.yomankum.util.RedisUtil;
-import com.account.yomankum.web.response.ResponseCode;
+import com.nimbusds.jose.shaded.gson.Gson;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,8 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import java.util.Random;
 
-import static jakarta.mail.Message.*;
+import static com.account.yomankum.user.dto.MailDto.*;
+import static jakarta.mail.Message.RecipientType;
 
 @Slf4j
 @Service
@@ -34,7 +36,7 @@ public class MailServiceImpl implements MailService {
     private String fromEmail;
 
     @Override
-    public String mailSend(Mail mail, String userEmail) throws MessagingException {
+    public String mailSend(Mail mail, String userEmail) {
 
         if (redisUtil.existData(userEmail)) {
             redisUtil.deleteData(userEmail);
@@ -42,16 +44,20 @@ public class MailServiceImpl implements MailService {
 
         String result = "";
         String randomCode = "";
+        Gson gson = new Gson();
 
         if (mail.equals(Mail.JOIN)) {
-            randomCode = createCode();
-            result = randomCode;
+            MailRandomCodeDto mailRandomCodeDto = MailRandomCodeDto.builder()
+                    .randomCode(
+                            createCode()
+                    )
+                    .build();
+            result = gson.toJson(mailRandomCodeDto);
         }
 
         MimeMessage template = setTemplate(mail, userEmail, randomCode);
         sendMail(template);
 
-        log.info("이메일 코드 전송 : {}", userEmail);
         return result;
     }
 
@@ -70,7 +76,7 @@ public class MailServiceImpl implements MailService {
         return builder.toString();
     }
     @Override
-    public MimeMessage setTemplate(Mail type, String userEmail, String randomCode) throws MessagingException {
+    public MimeMessage setTemplate(Mail type, String userEmail, String randomCode) {
 
         String key = "";
         String value = "";
@@ -105,29 +111,33 @@ public class MailServiceImpl implements MailService {
     }
 
     @Override
-    public void verifyEmailCode(String userEmail, String randomCode) throws CodeNotFoundException, CodeNotValidException {
+    public void verifyEmailCode(String userEmail, String randomCode) {
         String randomCodeByEmail = redisUtil.getData(userEmail);
 
         if (randomCodeByEmail == null) {
-            log.error("입력한 코드가 일치하지 않음 : {}", randomCode);
-            throw new CodeNotFoundException(ResponseCode.EMAIL_NOT_FOUND);
+            log.error("입력한 이메일이 일치하지 않음 : {}", userEmail);
+            throw new BadRequestException(Exception.EMAIL_NOT_FOUND);
         }
 
         if (!randomCodeByEmail.matches(randomCode)) {
             log.error("입력한 코드가 일치하지 않음 : {}", randomCode);
-            throw new CodeNotValidException(ResponseCode.EMAIL_CODE_NOT_MATCHED);
+            throw new BadRequestException(Exception.EMAIL_CODE_UN_MATCHED);
         }
     }
 
-    private MimeMessage setMimeMessage(String userEmail, String key, String value, String title, String template) throws MessagingException {
+    private MimeMessage setMimeMessage(String userEmail, String key, String value, String title, String template) {
         String charset = "UTF-8";
         String html = "html";
 
         MimeMessage message = mailSender.createMimeMessage();
-        message.addRecipients(RecipientType.TO, userEmail);
-        message.setSubject(title);
-        message.setFrom(fromEmail);
-        message.setText(getContext(key, value, template), charset, html);
+        try {
+            message.addRecipients(RecipientType.TO, userEmail);
+            message.setSubject(title);
+            message.setFrom(fromEmail);
+            message.setText(getContext(key, value, template), charset, html);
+        } catch (MessagingException e) {
+            throw new InternalErrorException(Exception.SERVER_ERROR);
+        }
         return message;
     }
 

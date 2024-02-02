@@ -56,6 +56,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if (!accessTokenValid) {
 
+            // TODO 수정 필요
             Arrays.stream(request.getCookies()).toList().stream().forEach(ThrowingConsumer.unchecked(
                     cookie -> {
                         String cookieName = cookie.getName().toUpperCase();
