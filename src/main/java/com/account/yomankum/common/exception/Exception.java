@@ -11,13 +11,16 @@ public enum Exception {
 
     // 유저
     USER_NOT_FOUND("유저를 찾을 수 없습니다.", 404),
+    DUPLICATED_USER("중복 유저입니다.", 400),
 
     // 이메일
     EMAIL_NOT_FOUND("이메일을 찾을 수 없습니다.", 404),
     EMAIL_CODE_UN_MATCHED("이메일 코드가 다릅니다.", 404),
 
     // 서버 에러
-    SERVER_ERROR("서버 에러", 500);
+    SERVER_ERROR("서버 에러", 500),
+
+    ;
 
     private final String message;
     private final int code;

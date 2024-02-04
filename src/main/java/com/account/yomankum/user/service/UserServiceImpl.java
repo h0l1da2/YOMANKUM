@@ -30,8 +30,12 @@ public class UserServiceImpl implements UserService {
     public void signUp(UserSignUpDto userSignUpDto) {
 
         String email = userSignUpDto.email();
-        userRepository.findByEmail(email)
-                .orElseThrow(() -> new BadRequestException(Exception.USER_NOT_FOUND));
+        User findUser = userRepository.findByEmail(email)
+                .orElse(null);
+
+        if (findUser != null) {
+            throw new BadRequestException(Exception.DUPLICATED_USER);
+        }
 
         String password = userSignUpDto.password();
         User user = userSignUpDto.toEntity(

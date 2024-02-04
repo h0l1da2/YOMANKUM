@@ -35,6 +35,7 @@ public class MailServiceImpl implements MailService {
     private final String CODE = "code";
     private final int CODE_LENGTH = 5;
     private final String CODE_VALUES = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    // TODO 5분
     private final long EXPIRE_CODE_TIME = 60 * 15L;
 
 
@@ -124,6 +125,7 @@ public class MailServiceImpl implements MailService {
             log.error("입력한 코드가 일치하지 않음 : {}", randomCode);
             throw new BadRequestException(Exception.EMAIL_CODE_UN_MATCHED);
         }
+        redisUtil.deleteData(userEmail);
     }
 
     private MimeMessage setMimeMessage(String userEmail, String key, String value, String title, String template) {
