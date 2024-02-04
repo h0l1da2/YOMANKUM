@@ -20,6 +20,7 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import java.util.Random;
 
+import static com.account.yomankum.user.dto.MailDto.EmailRequestDto;
 import static jakarta.mail.Message.RecipientType;
 
 @Slf4j
@@ -43,7 +44,8 @@ public class MailServiceImpl implements MailService {
     private String fromEmail;
 
     @Override
-    public String mailSend(String mailTypeStr, String userEmail) {
+    public String mailSend(EmailRequestDto emailRequestDto) {
+        String userEmail = emailRequestDto.email();
 
         if (redisUtil.existData(userEmail)) {
             redisUtil.deleteData(userEmail);
@@ -51,7 +53,7 @@ public class MailServiceImpl implements MailService {
 
         String result = "";
         String randomCode = "";
-        MailType mailType = MailType.valueOf(mailTypeStr);
+        MailType mailType = emailRequestDto.mailType();
 
         if (mailType.equals(MailType.JOIN)) {
             JsonObject code = new JsonObject();

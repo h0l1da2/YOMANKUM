@@ -6,9 +6,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import static com.account.yomankum.user.dto.MailDto.EmailCodeDto;
+import static com.account.yomankum.user.dto.MailDto.EmailRequestDto;
 
 @Slf4j
 @RestController
@@ -19,13 +23,10 @@ public class EmailController {
 
     private final MailService mailService;
 
-    @GetMapping
+    @PostMapping("/send")
     @Operation(summary = "인증 메일 보내기", description = "인증 메일 보내기")
-    public String sendEmailCode(
-            @RequestParam(name = "email") String email,
-            @RequestParam(name = "type", defaultValue = "JOIN") String mailType
-    ) {
-        return mailService.mailSend(mailType, email);
+    public void sendEmailCode(@RequestBody @Valid EmailRequestDto emailRequestDto) {
+        mailService.mailSend(emailRequestDto);
     }
 
     @PostMapping("/code/check")
