@@ -52,7 +52,6 @@ public class CustomDefaultOAuth2UserService extends DefaultOAuth2UserService {
     }
 
     private SnsUserInfo clientUserInfoCheck(OAuth2User oAuth2User, String client) {
-
         String upperCaseSns = client.toUpperCase();
 
         if(upperCaseSns.equals(Sns.GOOGLE.name())) {

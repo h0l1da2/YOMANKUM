@@ -1,5 +1,6 @@
 package com.account.yomankum.security.oauth.filter;
 
+import com.account.yomankum.security.oauth.type.TokenProp;
 import com.account.yomankum.security.oauth.user.SnsInfo;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -45,7 +46,7 @@ public class CustomOAuth2AuthorizationRequestResolver implements OAuth2Authoriza
 
         Map<String, String> clientMap = new HashMap<>();
         clientMap.put(OAuth2ParameterNames.RESPONSE_TYPE, responseType);
-        clientMap.put("client", sns);
+        clientMap.put(TokenProp.CLIENT.getName(), sns);
 
         return OAuth2AuthorizationRequest
                 .authorizationCode()
@@ -68,7 +69,7 @@ public class CustomOAuth2AuthorizationRequestResolver implements OAuth2Authoriza
     private void setStateSession(HttpServletRequest request, String state) {
         HttpSession session = request.getSession();
         if (session != null) {
-            session.setAttribute("state", state);
+            session.setAttribute(TokenProp.STATE.getName(), state);
         }
     }
 
