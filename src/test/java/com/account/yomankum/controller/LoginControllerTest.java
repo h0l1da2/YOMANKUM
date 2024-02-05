@@ -1,7 +1,5 @@
 package com.account.yomankum.controller;
 
-import com.account.yomankum.user.dto.LoginDto;
-import com.account.yomankum.user.dto.UserSignUpDto;
 import com.account.yomankum.user.repository.UserRepository;
 import com.account.yomankum.user.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,6 +13,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static com.account.yomankum.user.dto.UserDto.LoginDto;
+import static com.account.yomankum.user.dto.UserDto.UserSignUpDto;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -49,8 +49,8 @@ class LoginControllerTest {
         userService.signUp(userSignUpDto);
 
         LoginDto loginDto = LoginDto.builder()
-                .email(userSignUpDto.getEmail())
-                .password(userSignUpDto.getPassword())
+                .email(userSignUpDto.email())
+                .password(userSignUpDto.password())
                 .build();
 
         mockMvc.perform(
@@ -71,8 +71,8 @@ class LoginControllerTest {
                 .build();
 
         LoginDto loginDto = LoginDto.builder()
-                .email(userSignUpDto.getEmail())
-                .password(userSignUpDto.getPassword())
+                .email(userSignUpDto.email())
+                .password(userSignUpDto.password())
                 .build();
 
         mockMvc.perform(

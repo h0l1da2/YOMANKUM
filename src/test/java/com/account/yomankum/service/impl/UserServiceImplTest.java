@@ -1,12 +1,11 @@
 package com.account.yomankum.service.impl;
 
-import com.account.yomankum.user.domain.type.RoleName;
+import com.account.yomankum.security.oauth.type.Tokens;
 import com.account.yomankum.user.domain.User;
-import com.account.yomankum.user.dto.LoginDto;
-import com.account.yomankum.user.dto.UserSignUpDto;
+import com.account.yomankum.user.domain.type.RoleName;
+import com.account.yomankum.user.dto.UserDto.UserSignUpDto;
 import com.account.yomankum.user.repository.UserRepository;
 import com.account.yomankum.user.service.UserService;
-import com.account.yomankum.security.oauth.type.Tokens;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -18,8 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static com.account.yomankum.user.dto.UserDto.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Disabled
 @Transactional
@@ -45,12 +45,12 @@ class UserServiceImplTest {
 
         userService.signUp(userSignUpDto);
 
-        User findUser = userRepository.findByEmailFetchRole(userSignUpDto.getEmail()).orElse(null);
+        User findUser = userRepository.findByEmailFetchRole(userSignUpDto.email()).orElse(null);
 
-        boolean pwdMatches = passwordEncoder.matches(userSignUpDto.getPassword(), findUser.getPassword());
+        boolean pwdMatches = passwordEncoder.matches(userSignUpDto.password(), findUser.getPassword());
 
         assertThat(findUser).isNotNull();
-        assertThat(findUser.getEmail()).isEqualTo(userSignUpDto.getEmail());
+        assertThat(findUser.getEmail()).isEqualTo(userSignUpDto.email());
         assertThat(findUser.getRole().getRoleName()).isEqualTo(RoleName.ROLE_USER);
         assertThat(pwdMatches).isTrue();
     }
@@ -105,7 +105,7 @@ class UserServiceImplTest {
         userService.signUp(userSignUpDto);
 
         LoginDto loginDto = LoginDto.builder()
-                .email(userSignUpDto.getEmail())
+                .email(userSignUpDto.email())
                 .password("asd232112")
                 .build();
 
@@ -115,8 +115,8 @@ class UserServiceImplTest {
 
     private LoginDto getLoginDto(UserSignUpDto userSignUpDto) {
         return LoginDto.builder()
-                .email(userSignUpDto.getEmail())
-                .password(userSignUpDto.getPassword())
+                .email(userSignUpDto.email())
+                .password(userSignUpDto.password())
                 .build();
     }
 

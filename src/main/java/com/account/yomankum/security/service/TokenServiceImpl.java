@@ -1,22 +1,17 @@
 package com.account.yomankum.security.service;
 
-import com.account.yomankum.common.exception.status4xx.SnsException;
+import com.account.yomankum.common.exception.Exception;
+import com.account.yomankum.common.exception.InternalErrorException;
 import com.account.yomankum.security.oauth.token.GoogleJwt;
+import com.account.yomankum.security.oauth.token.JwtValue;
+import com.account.yomankum.security.oauth.token.KakaoJwt;
 import com.account.yomankum.security.oauth.type.Sns;
 import com.account.yomankum.security.token.TokenParser;
 import com.account.yomankum.security.token.TokenProvider;
-import com.account.yomankum.security.oauth.token.JwtValue;
-import com.account.yomankum.security.oauth.token.KakaoJwt;
 import com.account.yomankum.user.domain.type.RoleName;
-import com.account.yomankum.web.response.ResponseCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.SignatureException;
-import java.security.spec.InvalidKeySpecException;
 
 @Slf4j
 @Service
@@ -67,30 +62,30 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public String getSnsUUID(String sns, String token) throws SnsException, NoSuchAlgorithmException, InvalidKeySpecException, SignatureException, InvalidKeyException {
+    public String getSnsUUID(String sns, String token) {
 
         String kid = tokenParser.getSnsTokenSecret(token, "header", "kid");
 
         JwtValue jwtValue = null;
 
         // kid First인지 Second인지 확인하고, 해당 객체 쓰기
-        if (sns.equals(Sns.KAKAO.name()))
+        if (sns.equals(Sns.KAKAO.name())) {
             jwtValue = new KakaoJwt();
-
-        if (sns.equals(Sns.GOOGLE.name()))
+        } else if (sns.equals(Sns.GOOGLE.name())) {
             jwtValue = new GoogleJwt();
-        else
-            throw new SnsException(ResponseCode.SNS_DOESNT_EXIST);
+        } else {
+            log.error("해당 SNS 찾을 수 없음 없음. : {}", sns);
+            throw new InternalErrorException(Exception.SERVER_ERROR);
+        }
 
-        if (kid.equals(jwtValue.getFirstKid()))
+        if (kid.equals(jwtValue.getFirstKid())) {
             jwtValue.jwkSetting("first");
-
-        else if (kid.equals(jwtValue.getSecondKid()))
+        } else if (kid.equals(jwtValue.getSecondKid())) {
             jwtValue.jwkSetting("second");
-
-        else throw new SnsException(ResponseCode.SNS_KEY_NOT_VALID);
-
-
+        } else {
+            log.error("OAuth2 공개 키가 맞지 않음.");
+            throw new InternalErrorException(Exception.SERVER_ERROR);
+        }
 
         return tokenParser.getSnsUUID(jwtValue, token);
     }

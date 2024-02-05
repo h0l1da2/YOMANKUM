@@ -1,8 +1,5 @@
 package com.account.yomankum.controller;
 
-import com.account.yomankum.user.dto.EmailCodeDto;
-import com.account.yomankum.user.dto.EmailDto;
-import com.account.yomankum.user.dto.UserSignUpDto;
 import com.account.yomankum.user.repository.UserRepository;
 import com.account.yomankum.util.RedisUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,6 +13,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static com.account.yomankum.user.dto.MailDto.EmailCodeDto;
+import static com.account.yomankum.user.dto.MailDto.EmailDto;
+import static com.account.yomankum.user.dto.UserDto.UserSignUpDto;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;

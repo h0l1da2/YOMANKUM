@@ -1,20 +1,20 @@
 package com.account.yomankum.user.controller;
 
-import com.account.yomankum.common.exception.status4xx.UserNotFoundException;
-import com.account.yomankum.user.dto.LoginDto;
-import com.account.yomankum.user.service.UserService;
 import com.account.yomankum.security.oauth.type.Tokens;
-import com.account.yomankum.web.response.Response;
-import com.account.yomankum.web.response.ResponseCode;
+import com.account.yomankum.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
+
+import static com.account.yomankum.user.dto.UserDto.LoginDto;
 
 @Slf4j
 @RestController
@@ -27,10 +27,7 @@ public class LoginController {
 
     @PostMapping
     @Operation(summary = "일반 회원 로그인", description = "일반 회원용 로그인")
-    public ResponseEntity<Response> login(@RequestBody @Valid LoginDto loginDto) throws UserNotFoundException {
-
-        Map<Tokens, String> tokens = userService.login(loginDto);
-
-        return Response.ok(ResponseCode.OK, tokens);
+    public Map<Tokens, String> login(@RequestBody @Valid LoginDto loginDto) {
+        return userService.login(loginDto);
     }
 }

@@ -1,12 +1,12 @@
 package com.account.yomankum.security.service;
 
+import com.account.yomankum.common.exception.BadRequestException;
+import com.account.yomankum.common.exception.Exception;
 import com.account.yomankum.security.oauth.type.Sns;
 import com.account.yomankum.user.domain.Role;
 import com.account.yomankum.user.domain.SnsUser;
 import com.account.yomankum.user.domain.type.RoleName;
-import com.account.yomankum.common.exception.status4xx.UserNotFoundException;
 import com.account.yomankum.user.repository.SnsUserRepository;
-import com.account.yomankum.web.response.ResponseCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,8 +18,9 @@ public class SnsUserServiceImpl implements SnsUserService {
 
     private final SnsUserRepository snsUserRepository;
     @Override
-    public SnsUser login(Sns sns, String uuidKey) throws UserNotFoundException {
-        return snsUserRepository.findByUuidKeyAndSns(sns, uuidKey).orElseThrow(() -> new UserNotFoundException(ResponseCode.USER_NOT_FOUND));
+    public SnsUser login(Sns sns, String uuidKey) {
+        return snsUserRepository.findByUuidKeyAndSns(sns, uuidKey)
+                .orElseThrow(() -> new BadRequestException(Exception.USER_NOT_FOUND));
     }
 
     @Override
@@ -33,5 +34,6 @@ public class SnsUserServiceImpl implements SnsUserService {
                 .role(new Role(RoleName.ROLE_USER))
                 .build();
 
-        return snsUserRepository.save(snsUser);    }
+        return snsUserRepository.save(snsUser);
+    }
 }
