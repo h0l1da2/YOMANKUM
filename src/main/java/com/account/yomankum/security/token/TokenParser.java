@@ -2,11 +2,14 @@ package com.account.yomankum.security.token;
 
 import com.account.yomankum.common.exception.Exception;
 import com.account.yomankum.common.exception.InternalErrorException;
-import com.account.yomankum.security.oauth.type.Tokens;
 import com.account.yomankum.security.oauth.token.JwtValue;
+import com.account.yomankum.security.oauth.type.TokenProp;
 import com.nimbusds.jose.shaded.gson.JsonObject;
 import com.nimbusds.jose.shaded.gson.JsonParser;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtParser;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SigningKeyResolver;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,7 +19,6 @@ import org.springframework.stereotype.Component;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
-import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPublicKeySpec;
 import java.util.Base64;
@@ -42,17 +44,17 @@ public class TokenParser {
 
     public Long getId(String token) {
         Claims claims = getClaims(token);
-        return Long.parseLong(claims.get(Tokens.ID.name(), String.class));
+        return Long.parseLong(claims.get(TokenProp.ID.name(), String.class));
     }
 
     public String getNickname(String token) {
         Claims claims = getClaims(token);
-        return claims.get(Tokens.NICKNAME.name(), String.class);
+        return claims.get(TokenProp.NICKNAME.name(), String.class);
     }
 
     public String getRole(String token) {
         Claims claims = getClaims(token);
-        return claims.get(Tokens.ROLE.name(), String.class);
+        return claims.get(TokenProp.ROLE.name(), String.class);
     }
 
     public String getSnsTokenSecret(String token, String where, String what) {
@@ -100,25 +102,22 @@ public class TokenParser {
         }
 
         Claims snsClaims = getSnsClaims(token, publicKey);
-        return snsClaims.get(Tokens.SUB.name(), String.class);
+        return snsClaims.get(TokenProp.SUB.name(), String.class);
     }
 
     private boolean isSignatureValid(PublicKey publicKey, String token) {
         String[] jwt = splitToken(token);
 
 
-        boolean verify = false;
         try {
-            Signature verifier = Signature.getInstance(Tokens.ALGORITHM.getRealName());
+            Signature verifier = Signature.getInstance(TokenProp.ALGORITHM.getName());
             verifier.initVerify(publicKey);
             verifier.update((jwt[0]+"."+jwt[1]).getBytes(StandardCharsets.UTF_8));
-            verify = verifier.verify(Base64.getUrlDecoder().decode(jwt[2]));
+            return verifier.verify(Base64.getUrlDecoder().decode(jwt[2]));
         } catch (SignatureException | NoSuchAlgorithmException | InvalidKeyException e) {
             log.error("토큰을 파싱하다가 문제가 발생함.");
             throw new InternalErrorException(Exception.SERVER_ERROR);
         }
-        return verify;
-
     }
 
     private PublicKey getPublicKey(String n, String e, String kty) {
@@ -152,12 +151,10 @@ public class TokenParser {
     }
 
     private String[] splitToken(String token) {
-        String[] jwt = token.split("\\.");
-        return jwt;
+        return token.split("\\.");
     }
 
     private Claims getClaims(String token) {
-        Claims claims = jwtParser.parseClaimsJws(token).getBody();
-        return claims;
+        return jwtParser.parseClaimsJws(token).getBody();
     }
 }

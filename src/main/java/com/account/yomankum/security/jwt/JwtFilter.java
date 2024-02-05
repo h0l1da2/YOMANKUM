@@ -1,14 +1,17 @@
 package com.account.yomankum.security.jwt;
 
-import com.account.yomankum.common.exception.ThrowingConsumer;
-import com.account.yomankum.security.service.TokenService;
+import com.account.yomankum.common.exception.Exception;
+import com.account.yomankum.common.exception.InternalErrorException;
+import com.account.yomankum.security.oauth.type.TokenProp;
 import com.account.yomankum.security.oauth.type.Tokens;
+import com.account.yomankum.security.service.TokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,6 +23,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Arrays;
 
+@Slf4j
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
 
@@ -37,14 +41,13 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         tokenVerification(request, response, filterChain, authorizationToken);
-
-
+        
         String token = tokenService.reCreateToken(authorizationToken);
         String refreshToken = tokenService.createRefreshToken();
 
         setAuthenticationToSecurityContextHolder(token);
 
-        response.setHeader(HttpHeaders.AUTHORIZATION, Tokens.BEARER.getRealName() + " " + token);
+        response.setHeader(HttpHeaders.AUTHORIZATION, TokenProp.BEARER.getName() + " " + token);
         setCookieInRefreshToken(response, refreshToken);
 
         filterChain.doFilter(request, response);
@@ -53,23 +56,28 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private void tokenVerification(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain, String authorizationToken) {
         boolean accessTokenValid = tokenService.tokenValid(authorizationToken);
-
         if (!accessTokenValid) {
+            Arrays.stream(request.getCookies()).toList().forEach(cookie ->
+                        refreshTokenVerification(request, response, filterChain, cookie)
+            );
+        }
+    }
 
-            // TODO 수정 필요
-            Arrays.stream(request.getCookies()).toList().stream().forEach(ThrowingConsumer.unchecked(
-                    cookie -> {
-                        String cookieName = cookie.getName().toUpperCase();
-                        if (cookieName.equals(Tokens.REFRESH_TOKEN.name())) {
-                            String refreshToken = cookie.getValue();
-                            boolean refreshTokenValid = tokenService.tokenValid(refreshToken);
+    private void refreshTokenVerification(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain, Cookie cookie) {
+        String cookieName = cookie.getName().toUpperCase();
 
-                            if (!refreshTokenValid) {
-                                filterChain.doFilter(request, response);
-                            }
-                        }
-                    }
-            ));
+        if (cookieName.equals(Tokens.REFRESH_TOKEN.name())) {
+            String refreshToken = cookie.getValue();
+            boolean refreshTokenValid = tokenService.tokenValid(refreshToken);
+
+            if (!refreshTokenValid) {
+                try {
+                    filterChain.doFilter(request, response);
+                } catch (IOException | ServletException e) {
+                    log.error("JwtFilter 필터 에러");
+                    throw new InternalErrorException(Exception.SERVER_ERROR);
+                }
+            }
         }
     }
 

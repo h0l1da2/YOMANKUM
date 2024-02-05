@@ -1,5 +1,5 @@
 package com.account.yomankum.user.domain.type;
 
-public enum Mail {
+public enum MailType {
     JOIN
 }

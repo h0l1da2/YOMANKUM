@@ -45,9 +45,7 @@ public class KakaoJwt implements JwtValue {
     private String n;
     private String e;
 
-    @Override
     public void jwkSetting(String seq) {
-
         if (seq.equals("first")) {
             this.kid = kidFirst;
             this.kty = ktyFirst;

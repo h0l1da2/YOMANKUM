@@ -13,7 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static com.account.yomankum.user.dto.UserDto.LoginDto;
+import static com.account.yomankum.user.dto.UserDto.UserLoginDto;
 import static com.account.yomankum.user.dto.UserDto.UserSignUpDto;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -48,14 +48,14 @@ class LoginControllerTest {
 
         userService.signUp(userSignUpDto);
 
-        LoginDto loginDto = LoginDto.builder()
+        UserLoginDto userLoginDto = UserLoginDto.builder()
                 .email(userSignUpDto.email())
                 .password(userSignUpDto.password())
                 .build();
 
         mockMvc.perform(
                         post("/login")
-                                .content(mapper.writeValueAsString(loginDto))
+                                .content(mapper.writeValueAsString(userLoginDto))
                                 .contentType(MediaType.APPLICATION_JSON)
                 ).andExpect(status().is2xxSuccessful())
                 .andDo(print());
@@ -70,14 +70,14 @@ class LoginControllerTest {
                 .password("123456a")
                 .build();
 
-        LoginDto loginDto = LoginDto.builder()
+        UserLoginDto userLoginDto = UserLoginDto.builder()
                 .email(userSignUpDto.email())
                 .password(userSignUpDto.password())
                 .build();
 
         mockMvc.perform(
                         post("/login")
-                                .content(mapper.writeValueAsString(loginDto))
+                                .content(mapper.writeValueAsString(userLoginDto))
                                 .contentType(MediaType.APPLICATION_JSON)
                 ).andExpect(status().is4xxClientError())
                 .andDo(print());

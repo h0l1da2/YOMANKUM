@@ -9,6 +9,6 @@ public enum Gender {
 
     MALE("남자"), FEMALE("여자");
 
-    private String name;
+    private final String genderName;
 
 }

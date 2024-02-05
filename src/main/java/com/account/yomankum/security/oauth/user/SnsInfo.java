@@ -1,6 +1,7 @@
 package com.account.yomankum.security.oauth.user;
 
 import com.account.yomankum.security.oauth.type.Sns;
+import com.account.yomankum.security.oauth.type.TokenProp;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,6 +16,11 @@ import java.util.List;
 @PropertySource("classpath:application.yml")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SnsInfo {
+
+    // SNS Info interface
+    // GoogleInfo
+    // NaverInfo
+    // KakaoInfo
 
     @Getter
     private String clientId;
@@ -55,7 +61,6 @@ public class SnsInfo {
     @Value("${spring.security.oauth2.client.provider.naver.user-info-uri}")
     private String naverProfileApiUri;
 
-
     @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
     private String kakaoClientId;
     @Value("${spring.security.oauth2.client.registration.kakao.client-secret}")
@@ -68,7 +73,7 @@ public class SnsInfo {
     private String kakaoTokenUri;
 
     public String responseType() {
-        return "code";
+        return TokenProp.CODE.getName();
     }
 
     public SnsInfo(String sns) {

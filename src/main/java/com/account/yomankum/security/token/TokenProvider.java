@@ -1,10 +1,10 @@
 package com.account.yomankum.security.token;
 
+import com.account.yomankum.security.oauth.type.TokenProp;
 import com.account.yomankum.security.oauth.type.Tokens;
 import com.account.yomankum.user.domain.type.RoleName;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -35,11 +35,12 @@ public class TokenProvider {
 
         Claims claims = getClaims(Tokens.ACCESS_TOKEN, id, username, name);
 
-        return Jwts.builder()
-                .setHeaderParam(Tokens.TYP.getRealName(), Tokens.BEARER.getRealName())
-                .setClaims(claims)
-                .signWith(key, SignatureAlgorithm.HS512)
-                .compact();
+
+    return Jwts.builder()
+            .header().add(TokenProp.TYP.getName(), TokenProp.BEARER.getName()).and()
+            .claims(claims)
+            .signWith(key)
+            .compact();
     }
 
     public String createRefreshToken() {
@@ -48,33 +49,29 @@ public class TokenProvider {
 
         return Jwts.builder()
                 .claims(claims)
-                .signWith(key, SignatureAlgorithm.HS512)
+                .signWith(key)
                 .compact();
     }
 
     private Claims getClaims(Tokens tokenType) {
         Date now = new Date();
 
-        Claims claims = Jwts.claims()
+        return Jwts.claims()
                 .subject(tokenType.toString())
                 .issuedAt(now)
                 .expiration(new Date(now.getTime() + refreshTokenValidTime))
                 .build();
-
-        return claims;
     }
     private Claims getClaims(Tokens tokenType, Long id, String nickname, RoleName name) {
         Date now = new Date();
 
-        Claims claims = Jwts.claims()
+        return Jwts.claims()
                 .subject(tokenType.toString())
                 .issuedAt(now)
                 .expiration(new Date(now.getTime() + tokenValidTime))
-                .add(Tokens.ID.getRealName(), id.toString())
-                .add(Tokens.NICKNAME.getRealName(), nickname)
-                .add(Tokens.ROLE.getRealName(), name)
+                .add(TokenProp.ID.getName(), id.toString())
+                .add(TokenProp.NICKNAME.getName(), nickname)
+                .add(TokenProp.ROLE.getName(), name)
                 .build();
-
-        return claims;
     }
 }

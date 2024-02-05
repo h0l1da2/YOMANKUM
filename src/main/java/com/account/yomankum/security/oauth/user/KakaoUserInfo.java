@@ -1,6 +1,7 @@
 package com.account.yomankum.security.oauth.user;
 
 import com.account.yomankum.security.oauth.type.Sns;
+import com.account.yomankum.security.oauth.type.TokenProp;
 
 import java.util.Map;
 
@@ -11,11 +12,11 @@ public class KakaoUserInfo implements SnsUserInfo {
 
     public KakaoUserInfo(Map<String, Object> attributes) {
         this.attributes = attributes;
-        this.attributesAccount = (Map<String, Object>) attributes.get("kakao_account");
+        this.attributesAccount = (Map<String, Object>) attributes.get(TokenProp.KAKAO_ACCOUNT.getName());
     }
     @Override
     public String getUUIDKey() {
-        return String.valueOf(attributes.get("id"));
+        return String.valueOf(attributes.get(TokenProp.ID.getName()));
     }
 
     @Override
@@ -25,7 +26,7 @@ public class KakaoUserInfo implements SnsUserInfo {
 
     @Override
     public String getEmail() {
-        return String.valueOf(attributesAccount.get("email"));
+        return String.valueOf(attributesAccount.get(TokenProp.EMAIL.getName()));
     }
 
 }

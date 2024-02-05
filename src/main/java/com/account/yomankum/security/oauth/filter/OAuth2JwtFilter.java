@@ -4,6 +4,7 @@ import com.account.yomankum.security.oauth.response.NaverProfileApiResponse;
 import com.account.yomankum.security.oauth.response.TokenResponse;
 import com.account.yomankum.security.oauth.service.CustomDefaultOAuth2UserService;
 import com.account.yomankum.security.oauth.type.Sns;
+import com.account.yomankum.security.oauth.type.TokenProp;
 import com.account.yomankum.security.oauth.type.Tokens;
 import com.account.yomankum.security.oauth.user.SnsInfo;
 import com.account.yomankum.security.service.SnsUserService;
@@ -47,12 +48,10 @@ public class OAuth2JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        log.info("OAuth2JwtFilter 시작");
-
         TokenResponse tokenResponse =
-                (TokenResponse) request.getAttribute(Tokens.TOKEN_RESPONSE.name());
+                (TokenResponse) request.getAttribute(TokenProp.TOKEN_RESPONSE.name());
         String sns = String.valueOf(
-                request.getAttribute("sns")
+                request.getAttribute(TokenProp.SNS.getName())
         );
 
         Sns snsEnum = null;
@@ -80,9 +79,7 @@ public class OAuth2JwtFilter extends OncePerRequestFilter {
 
                 // 카카오는 서비스 오픈 안 하면 이메일은 가져올 수 없음
                 snsEnum = Sns.KAKAO;
-
             }
-
         }
 
         // 토큰 만들기
@@ -102,11 +99,10 @@ public class OAuth2JwtFilter extends OncePerRequestFilter {
     private String getNaverUuidkey(TokenResponse tokenResponse) {
         // 헤더 세팅
         HttpHeaders headers = new HttpHeaders();
-        headers.set(HttpHeaders.AUTHORIZATION, Tokens.BEARER.getRealName() + " " + tokenResponse.getAccessToken());
+        headers.set(HttpHeaders.AUTHORIZATION, TokenProp.BEARER.getName() + " " + tokenResponse.getAccessToken());
         HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(headers);
 
         // https://openapi.naver.com/v1/nid/me 으로 프로필 정보 요청 보내기
-
         RestTemplate restTemplate = new RestTemplate();
 
         String naverProfileApiUri = snsInfo.getNaverProfileApiUri();
@@ -115,19 +111,17 @@ public class OAuth2JwtFilter extends OncePerRequestFilter {
                         httpEntity, NaverProfileApiResponse.class);
 
         NaverProfileApiResponse profileResponse = responseEntity.getBody();
-        String snsUuidKey = profileResponse.getResponse().getId();
-
-        return snsUuidKey;
+        return profileResponse.getResponse().getId();
     }
 
     private void setTokensAtReponse(HttpServletResponse response, String accessToken, String refreshToken) {
-        response.setHeader(HttpHeaders.AUTHORIZATION, Tokens.BEARER.getRealName() + " " + accessToken);
+        response.setHeader(HttpHeaders.AUTHORIZATION, TokenProp.BEARER.getName() + " " + accessToken);
         response.addCookie(new Cookie(Tokens.REFRESH_TOKEN.name(), refreshToken));
     }
 
     private void setIdAndNicknameAtSession(HttpServletRequest request, SnsUser snsUser) {
-        request.getSession().setAttribute("id", snsUser.getId());
-        request.getSession().setAttribute("nickname", snsUser.getNickname());
+        request.getSession().setAttribute(TokenProp.ID.getName(), snsUser.getId());
+        request.getSession().setAttribute(TokenProp.NICKNAME.getName(), snsUser.getNickname());
     }
 
     private void setAuthenticationInSpringContext(String sns, TokenResponse tokenResponse, String accessToken) {
