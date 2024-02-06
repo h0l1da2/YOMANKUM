@@ -23,7 +23,7 @@ public class EmailController {
 
     private final MailService mailService;
 
-    @PostMapping("/send")
+    @PostMapping
     @Operation(summary = "인증 메일 보내기", description = "인증 메일 보내기")
     public void sendEmailCode(@RequestBody @Valid EmailRequestDto emailRequestDto) {
         mailService.mailSend(emailRequestDto);

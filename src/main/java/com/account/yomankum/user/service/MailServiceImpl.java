@@ -22,6 +22,7 @@ import java.util.Random;
 
 import static com.account.yomankum.user.dto.MailDto.EmailRequestDto;
 import static jakarta.mail.Message.RecipientType;
+import static java.util.UUID.*;
 
 @Slf4j
 @Service
@@ -34,10 +35,10 @@ public class MailServiceImpl implements MailService {
     private final RedisUtil redisUtil;
 
     private final String CODE = "code";
+    private final String UUID = "uuid";
     private final int CODE_LENGTH = 5;
     private final String CODE_VALUES = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    // TODO 5분
-    private final long EXPIRE_CODE_TIME = 60 * 15L;
+    private final long EXPIRE_CODE_TIME = 60 * 5L;
 
 
     @Value("${mail.id}")
@@ -52,17 +53,28 @@ public class MailServiceImpl implements MailService {
         }
 
         String result = "";
-        String randomCode = "";
+        String templateCode = "";
         MailType mailType = emailRequestDto.mailType();
 
         if (mailType.equals(MailType.JOIN)) {
-            JsonObject code = new JsonObject();
-            code.addProperty(CODE, createCode());
+            templateCode = createCode();
 
-            result = new Gson().toJson(code.toString());
+            JsonObject code = new JsonObject();
+            code.addProperty(CODE, templateCode);
+
+            result = new Gson().toJson(code);
         }
 
-        MimeMessage template = setTemplate(mailType, userEmail, randomCode);
+        if (mailType.equals(MailType.PASSWORD)) {
+            templateCode = randomUUID().toString();
+
+            JsonObject uuid = new JsonObject();
+            uuid.addProperty(UUID, templateCode);
+
+            result = new Gson().toJson(uuid);
+        }
+
+        MimeMessage template = setTemplate(mailType, userEmail, templateCode);
         sendMail(template);
 
         return result;
@@ -81,7 +93,7 @@ public class MailServiceImpl implements MailService {
         return builder.toString();
     }
     @Override
-    public MimeMessage setTemplate(MailType type, String userEmail, String randomCode) {
+    public MimeMessage setTemplate(MailType type, String userEmail, String templateCode) {
 
         String key = "";
         String value = "";
@@ -93,12 +105,20 @@ public class MailServiceImpl implements MailService {
             title = "YOMANKUM * 가입 코드 전송";
             template = "email/joinMailForm";
             key = CODE;
-            value = randomCode;
+            value = templateCode;
+            redisUtil.setDataExpire(userEmail, templateCode, EXPIRE_CODE_TIME);
+        }
+
+        if (type.equals(MailType.PASSWORD)) {
+            title = "YOMANKUM * 비밀번호 재설정";
+            template = "email/passwordResetMailForm";
+            key = UUID;
+            value = templateCode;
+            redisUtil.setDataExpire(templateCode, userEmail, EXPIRE_CODE_TIME);
         }
 
         MimeMessage message = setMimeMessage(userEmail, key, value, title, template);
 
-        redisUtil.setDataExpire(userEmail, randomCode, EXPIRE_CODE_TIME);
 
         return message;
     }
@@ -115,7 +135,7 @@ public class MailServiceImpl implements MailService {
     }
 
     @Override
-    public void verifyEmailCode(String userEmail, String randomCode) {
+    public void verifyEmailCode(String userEmail, String templateCode) {
         String randomCodeByEmail = redisUtil.getData(userEmail);
 
         if (randomCodeByEmail == null) {
@@ -123,8 +143,8 @@ public class MailServiceImpl implements MailService {
             throw new BadRequestException(Exception.EMAIL_NOT_FOUND);
         }
 
-        if (!randomCodeByEmail.matches(randomCode)) {
-            log.error("입력한 코드가 일치하지 않음 : {}", randomCode);
+        if (!randomCodeByEmail.matches(templateCode)) {
+            log.error("입력한 코드가 일치하지 않음 : {}", templateCode);
             throw new BadRequestException(Exception.EMAIL_CODE_UN_MATCHED);
         }
         redisUtil.deleteData(userEmail);
