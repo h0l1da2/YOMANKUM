@@ -12,4 +12,5 @@ public interface UserService {
     void signUp(UserSignUpDto userSignUpDto);
     Map<Tokens, String> login(UserLoginDto userLoginDto);
     UserInfoDto userInfo(String jwt);
+    void updatePassword(String uuid, String password);
 }

@@ -8,9 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -27,4 +25,9 @@ public class UserController {
         return userService.userInfo(request.getHeader(HttpHeaders.AUTHORIZATION));
     }
 
+    @PutMapping("/password/{uuid}")
+    @Operation(summary = "패스워드 변경", description = "패스워드 변경하기")
+    public void updatePassword(@PathVariable String uuid, @RequestBody String password) {
+        userService.updatePassword(uuid, password);
+    }
 }

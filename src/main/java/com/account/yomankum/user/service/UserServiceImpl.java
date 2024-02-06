@@ -2,17 +2,23 @@ package com.account.yomankum.user.service;
 
 import com.account.yomankum.common.exception.BadRequestException;
 import com.account.yomankum.common.exception.Exception;
+import com.account.yomankum.common.exception.InternalErrorException;
 import com.account.yomankum.security.oauth.type.TokenProp;
 import com.account.yomankum.security.oauth.type.Tokens;
 import com.account.yomankum.security.service.TokenService;
 import com.account.yomankum.user.domain.User;
 import com.account.yomankum.user.dto.UserDto.UserSignUpDto;
 import com.account.yomankum.user.dto.response.UserInfoDto;
+import com.account.yomankum.user.repository.UserQueryRepository;
 import com.account.yomankum.user.repository.UserRepository;
+import com.account.yomankum.util.RedisUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,6 +33,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final TokenService tokenService;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final RedisUtil redisUtil;
+    private final UserQueryRepository userQueryRepository;
 
     @Override
     public void signUp(UserSignUpDto userSignUpDto) {
@@ -84,5 +92,30 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new BadRequestException(Exception.USER_NOT_FOUND));
 
         return UserInfoDto.from(user);
+    }
+
+    @Override
+    public void updatePassword(String uuid, String passwordJson) {
+        String userEmail = redisUtil.getData(uuid);
+        if (!StringUtils.hasText(userEmail)) {
+            throw new BadRequestException(Exception.USER_NOT_FOUND);
+        }
+        redisUtil.deleteData(uuid);
+
+        String password = "";
+        try {
+            password = new ObjectMapper().readTree(passwordJson)
+                    .path("password").asText();
+        } catch (JsonProcessingException e) {
+            throw new BadRequestException(Exception.REQUEST_NOT_FOUND);
+        }
+
+        long execute = userQueryRepository.updateUserPassword(userEmail, passwordEncoder.encode(password));
+
+        if (execute != 1) {
+            log.error("모종의 이유로 패스워드 업데이트 오류. (확인 필요)");
+            throw new InternalErrorException(Exception.SERVER_ERROR);
+        }
+
     }
 }

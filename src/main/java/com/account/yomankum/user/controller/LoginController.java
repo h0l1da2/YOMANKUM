@@ -37,10 +37,4 @@ public class LoginController {
         return;
     }
 
-    // 비밀번호 재설정
-    @PutMapping("password")
-    @Operation(summary = "패스워드 변경", description = "패스워드 변경하기")
-    public void updatePassword() {
-
-    }
 }

@@ -34,4 +34,7 @@ public class User {
     private LocalDateTime stopDate;
     private LocalDateTime removeDate;
 
+    public void updatePassword(String password) {
+        this.password = password;
+    }
 }
