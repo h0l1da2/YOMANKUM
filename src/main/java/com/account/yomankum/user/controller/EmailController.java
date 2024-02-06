@@ -35,4 +35,6 @@ public class EmailController {
         mailService.verifyEmailCode(emailCodeDto.email(), emailCodeDto.code());
     }
 
+    // 비밀번호 재설정 메일 보내기
+
 }

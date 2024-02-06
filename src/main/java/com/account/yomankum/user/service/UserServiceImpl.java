@@ -2,10 +2,12 @@ package com.account.yomankum.user.service;
 
 import com.account.yomankum.common.exception.BadRequestException;
 import com.account.yomankum.common.exception.Exception;
+import com.account.yomankum.security.oauth.type.TokenProp;
 import com.account.yomankum.security.oauth.type.Tokens;
 import com.account.yomankum.security.service.TokenService;
 import com.account.yomankum.user.domain.User;
 import com.account.yomankum.user.dto.UserDto.UserSignUpDto;
+import com.account.yomankum.user.dto.response.UserInfoDto;
 import com.account.yomankum.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -70,5 +72,17 @@ public class UserServiceImpl implements UserService {
         tokenMap.put(Tokens.REFRESH_TOKEN, refreshToken);
 
         return tokenMap;
+    }
+
+    @Override
+    public UserInfoDto userInfo(String bearerJwt) {
+        // Bearer dsadj2e ...
+        String jwt = bearerJwt.substring(TokenProp.BEARER.name().length() + 1);
+        Long userId = tokenService.getIdByToken(jwt);
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BadRequestException(Exception.USER_NOT_FOUND));
+
+        return UserInfoDto.from(user);
     }
 }

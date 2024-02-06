@@ -1,7 +1,6 @@
 package com.account.yomankum.user.domain;
 
 import com.account.yomankum.user.domain.type.Gender;
-import com.account.yomankum.user.domain.type.Job;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,8 +26,8 @@ public class User {
     private Date birthday;
     @Enumerated(EnumType.STRING)
     private Gender gender;
-    @Enumerated(EnumType.STRING)
-    private Job job;
+    private String job;
+    private Integer salary;
 
     private LocalDateTime joinDate;
     private LocalDateTime pwdChangeDate;
