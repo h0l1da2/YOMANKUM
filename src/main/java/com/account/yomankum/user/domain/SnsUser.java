@@ -29,8 +29,7 @@ public class SnsUser {
     private Date birthday;
     @Enumerated(EnumType.STRING)
     private Gender gender;
-    @Enumerated(EnumType.STRING)
-    private Job job;
+    private String job;
 
     private LocalDateTime joinDate;
     private LocalDateTime pwdChangeDate;
