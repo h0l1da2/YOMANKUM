@@ -1,6 +1,7 @@
 package com.account.yomankum.user.controller;
 
 import com.account.yomankum.security.oauth.type.Tokens;
+import com.account.yomankum.security.service.CustomUserDetails;
 import com.account.yomankum.user.dto.request.FirstLoginUserInfoSaveDto;
 import com.account.yomankum.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,7 +35,7 @@ public class LoginController {
     @GetMapping("first")
     @Operation(summary = "첫 로그인 정보 받기", description = "첫 로그인 후 기본 정보를 저장하기 위한 창")
     public void firstLogin(@RequestBody FirstLoginUserInfoSaveDto firstLoginUserInfoSaveDto, @AuthenticationPrincipal Principal principal) {
-        userService.saveFirstLoginUserInfo(firstLoginUserInfoSaveDto, principal);
+        userService.saveFirstLoginUserInfo(firstLoginUserInfoSaveDto, (CustomUserDetails) principal);
     }
 
 }

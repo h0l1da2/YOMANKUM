@@ -26,8 +26,8 @@ public class UserController {
 
     @GetMapping("my-page")
     @Operation(summary = "마이 페이지", description = "마이 페이지 정보 가져오기")
-    public UserInfoDto myPage(HttpServletRequest request) {
-        return userService.getUserInfo(request.getHeader(HttpHeaders.AUTHORIZATION));
+    public UserInfoDto myPage(@AuthenticationPrincipal Principal principal) {
+        return userService.getUserInfo((CustomUserDetails) principal);
     }
 
     @PutMapping("my-page")

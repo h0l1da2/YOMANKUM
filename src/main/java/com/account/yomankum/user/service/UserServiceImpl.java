@@ -3,7 +3,6 @@ package com.account.yomankum.user.service;
 import com.account.yomankum.common.exception.BadRequestException;
 import com.account.yomankum.common.exception.Exception;
 import com.account.yomankum.common.exception.InternalErrorException;
-import com.account.yomankum.security.oauth.type.TokenProp;
 import com.account.yomankum.security.oauth.type.Tokens;
 import com.account.yomankum.security.service.CustomUserDetails;
 import com.account.yomankum.security.service.TokenService;
@@ -23,7 +22,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -87,12 +85,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserInfoDto getUserInfo(String bearerJwt) {
-        // Bearer dsadj2e ...
-        String jwt = bearerJwt.substring(TokenProp.BEARER.name().length() + 1);
-        Long userId = tokenService.getIdByToken(jwt);
-
-        User user = userRepository.findById(userId)
+    public UserInfoDto getUserInfo(CustomUserDetails userDetails) {
+        User user = userRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new BadRequestException(Exception.USER_NOT_FOUND));
 
         return UserInfoDto.from(user);
@@ -124,9 +118,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void saveFirstLoginUserInfo(FirstLoginUserInfoSaveDto firstLoginUserInfoSaveDto, Principal principal) {
-        CustomUserDetails userDetails = (CustomUserDetails) principal;
-
+    public void saveFirstLoginUserInfo(FirstLoginUserInfoSaveDto firstLoginUserInfoSaveDto, CustomUserDetails userDetails) {
         User findUser = userRepository.findByEmailFetchRole(userDetails.getUsername())
                 .orElseThrow(() -> new BadRequestException(Exception.USER_NOT_FOUND));
 
