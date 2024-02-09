@@ -13,7 +13,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedOrigins("*")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                 .allowedHeaders("*")
-                .allowCredentials(false) // 와일드카드 사용 시 false로 설정
+                .allowCredentials(false)
                 .maxAge(3600);
     }
 
