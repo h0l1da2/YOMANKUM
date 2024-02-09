@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AccountBookService {
 
     private final AccountBookRepository accountBookRepository;
+    private final AccountBookFinder accountBookFinder;
     private final SessionService sessionService;
 
     public Long create(AccountBookCreateRequest accountBookWriteDto) {
@@ -25,19 +26,14 @@ public class AccountBookService {
     }
 
     public void update(Long id, String name) {
-        AccountBook accountBook = findById(id);
+        AccountBook accountBook = accountBookFinder.findById(id);
         accountBook.updateName(name, sessionService.getSessionUserId());
     }
 
     public void delete(Long id) {
-        AccountBook accountBook = findById(id);
+        AccountBook accountBook = accountBookFinder.findById(id);
         accountBook.delete(sessionService.getSessionUserId());
         accountBookRepository.deleteById(id);
-    }
-
-    public AccountBook findById(Long id){
-        return accountBookRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException(Exception.ACCOUNT_BOOK_NOT_FOUND));
     }
 
 }

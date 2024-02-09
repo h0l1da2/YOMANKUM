@@ -4,6 +4,7 @@ import com.account.yomankum.accountBook.domain.record.Record;
 import com.account.yomankum.accountBook.domain.record.RecordType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -20,7 +21,7 @@ public record RecordCreateRequest (
         RecordType recordType,
         int money,
         @DateTimeFormat(pattern = "yyyy-MM-dd EEE")
-        LocalDateTime date
+        LocalDate date
 ){
     public Record toEntity(){
         return Record.builder()

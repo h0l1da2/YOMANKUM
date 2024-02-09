@@ -8,6 +8,7 @@ import com.account.yomankum.accountBook.service.RecordFinder;
 import com.account.yomankum.accountBook.service.RecordService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,6 +38,11 @@ public class RecordController {
     @PutMapping("/{recordId}")
     public void updateRecord(@PathVariable Long recordId, @RequestBody RecordUpdateRequest request){
         recordService.updateRecord(recordId, request);
+    }
+
+    @DeleteMapping("/{recordId}")
+    public void deleteRecord(@PathVariable Long recordId){
+        recordService.deleteRecord(recordId);
     }
 
 }

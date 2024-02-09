@@ -10,9 +10,11 @@ import com.account.yomankum.accountBook.domain.record.Record;
 import com.account.yomankum.accountBook.domain.record.RecordSearchCondition;
 import com.account.yomankum.accountBook.domain.record.RecordType;
 import com.account.yomankum.accountBook.dto.request.RecordCreateRequest;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,17 +38,17 @@ public class RecordFinderIntegrationTest {
     private AccountBookRepository accountBookRepository;
 
     private AccountBook accountBook;
-    private LocalDateTime today;
-    private LocalDateTime yesterday;
-    private LocalDateTime twoDaysAgo;
+    private LocalDate today;
+    private LocalDate yesterday;
+    private LocalDate twoDaysAgo;
 
     @BeforeEach
     public void setup() {
         accountBook = createAccountBook();
         accountBookRepository.save(accountBook);
-        today = LocalDateTime.now();
-        yesterday = LocalDateTime.now().minusDays(1);
-        twoDaysAgo = LocalDateTime.now().minusDays(2);
+        today = LocalDate.now();
+        yesterday = LocalDate.now().minusDays(1);
+        twoDaysAgo = LocalDate.now().minusDays(2);
         recordService.addRecord(accountBook.getId(),
                 makeRecordRequest("지출 내역1", today, "대분류1", RecordType.EXPENDITURE, 10000, "소분류1", "소분류2"));
         recordService.addRecord(accountBook.getId(),
@@ -57,7 +59,7 @@ public class RecordFinderIntegrationTest {
 
     private RecordCreateRequest makeRecordRequest(
             String content,
-            LocalDateTime date,
+            LocalDate date,
             String majorTag,
             RecordType recordType,
             int money,
@@ -137,9 +139,10 @@ public class RecordFinderIntegrationTest {
     }
 
     @Test
+    @DisplayName("기간검색 - 시작일 기준")
     public void searchByDateFrom(){
         RecordSearchCondition recordSearchCondition = RecordSearchCondition.builder()
-                .from(twoDaysAgo.plusMinutes(1))
+                .from(twoDaysAgo.plusDays(1))
                 .pageSize(100)
                 .build();
         List<Record> records = recordFinder.searchRecords(accountBook.getId(), recordSearchCondition);
@@ -152,7 +155,7 @@ public class RecordFinderIntegrationTest {
     @Test
     public void searchByDateTo(){
         RecordSearchCondition recordSearchCondition = RecordSearchCondition.builder()
-                .to(today.minusMinutes(1))
+                .to(today.minusDays(1))
                 .pageSize(100)
                 .build();
         List<Record> records = recordFinder.searchRecords(accountBook.getId(), recordSearchCondition);
@@ -165,8 +168,8 @@ public class RecordFinderIntegrationTest {
     @Test
     public void searchByDateFromTo(){
         RecordSearchCondition recordSearchCondition = RecordSearchCondition.builder()
-                .from(twoDaysAgo.plusMinutes(1))
-                .to(today.minusMinutes(1))
+                .from(twoDaysAgo.plusDays(1))
+                .to(today.minusDays(1))
                 .pageSize(100)
                 .build();
         List<Record> records = recordFinder.searchRecords(accountBook.getId(), recordSearchCondition);

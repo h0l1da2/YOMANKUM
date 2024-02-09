@@ -18,12 +18,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class RecordService {
 
     private final RecordRepository recordRepository;
-    private final AccountBookService accountBookService;
+    private final AccountBookFinder accountBookFinder;
     private final SessionService sessionService;
 
     public void addRecord(Long accountBookId, RecordCreateRequest dto){
         Record record = dto.toEntity();
-        AccountBook accountBook = accountBookService.findById(accountBookId);
+        AccountBook accountBook = accountBookFinder.findById(accountBookId);
         accountBook.addRecord(record, sessionService.getSessionUserId());
         recordRepository.save(record);
     }

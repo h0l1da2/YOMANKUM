@@ -13,6 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import java.time.LocalDate;
 import java.util.List;
 import jdk.jfr.Name;
 import lombok.AccessLevel;
@@ -44,8 +45,8 @@ public class Record extends UserBaseEntity {
     private List<String> minorTag; // 소분류
     @Enumerated(value =  EnumType.STRING)
     private RecordType recordType;
-    private int money;
-    private LocalDateTime date;
+    private long money;
+    private LocalDate date;
 
     // TODO. 적절한 메소드 명 없는지?
     public void appointAccountBook(AccountBook accountBook) {
