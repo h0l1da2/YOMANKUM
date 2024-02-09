@@ -1,7 +1,9 @@
 package com.account.yomankum.user.service;
 
 import com.account.yomankum.security.oauth.type.Tokens;
+import com.account.yomankum.security.service.CustomUserDetails;
 import com.account.yomankum.user.dto.request.FirstLoginUserInfoSaveDto;
+import com.account.yomankum.user.dto.request.UserInfoUpdateDto;
 import com.account.yomankum.user.dto.response.UserInfoDto;
 
 import java.security.Principal;
@@ -16,4 +18,5 @@ public interface UserService {
     UserInfoDto getUserInfo(String jwt);
     void updatePassword(String uuid, String password);
     void saveFirstLoginUserInfo(FirstLoginUserInfoSaveDto firstLoginUserInfoSaveDto, Principal principal);
+    void updateUserInfo(CustomUserDetails userDetails, UserInfoUpdateDto dto);
 }

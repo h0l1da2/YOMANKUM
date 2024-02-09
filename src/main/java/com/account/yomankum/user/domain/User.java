@@ -2,6 +2,7 @@ package com.account.yomankum.user.domain;
 
 import com.account.yomankum.user.domain.type.Gender;
 import com.account.yomankum.user.dto.request.FirstLoginUserInfoSaveDto;
+import com.account.yomankum.user.dto.request.UserInfoUpdateDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -43,5 +44,12 @@ public class User {
         this.nickname = dto.nickname();
         this.gender = dto.gender();
         this.birthday = dto.birthDate();
+    }
+
+    public void updateUserInfo(UserInfoUpdateDto dto) {
+        this.gender = dto.gender();
+        this.birthday = dto.birthDate();
+        this.job = dto.job();
+        this.salary = dto.salary();
     }
 }

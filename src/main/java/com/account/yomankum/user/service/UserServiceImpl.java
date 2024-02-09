@@ -10,6 +10,7 @@ import com.account.yomankum.security.service.TokenService;
 import com.account.yomankum.user.domain.User;
 import com.account.yomankum.user.dto.UserDto.UserSignUpDto;
 import com.account.yomankum.user.dto.request.FirstLoginUserInfoSaveDto;
+import com.account.yomankum.user.dto.request.UserInfoUpdateDto;
 import com.account.yomankum.user.dto.response.UserInfoDto;
 import com.account.yomankum.user.repository.UserQueryRepository;
 import com.account.yomankum.user.repository.UserRepository;
@@ -130,6 +131,15 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new BadRequestException(Exception.USER_NOT_FOUND));
 
         findUser.updateFirstUserInfo(firstLoginUserInfoSaveDto);
+        userRepository.save(findUser);
+    }
+
+    @Override
+    public void updateUserInfo(CustomUserDetails userDetails, UserInfoUpdateDto dto) {
+        User findUser = userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new BadRequestException(Exception.USER_NOT_FOUND));
+
+        findUser.updateUserInfo(dto);
         userRepository.save(findUser);
     }
 }
