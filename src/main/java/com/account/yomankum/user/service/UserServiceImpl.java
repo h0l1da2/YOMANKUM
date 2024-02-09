@@ -5,6 +5,7 @@ import com.account.yomankum.common.exception.Exception;
 import com.account.yomankum.common.exception.InternalErrorException;
 import com.account.yomankum.security.oauth.type.TokenProp;
 import com.account.yomankum.security.oauth.type.Tokens;
+import com.account.yomankum.security.service.CustomUserDetails;
 import com.account.yomankum.security.service.TokenService;
 import com.account.yomankum.user.domain.User;
 import com.account.yomankum.user.dto.UserDto.UserSignUpDto;
@@ -17,7 +18,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -124,7 +124,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void saveFirstLoginUserInfo(FirstLoginUserInfoSaveDto firstLoginUserInfoSaveDto, Principal principal) {
-        UserDetails userDetails = (UserDetails) principal;
+        CustomUserDetails userDetails = (CustomUserDetails) principal;
 
         User findUser = userRepository.findByEmailFetchRole(userDetails.getUsername())
                 .orElseThrow(() -> new BadRequestException(Exception.USER_NOT_FOUND));
