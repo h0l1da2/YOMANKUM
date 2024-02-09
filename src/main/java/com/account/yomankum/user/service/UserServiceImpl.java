@@ -83,7 +83,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserInfoDto userInfo(String bearerJwt) {
+    public UserInfoDto getUserInfo(String bearerJwt) {
         // Bearer dsadj2e ...
         String jwt = bearerJwt.substring(TokenProp.BEARER.name().length() + 1);
         Long userId = tokenService.getIdByToken(jwt);

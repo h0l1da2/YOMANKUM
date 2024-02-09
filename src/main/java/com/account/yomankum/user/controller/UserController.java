@@ -22,7 +22,7 @@ public class UserController {
     @GetMapping
     @Operation(summary = "마이 페이지", description = "마이 페이지 정보 가져오기")
     public UserInfoDto myPage(HttpServletRequest request) {
-        return userService.userInfo(request.getHeader(HttpHeaders.AUTHORIZATION));
+        return userService.getUserInfo(request.getHeader(HttpHeaders.AUTHORIZATION));
     }
 
     @PutMapping("/password/{uuid}")
