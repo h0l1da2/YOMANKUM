@@ -1,11 +1,12 @@
 package com.account.yomankum.user.domain;
 
 import com.account.yomankum.user.domain.type.Gender;
+import com.account.yomankum.user.dto.request.FirstLoginUserInfoSaveDto;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @Getter
@@ -23,7 +24,7 @@ public class User {
     private Role role;
     private String nickname;
 
-    private Date birthday;
+    private LocalDate birthday;
     @Enumerated(EnumType.STRING)
     private Gender gender;
     private String job;
@@ -36,5 +37,11 @@ public class User {
 
     public void updatePassword(String password) {
         this.password = password;
+    }
+
+    public void updateFirstUserInfo(FirstLoginUserInfoSaveDto dto) {
+        this.nickname = dto.nickname();
+        this.gender = dto.gender();
+        this.birthday = dto.birthDate();
     }
 }

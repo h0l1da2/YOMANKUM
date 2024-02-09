@@ -8,6 +8,7 @@ import com.account.yomankum.security.oauth.type.Tokens;
 import com.account.yomankum.security.service.TokenService;
 import com.account.yomankum.user.domain.User;
 import com.account.yomankum.user.dto.UserDto.UserSignUpDto;
+import com.account.yomankum.user.dto.request.FirstLoginUserInfoSaveDto;
 import com.account.yomankum.user.dto.response.UserInfoDto;
 import com.account.yomankum.user.repository.UserQueryRepository;
 import com.account.yomankum.user.repository.UserRepository;
@@ -16,10 +17,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -117,5 +120,16 @@ public class UserServiceImpl implements UserService {
             throw new InternalErrorException(Exception.SERVER_ERROR);
         }
 
+    }
+
+    @Override
+    public void saveFirstLoginUserInfo(FirstLoginUserInfoSaveDto firstLoginUserInfoSaveDto, Principal principal) {
+        UserDetails userDetails = (UserDetails) principal;
+
+        User findUser = userRepository.findByEmailFetchRole(userDetails.getUsername())
+                .orElseThrow(() -> new BadRequestException(Exception.USER_NOT_FOUND));
+
+        findUser.updateFirstUserInfo(firstLoginUserInfoSaveDto);
+        userRepository.save(findUser);
     }
 }

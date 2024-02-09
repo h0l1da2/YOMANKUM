@@ -1,6 +1,7 @@
 package com.account.yomankum.user.controller;
 
 import com.account.yomankum.security.oauth.type.Tokens;
+import com.account.yomankum.user.dto.request.FirstLoginUserInfoSaveDto;
 import com.account.yomankum.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,11 +31,10 @@ public class LoginController {
         return userService.login(userLoginDto);
     }
 
-    // 첫 로그인을 했을 때, sns 로그인이라면 생년 월일 정보가 있을 수도?
     @GetMapping("first")
     @Operation(summary = "첫 로그인 정보 받기", description = "첫 로그인 후 기본 정보를 저장하기 위한 창")
-    public void firstLogin(@AuthenticationPrincipal Principal principal) {
-        return;
+    public void firstLogin(@RequestBody FirstLoginUserInfoSaveDto firstLoginUserInfoSaveDto, @AuthenticationPrincipal Principal principal) {
+        userService.saveFirstLoginUserInfo(firstLoginUserInfoSaveDto, principal);
     }
 
 }
