@@ -6,10 +6,9 @@ import com.account.yomankum.user.dto.response.UserInfoDto;
 import com.account.yomankum.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,7 +31,7 @@ public class UserController {
 
     @PutMapping("my-page")
     @Operation(summary = "마이 페이지", description = "마이 페이지 정보 가져오기")
-    public void updateMyPage(@AuthenticationPrincipal Principal principal, @RequestBody UserInfoUpdateDto dto) {
+    public void updateMyPage(@AuthenticationPrincipal Principal principal, @RequestBody @Valid UserInfoUpdateDto dto) {
         userService.updateUserInfo((CustomUserDetails) principal, dto);
     }
 
