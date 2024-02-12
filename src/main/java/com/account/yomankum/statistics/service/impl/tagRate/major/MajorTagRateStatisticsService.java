@@ -7,12 +7,8 @@ import com.account.yomankum.accountBook.service.RecordFinder;
 import com.account.yomankum.statistics.service.StatisticsRequest;
 import com.account.yomankum.statistics.service.StatisticsService;
 import com.account.yomankum.statistics.service.StatisticsType;
-import com.account.yomankum.statistics.service.impl.tagRate.vo.TagRate;
 import java.time.YearMonth;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

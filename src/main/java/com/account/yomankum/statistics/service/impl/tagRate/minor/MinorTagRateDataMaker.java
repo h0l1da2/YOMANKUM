@@ -11,16 +11,22 @@ public class MinorTagRateDataMaker {
 
     private MinorTagRateDataMaker(){}
 
-    private static final String MINOR_TOTAL = "statistics-totalAmountOfMinorTag";
-
     public static List<TagRate> createMinorTagRateData(List<Record> records) {
+        Long totalAmount = getTotalAmount(records);
         Map<String, Long> amountsByTags = getAmountsByMinorTags(records);
-        long totalAmount = amountsByTags.get(MINOR_TOTAL);
 
         return amountsByTags.keySet().stream()
                 .map(key -> new TagRate(key, totalAmount, amountsByTags.get(key)))
                 .sorted()
                 .collect(Collectors.toList());
+    }
+
+    private static long getTotalAmount(List<Record> records){
+        long amount = 0;
+        for(Record record : records){
+            amount += record.getMinorTag().size() * record.getMoney();
+        }
+        return amount;
     }
 
     private static Map<String, Long> getAmountsByMinorTags(List<Record> records) {
@@ -30,9 +36,6 @@ public class MinorTagRateDataMaker {
                 long amountOfTag = amountsByTags.getOrDefault(minorTag, 0L);
                 amountOfTag += record.getMoney();
                 amountsByTags.put(minorTag, amountOfTag);
-
-                Long totalAmount = amountsByTags.getOrDefault(MINOR_TOTAL, 0L);
-                amountsByTags.put(MINOR_TOTAL, ++totalAmount);
             }
         }
         return amountsByTags;

@@ -12,7 +12,7 @@ public class TagRate implements Comparable<TagRate> {
     public TagRate(String tag, Long totalAmount, Long amountOfTag){
         this.tag = tag;
         this.money = amountOfTag;
-        this.rate = (float) amountOfTag / totalAmount;
+        this.rate = ((float) amountOfTag / totalAmount) * 100;
     }
 
     @Override

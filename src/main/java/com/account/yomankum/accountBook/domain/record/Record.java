@@ -48,7 +48,6 @@ public class Record extends UserBaseEntity {
     private long money;
     private LocalDate date;
 
-    // TODO. 적절한 메소드 명 없는지?
     public void appointAccountBook(AccountBook accountBook) {
         this.accountBook = accountBook;
     }

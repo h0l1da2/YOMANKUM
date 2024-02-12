@@ -30,7 +30,7 @@ public class MonthlyTotalDataMaker {
         while(!start.isAfter(end)){
             YearMonth yearMonth = YearMonth.of(start.getYear(), start.getMonth());
             defaultMonthlyTotals.put(yearMonth, new MonthlyTotal(yearMonth, 0L, 0L));
-            start.plusMonths(1);
+            start = start.plusMonths(1);
         }
         return defaultMonthlyTotals;
     }
