@@ -1,9 +1,9 @@
-package com.account.yomankum.statistics.vo;
+package com.account.yomankum.statistics.service.impl.tagRate.vo;
 
 import lombok.Getter;
 
 @Getter
-public class TagRate {
+public class TagRate implements Comparable<TagRate> {
 
     private final String tag;
     private final float rate;
@@ -15,4 +15,8 @@ public class TagRate {
         this.rate = (float) amountOfTag / totalAmount;
     }
 
+    @Override
+    public int compareTo(TagRate o) {
+        return Float.compare(o.getRate(), rate);
+    }
 }

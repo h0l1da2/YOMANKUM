@@ -1,13 +1,17 @@
 package com.account.yomankum.statistics.controller;
 
-import com.account.yomankum.statistics.vo.MonthlyTotal;
+import com.account.yomankum.accountBook.domain.record.RecordType;
 import com.account.yomankum.statistics.service.StatisticsService;
-import com.account.yomankum.statistics.vo.TagRate;
+import com.account.yomankum.statistics.service.StatisticsType;
+import com.account.yomankum.statistics.service.impl.monthly.MonthlyTotalStatisticRequest;
+import com.account.yomankum.statistics.service.impl.tagRate.major.MajorTagRateStatisticsRequest;
+import com.account.yomankum.statistics.service.impl.tagRate.minor.MinorTagRateStatisticsRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import java.time.YearMonth;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,33 +19,42 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api/v1/statistics")
 public class StatisticsController {
 
-    private final StatisticsService statisticsService;
+    private final Map<StatisticsType, StatisticsService> services;
+
+    public StatisticsController(List<StatisticsService> services){
+        this.services = services.stream()
+                .collect(Collectors.toMap(StatisticsService::getSupportType, service -> service));
+    }
 
     @GetMapping("/monthly/total/{accountBookId}")
     @Operation(summary = "월별 지출입 총합 통계")
-    public List<MonthlyTotal> getMonthlyTotalData(@PathVariable Long accountBookId,
+    public Object getMonthlyTotalData(@PathVariable Long accountBookId,
             @RequestParam YearMonth from,
             @RequestParam YearMonth to){
-        return statisticsService.getMonthlyTotalData(accountBookId, from, to);
+        MonthlyTotalStatisticRequest request = new MonthlyTotalStatisticRequest(accountBookId, from, to);
+        return services.get(StatisticsType.MONTHLY_TOTAL).get(request);
     }
 
     @GetMapping("/monthly/expenditure/majorTagRate/{accountBookId}")
-    @Operation(summary = "한 달 지출의 대분류 비율 통계")
-    public List<TagRate> getMonthlyExpenditureMajorTagRate(@PathVariable Long accountBookId,
-            @RequestParam @NonNull YearMonth yearMonth){
-        return statisticsService.getMonthlyExpenditureMajorTagRate(accountBookId, yearMonth);
+    @Operation(summary = "한 달 동안의 대분류 비율 통계")
+    public Object getMonthlyExpenditureMajorTagRate(@PathVariable Long accountBookId,
+            @RequestParam @NonNull YearMonth yearMonth,
+            @RequestParam @NonNull RecordType type){
+        MajorTagRateStatisticsRequest request = new MajorTagRateStatisticsRequest(accountBookId, yearMonth, type);
+        return services.get(StatisticsType.MAJOR_TAG_RATE).get(request);
     }
 
-    @GetMapping("/monthly/income/majorTagRate/{accountBookId}")
-    @Operation(summary = "한 달 수입의 대분류 비율 통계")
-    public List<TagRate> getMonthlyIncomeMajorTagRate(@PathVariable Long accountBookId,
-            @RequestParam @NonNull YearMonth yearMonth){
-        return statisticsService.getMonthlyIncomeMajorTagRate(accountBookId, yearMonth);
+    @GetMapping("/monthly/expenditure/minorTagRate/{accountBookId}")
+    @Operation(summary = "(한 달 동안의) 하나의 대분류 내 소분류 비율")
+    public Object getMonthlyExpenditureMinorTagRate(@PathVariable Long accountBookId,
+            @RequestParam @NonNull String majorTag,
+            @RequestParam @NonNull YearMonth yearMonth,
+            @RequestParam @NonNull RecordType type){
+        MinorTagRateStatisticsRequest request = new MinorTagRateStatisticsRequest(accountBookId, majorTag, yearMonth, type);
+        return services.get(StatisticsType.MINOR_TAG_RATE).get(request);
     }
-
 
 }

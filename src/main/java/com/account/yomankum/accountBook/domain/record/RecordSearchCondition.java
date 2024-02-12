@@ -42,4 +42,10 @@ public class RecordSearchCondition{
         return condition;
     }
 
+    public static RecordSearchCondition of(YearMonth yearMonth, RecordType recordType, String majorTag){
+        RecordSearchCondition condition = of(yearMonth,recordType);
+        condition.majorTag = majorTag;
+        return condition;
+    }
+
 }
