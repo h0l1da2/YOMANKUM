@@ -2,7 +2,6 @@ package com.account.yomankum.user.service;
 
 import com.account.yomankum.common.exception.BadRequestException;
 import com.account.yomankum.common.exception.Exception;
-import com.account.yomankum.common.exception.InternalErrorException;
 import com.account.yomankum.security.oauth.type.Tokens;
 import com.account.yomankum.security.service.CustomUserDetails;
 import com.account.yomankum.security.service.TokenService;
@@ -11,7 +10,6 @@ import com.account.yomankum.user.dto.UserDto.UserSignUpDto;
 import com.account.yomankum.user.dto.request.FirstLoginUserInfoSaveDto;
 import com.account.yomankum.user.dto.request.UserInfoUpdateDto;
 import com.account.yomankum.user.dto.response.UserInfoDto;
-import com.account.yomankum.user.repository.UserQueryRepository;
 import com.account.yomankum.user.repository.UserRepository;
 import com.account.yomankum.util.RedisUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -20,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
@@ -36,7 +35,6 @@ public class UserServiceImpl implements UserService {
     private final TokenService tokenService;
     private final BCryptPasswordEncoder passwordEncoder;
     private final RedisUtil redisUtil;
-    private final UserQueryRepository userQueryRepository;
 
     @Override
     public void signUp(UserSignUpDto userSignUpDto) {
@@ -93,6 +91,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void updatePassword(String uuid, String passwordJson) {
         String userEmail = redisUtil.getData(uuid);
         if (!StringUtils.hasText(userEmail)) {
@@ -108,13 +107,9 @@ public class UserServiceImpl implements UserService {
             throw new BadRequestException(Exception.REQUEST_NOT_FOUND);
         }
 
-        long execute = userQueryRepository.updateUserPassword(userEmail, passwordEncoder.encode(password));
-
-        if (execute != 1) {
-            log.error("모종의 이유로 패스워드 업데이트 오류. (확인 필요)");
-            throw new InternalErrorException(Exception.SERVER_ERROR);
-        }
-
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new BadRequestException(Exception.USER_NOT_FOUND));
+        user.updatePassword(passwordEncoder.encode(password));
     }
 
     @Override

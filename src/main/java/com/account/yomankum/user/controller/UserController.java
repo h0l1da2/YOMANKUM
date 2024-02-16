@@ -23,13 +23,13 @@ public class UserController {
 
     private final UserService userService;
 
-    @GetMapping("my-page")
+    @GetMapping("/my-page")
     @Operation(summary = "마이 페이지", description = "마이 페이지 정보 가져오기")
     public UserInfoDto myPage(@AuthenticationPrincipal Principal principal) {
         return userService.getUserInfo((CustomUserDetails) principal);
     }
 
-    @PutMapping("my-page")
+    @PutMapping("/my-page")
     @Operation(summary = "마이 페이지", description = "마이 페이지 정보 가져오기")
     public void updateMyPage(@AuthenticationPrincipal Principal principal, @RequestBody @Valid UserInfoUpdateDto dto) {
         userService.updateUserInfo((CustomUserDetails) principal, dto);

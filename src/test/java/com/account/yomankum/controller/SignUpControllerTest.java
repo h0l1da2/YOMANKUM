@@ -14,7 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static com.account.yomankum.user.dto.MailDto.EmailCodeDto;
-import static com.account.yomankum.user.dto.MailDto.EmailDto;
+import static com.account.yomankum.user.dto.MailDto.EmailRequestDto;
 import static com.account.yomankum.user.dto.UserDto.UserSignUpDto;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -138,7 +138,7 @@ class SignUpControllerTest {
     @DisplayName("메일 보내기 성공")
     void 메일_보내기_성공() throws Exception {
 
-        EmailDto emailDto = getEmailDto();
+        EmailRequestDto emailDto = getEmailDto();
 
         mockMvc.perform(
                 post("/signUp/email/send")
@@ -155,7 +155,7 @@ class SignUpControllerTest {
     @DisplayName("메일 보내기 실패 : 형식 이상")
     void 메일_보내기_실패_형식_이상() throws Exception {
 
-        EmailDto emailDto = EmailDto.builder()
+        EmailRequestDto emailDto = EmailRequestDto.builder()
                 .email("holicloud.com")
                 .build();
 
@@ -172,7 +172,7 @@ class SignUpControllerTest {
     @DisplayName("이메일 코드 확인 성공")
     void 이메일_코드_확인_후_성공() throws Exception {
 
-        EmailDto emailDto = getEmailDto();
+        EmailRequestDto emailDto = getEmailDto();
 
         mockMvc.perform(
                 post("/signUp/email/send")
@@ -196,8 +196,8 @@ class SignUpControllerTest {
 
     }
 
-    private EmailDto getEmailDto() {
-        return EmailDto.builder()
+    private EmailRequestDto getEmailDto() {
+        return EmailRequestDto.builder()
                 .email("holiday.k1@icloud.com")
                 .build();
     }
