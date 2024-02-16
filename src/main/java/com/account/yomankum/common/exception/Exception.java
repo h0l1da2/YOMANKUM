@@ -20,6 +20,8 @@ public enum Exception {
     // 서버 에러
     SERVER_ERROR("서버 에러", 500),
 
+    // 기타
+    REQUEST_NOT_FOUND("요청값을 찾을 수 없습니다.", 404)
     ;
 
     private final String message;

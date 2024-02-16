@@ -23,7 +23,7 @@ public class EmailController {
 
     private final MailService mailService;
 
-    @PostMapping("/send")
+    @PostMapping
     @Operation(summary = "인증 메일 보내기", description = "인증 메일 보내기")
     public void sendEmailCode(@RequestBody @Valid EmailRequestDto emailRequestDto) {
         mailService.mailSend(emailRequestDto);
@@ -34,5 +34,7 @@ public class EmailController {
     public void checkEmailCode(@RequestBody @Valid EmailCodeDto emailCodeDto) {
         mailService.verifyEmailCode(emailCodeDto.email(), emailCodeDto.code());
     }
+
+    // 비밀번호 재설정 메일 보내기
 
 }
