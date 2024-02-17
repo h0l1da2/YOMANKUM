@@ -2,6 +2,7 @@ package com.account.yomankum.common.annotation;
 
 import com.account.yomankum.common.annotation.constraint.PasswordValidator;
 import jakarta.validation.Constraint;
+import jakarta.validation.Payload;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
@@ -15,4 +16,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({FIELD})
 @Retention(RUNTIME)
 public @interface Password {
+    String message() default "비밀번호 형식이 다릅니다.";
+    Class<?>[] groups() default {};
+    Class<? extends Payload>[] payload() default {};
 }
