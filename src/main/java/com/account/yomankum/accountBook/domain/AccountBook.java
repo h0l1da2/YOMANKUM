@@ -34,11 +34,11 @@ public class AccountBook extends UserBaseEntity {
     private Long id;
     private String name;
     private AccountBookType type;
+    @Default
     @OneToMany(mappedBy = "accountBook",
             cascade = CascadeType.ALL,
             orphanRemoval = true,
             fetch = FetchType.LAZY)
-    @Default
     private List<Record> records = new ArrayList<>();
 
     public void updateName(String name, Long requesterId) {

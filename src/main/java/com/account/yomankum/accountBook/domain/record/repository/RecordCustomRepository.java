@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface RecordCustomRepository {
 
-    List<Record> searchRecords(Long accountBookId, Long requesterId, RecordSearchCondition condition);
+    List<Record> searchRecords(Long accountBookId, RecordSearchCondition condition);
 
 }

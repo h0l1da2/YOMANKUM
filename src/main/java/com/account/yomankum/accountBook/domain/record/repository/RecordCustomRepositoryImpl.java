@@ -9,6 +9,7 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -23,30 +24,29 @@ public class RecordCustomRepositoryImpl implements RecordCustomRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<Record> searchRecords(Long accountBookId, Long requesterId, RecordSearchCondition condition) {
+    public List<Record> searchRecords(Long accountBookId, RecordSearchCondition condition) {
         return queryFactory
                 .selectFrom(record)
                 .where(record.accountBook.id.eq(accountBookId)
-                        .and(record.accountBook.createUser.eq(requesterId.toString()))
                         .and(allCondition(condition)))
                 .offset(getOffset(condition))
-                .limit(condition.pageSize())
+                .limit(condition.getPageSize())
                 .fetch();
     }
 
     private long getOffset(RecordSearchCondition condition) {
-        return condition.page() != null && condition.pageSize() != null ?
-                (long) (condition.page() - 1) * condition.pageSize() : 0;
+        return condition.getPage() != null && condition.getPageSize() != null ?
+                (long) (condition.getPage() - 1) * condition.getPageSize() : 0;
     }
 
     private BooleanBuilder allCondition(RecordSearchCondition condition){
         return new BooleanBuilder()
-                .and(majorTagContains(condition.majorTag()))
-                .and(minorTagContains(condition.minorTag()))
-                .and(contentContains(condition.content()))
-                .and(recordTypeEquals(condition.recordType()))
-                .and(date(condition.from(), condition.to()))
-                .and(moneyRange(condition.minMoney(), condition.maxMoney()));
+                .and(majorTagContains(condition.getMajorTag()))
+                .and(minorTagContains(condition.getMinorTag()))
+                .and(contentContains(condition.getContent()))
+                .and(recordTypeEquals(condition.getRecordType()))
+                .and(date(condition.getFrom(), condition.getTo()))
+                .and(moneyRange(condition.getMinMoney(), condition.getMaxMoney()));
     }
 
     private BooleanExpression majorTagContains(String tag){
@@ -76,11 +76,11 @@ public class RecordCustomRepositoryImpl implements RecordCustomRepository {
                 record.recordType.eq(recordType) : null;
     }
 
-    private BooleanExpression date(LocalDateTime from, LocalDateTime to) {
-        BooleanExpression afterFrom = from != null ? record.date.after(from) : null;
-        BooleanExpression beforeTo =  to != null ? record.date.before(to) : null;
+    private BooleanExpression date(LocalDate from, LocalDate to) {
+        BooleanExpression goeFrom = from != null ? record.date.goe(from) : null;
+        BooleanExpression loeTo =  to != null ? record.date.loe(to) : null;
 
-        return afterFrom != null ? afterFrom.and(beforeTo) : beforeTo;
+        return goeFrom != null ? goeFrom.and(loeTo) : loeTo;
     }
 
 }
