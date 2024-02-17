@@ -6,6 +6,7 @@ import com.account.yomankum.accountBook.dto.request.RecordCreateRequest;
 import com.account.yomankum.accountBook.dto.request.RecordUpdateRequest;
 import com.account.yomankum.accountBook.service.RecordFinder;
 import com.account.yomankum.accountBook.service.RecordService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/record")
+@Tag(name = "Record", description = "가계부 내역 api")
 public class RecordController {
 
     private final RecordFinder recordFinder;

@@ -6,6 +6,7 @@ import com.account.yomankum.statistics.service.impl.monthly.MonthlyTotalStatisti
 import com.account.yomankum.statistics.service.impl.tagRate.major.MajorTagRateStatisticsRequest;
 import com.account.yomankum.statistics.service.impl.tagRate.minor.MinorTagRateStatisticsRequest;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/statistics")
+@Tag(name = "Statistics", description = "통계 api")
 public class StatisticsController {
 
     private final Map<StatisticsType, StatisticsService> services;

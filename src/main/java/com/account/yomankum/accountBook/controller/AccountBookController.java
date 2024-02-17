@@ -4,6 +4,7 @@ import com.account.yomankum.accountBook.dto.response.AccountBookSimpleDto;
 import com.account.yomankum.accountBook.dto.request.AccountBookCreateRequest;
 import com.account.yomankum.accountBook.service.AccountBookFinder;
 import com.account.yomankum.accountBook.service.AccountBookService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/account")
+@Tag(name = "AccountBook", description = "가계부 api")
 public class AccountBookController {
 
     private final AccountBookService accountBookService;

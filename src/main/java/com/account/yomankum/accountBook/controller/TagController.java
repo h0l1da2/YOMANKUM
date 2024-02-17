@@ -2,6 +2,7 @@ package com.account.yomankum.accountBook.controller;
 
 import com.account.yomankum.accountBook.service.TagFinder;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/tag")
+@Tag(name = "Tag", description = "태그 api")
 public class TagController {
 
     private final TagFinder tagFinder;
