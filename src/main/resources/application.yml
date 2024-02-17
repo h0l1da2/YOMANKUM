@@ -132,6 +132,11 @@ springdoc:
     display-request-duration: true
     operations-sorter: method
 
+commit:
+  final:
+    number: 44
+    datetime: 2024-02-17 16:00
+
 ---
 spring:
   profiles:
