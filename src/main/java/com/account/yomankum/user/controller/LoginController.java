@@ -32,7 +32,7 @@ public class LoginController {
         return userService.login(userLoginDto);
     }
 
-    @GetMapping("first")
+    @GetMapping("/first")
     @Operation(summary = "첫 로그인 정보 받기", description = "첫 로그인 후 기본 정보를 저장하기 위한 창")
     public void firstLogin(@RequestBody @Valid FirstLoginUserInfoSaveDto firstLoginUserInfoSaveDto, @AuthenticationPrincipal Principal principal) {
         userService.saveFirstLoginUserInfo(firstLoginUserInfoSaveDto, (CustomUserDetails) principal);
