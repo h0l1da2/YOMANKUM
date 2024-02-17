@@ -1,7 +1,6 @@
 package com.account.yomankum.user.domain;
 
 import com.account.yomankum.user.domain.type.Gender;
-import com.account.yomankum.user.domain.type.Job;
 import com.account.yomankum.security.oauth.type.Sns;
 import jakarta.persistence.*;
 import lombok.*;
@@ -30,8 +29,7 @@ public class SnsUser {
     private Date birthday;
     @Enumerated(EnumType.STRING)
     private Gender gender;
-    @Enumerated(EnumType.STRING)
-    private Job job;
+    private String job;
 
     private LocalDateTime joinDate;
     private LocalDateTime pwdChangeDate;
