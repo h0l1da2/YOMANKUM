@@ -13,16 +13,14 @@ public class PasswordValidator implements ConstraintValidator<Password, String> 
 
     private static final int MIN_SIZE = 6;
     private static final int MAX_SIZE = 20;
-    private static final String regexPassword = "^[a-zA-Z0-9]{"+MIN_SIZE+","+MAX_SIZE+"}$";
+    private static final String regexPassword = "^(?=.*[A-Za-z])(?=.*[0-9])(?=.*[$@$!%*#?&])[A-Za-z[0-9]$@$!%*#?&]{" + MIN_SIZE + "," + MAX_SIZE + "}$";
     @Override
     public boolean isValid(String password, ConstraintValidatorContext context) {
 
-        if (!StringUtils.hasText(password) ||
-                !password.matches(regexPassword)
-        ) {
+        if (!StringUtils.hasText(password) || !password.matches(regexPassword)) {
             context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate(
-                            MessageFormat.format("{0}자 이상의 {1}자 이하의 숫자, 영 대소문자로 이루어진 비밀번호가 필요합니다.", MIN_SIZE, MAX_SIZE))
+                            MessageFormat.format("{0}자 이상의 {1}자 이하의 숫자, 영 대소문자, 특수문자로 이루어진 비밀번호가 필요합니다.", MIN_SIZE, MAX_SIZE))
                     .addConstraintViolation();
             return false;
         }
