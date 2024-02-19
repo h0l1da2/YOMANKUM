@@ -35,28 +35,19 @@ public class StatisticsController {
     }
 
     @GetMapping("/monthly/total")
-    @Operation(summary = "월별 지출입 총합 통계",
-            responses = {
-                @ApiResponse(responseCode = "200", content = @Content(array = @ArraySchema(schema = @Schema(implementation = MonthlyTotal.class))))
-            })
+    @Operation(summary = "월별 지출입 총합 통계", responses = {@ApiResponse(responseCode = "200", content = @Content(array = @ArraySchema(schema = @Schema(implementation = MonthlyTotal.class))))})
     public Object getMonthlyTotalData(@Valid MonthlyTotalStatisticRequest request){
         return services.get(StatisticsType.MONTHLY_TOTAL).get(request);
     }
 
     @GetMapping("/monthly/expenditure/majorTagRate")
-    @Operation(summary = "한 달 동안의 대분류 비율 통계",
-            responses = {
-                    @ApiResponse(responseCode = "200", content = @Content(array = @ArraySchema(schema = @Schema(implementation = TagRate.class))))
-            })
+    @Operation(summary = "한 달 동안의 대분류 비율 통계", responses = {@ApiResponse(responseCode = "200", content = @Content(array = @ArraySchema(schema = @Schema(implementation = TagRate.class))))})
     public Object getMonthlyExpenditureMajorTagRate(@Valid MajorTagRateStatisticsRequest request){
         return services.get(StatisticsType.MAJOR_TAG_RATE).get(request);
     }
 
     @GetMapping("/monthly/expenditure/minorTagRate")
-    @Operation(summary = "(한 달 동안의) 하나의 대분류 내 소분류 비율",
-            responses = {
-                    @ApiResponse(responseCode = "200", content = @Content(array = @ArraySchema(schema = @Schema(implementation = TagRate.class))))
-            })
+    @Operation(summary = "(한 달 동안의) 하나의 대분류 내 소분류 비율", responses = {@ApiResponse(responseCode = "200", content = @Content(array = @ArraySchema(schema = @Schema(implementation = TagRate.class))))})
     public Object getMonthlyExpenditureMinorTagRate(@Valid MinorTagRateStatisticsRequest request){
         return services.get(StatisticsType.MINOR_TAG_RATE).get(request);
     }
