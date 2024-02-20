@@ -31,13 +31,18 @@ public class User {
     private String job;
     private Integer salary;
 
-    private LocalDateTime joinDate;
-    private LocalDateTime pwdChangeDate;
-    private LocalDateTime stopDate;
-    private LocalDateTime removeDate;
+    private LocalDateTime joinDatetime;
+    private LocalDateTime pwdChangeDatetime;
+    private LocalDateTime lastLoginDatetime; // 마지막 로그인이 NULL 일 경우, 첫 로그인
+    private LocalDateTime stopDatetime;
+    private LocalDateTime removeDatetime;
 
     public void updatePassword(String password) {
         this.password = password;
+    }
+
+    public void login() {
+        this.lastLoginDatetime = LocalDateTime.now();
     }
 
     public void updateFirstUserInfo(FirstLoginUserInfoSaveDto dto) {

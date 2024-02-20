@@ -18,8 +18,8 @@ public record UserInfoDto(
         return UserInfoDto.builder()
                 .email(user.getEmail())
                 .nickname(user.getNickname())
-                .joinDate(user.getJoinDate())
-                .pwdChangeDate(user.getPwdChangeDate())
+                .joinDate(user.getJoinDatetime())
+                .pwdChangeDate(user.getPwdChangeDatetime())
                 .job(user.getJob())
                 .salary(user.getSalary())
                 .build();

@@ -2,13 +2,13 @@ package com.account.yomankum.user.service;
 
 import com.account.yomankum.common.exception.BadRequestException;
 import com.account.yomankum.common.exception.Exception;
-import com.account.yomankum.security.oauth.type.Tokens;
 import com.account.yomankum.security.service.CustomUserDetails;
 import com.account.yomankum.security.service.TokenService;
 import com.account.yomankum.user.domain.User;
 import com.account.yomankum.user.dto.UserDto.UserSignUpDto;
 import com.account.yomankum.user.dto.request.FirstLoginUserInfoSaveDto;
 import com.account.yomankum.user.dto.request.UserInfoUpdateDto;
+import com.account.yomankum.user.dto.response.LoginResDto;
 import com.account.yomankum.user.dto.response.UserInfoDto;
 import com.account.yomankum.user.repository.UserRepository;
 import com.account.yomankum.util.RedisUtil;
@@ -21,8 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.time.LocalDateTime;
 
 import static com.account.yomankum.user.dto.UserDto.UserLoginDto;
 
@@ -38,7 +37,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void signUp(UserSignUpDto userSignUpDto) {
-
         String email = userSignUpDto.email();
         User findUser = userRepository.findByEmail(email)
                 .orElse(null);
@@ -56,8 +54,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Map<Tokens, String> login(UserLoginDto userLoginDto) {
-
+    @Transactional
+    public LoginResDto login(UserLoginDto userLoginDto) {
         String email = userLoginDto.email();
         String password = userLoginDto.password();
 
@@ -74,12 +72,10 @@ public class UserServiceImpl implements UserService {
 
         String accessToken = tokenService.creatToken(findUser.getId(), findUser.getNickname(), findUser.getRole().getRoleName());
         String refreshToken = tokenService.createRefreshToken();
+        LocalDateTime lastLoginDatetime = findUser.getLastLoginDatetime();
 
-        Map<Tokens, String> tokenMap = new HashMap<>();
-        tokenMap.put(Tokens.ACCESS_TOKEN, accessToken);
-        tokenMap.put(Tokens.REFRESH_TOKEN, refreshToken);
-
-        return tokenMap;
+        findUser.login();
+        return LoginResDto.of(accessToken, refreshToken, lastLoginDatetime);
     }
 
     @Override

@@ -53,7 +53,7 @@ public class CustomUserDetails implements UserDetails, OAuth2User {
     @Override
     public boolean isAccountNonExpired() {
         if (snsUser == null) {
-            return now().isBefore(user.getPwdChangeDate().plusMonths(3L));
+            return now().isBefore(user.getPwdChangeDatetime().plusMonths(3L));
         }
         return now().isBefore(snsUser.getPwdChangeDate().plusMonths(3L));
     }
@@ -61,7 +61,7 @@ public class CustomUserDetails implements UserDetails, OAuth2User {
     @Override
     public boolean isAccountNonLocked() {
         if (snsUser == null) {
-            return user.getStopDate() == null ? true : false;
+            return user.getStopDatetime() == null ? true : false;
         }
         return snsUser.getStopDate() == null ? true : false;
     }
@@ -74,7 +74,7 @@ public class CustomUserDetails implements UserDetails, OAuth2User {
     @Override
     public boolean isEnabled() {
         if (snsUser == null) {
-            return user.getRemoveDate() == null ? true : false;
+            return user.getRemoveDatetime() == null ? true : false;
         }
         return snsUser.getRemoveDate() == null ? true : false;
     }

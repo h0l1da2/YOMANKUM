@@ -24,7 +24,7 @@ public record UserDto() {
                     .role(new Role(RoleName.ROLE_USER))
                     .email(email)
                     .password(encodedPassword)
-                    .pwdChangeDate(LocalDateTime.now())
+                    .pwdChangeDatetime(LocalDateTime.now())
                     .build();
         }
     }
