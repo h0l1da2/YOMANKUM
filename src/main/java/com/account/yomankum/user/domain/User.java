@@ -32,9 +32,9 @@ public class User {
     private Integer salary;
 
     private Instant joinDatetime;
-    private Instant pwdChangeDatetime;
     private Instant lastLoginDatetime; // 마지막 로그인이 NULL 일 경우, 첫 로그인
     private Instant stopDatetime;
+    private Instant pwdChangeDatetime;
     private Instant removeDatetime;
 
     public void updatePassword(String password) {

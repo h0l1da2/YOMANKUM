@@ -10,7 +10,7 @@ import com.account.yomankum.user.repository.SnsUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import static java.time.LocalDateTime.now;
+import java.time.Instant;
 
 @Service
 @RequiredArgsConstructor
@@ -27,9 +27,9 @@ public class SnsUserServiceImpl implements SnsUserService {
     public SnsUser signUp(Sns sns, String email, String uuidKey) {
         SnsUser snsUser = SnsUser.builder()
                 .uuidKey(uuidKey)
-                .joinDate(now())
+                .joinDatetime(Instant.now())
                 .email(email)
-                .pwdChangeDate(now())
+                .pwdChangeDatetime(Instant.now())
                 .sns(sns)
                 .role(new Role(RoleName.ROLE_USER))
                 .build();
