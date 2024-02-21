@@ -6,8 +6,8 @@ import com.account.yomankum.user.dto.request.UserInfoUpdateDto;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -31,18 +31,18 @@ public class User {
     private String job;
     private Integer salary;
 
-    private LocalDateTime joinDatetime;
-    private LocalDateTime pwdChangeDatetime;
-    private LocalDateTime lastLoginDatetime; // 마지막 로그인이 NULL 일 경우, 첫 로그인
-    private LocalDateTime stopDatetime;
-    private LocalDateTime removeDatetime;
+    private Instant joinDatetime;
+    private Instant pwdChangeDatetime;
+    private Instant lastLoginDatetime; // 마지막 로그인이 NULL 일 경우, 첫 로그인
+    private Instant stopDatetime;
+    private Instant removeDatetime;
 
     public void updatePassword(String password) {
         this.password = password;
     }
 
-    public void login() {
-        this.lastLoginDatetime = LocalDateTime.now();
+    public void updateLastLoginDatetime() {
+        this.lastLoginDatetime = Instant.now();
     }
 
     public void updateFirstUserInfo(FirstLoginUserInfoSaveDto dto) {

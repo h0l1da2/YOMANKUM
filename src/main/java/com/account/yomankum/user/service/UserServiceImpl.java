@@ -21,8 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.time.LocalDateTime;
-
 import static com.account.yomankum.user.dto.UserDto.UserLoginDto;
 
 @Slf4j
@@ -70,12 +68,13 @@ public class UserServiceImpl implements UserService {
             throw new BadRequestException(Exception.USER_NOT_FOUND);
         }
 
+        findUser.updateLastLoginDatetime();
+
         String accessToken = tokenService.creatToken(findUser.getId(), findUser.getNickname(), findUser.getRole().getRoleName());
         String refreshToken = tokenService.createRefreshToken();
-        LocalDateTime lastLoginDatetime = findUser.getLastLoginDatetime();
+        String nickname = findUser.getNickname();
 
-        findUser.login();
-        return LoginResDto.of(accessToken, refreshToken, lastLoginDatetime);
+        return LoginResDto.of(accessToken, refreshToken, nickname);
     }
 
     @Override
