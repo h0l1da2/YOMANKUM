@@ -4,7 +4,6 @@ import com.account.yomankum.user.repository.UserRepository;
 import com.account.yomankum.user.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +18,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Disabled
 @SpringBootTest
 @AutoConfigureMockMvc
-class LoginControllerTest {
+class LoginResDtoControllerTest {
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -40,10 +38,9 @@ class LoginControllerTest {
     @Test
     @DisplayName("로그인 성공")
     void 로그인_성공() throws Exception {
-
         UserSignUpDto userSignUpDto = UserSignUpDto.builder()
                 .email("email@naver.com")
-                .password("123456a")
+                .password("123456a!")
                 .build();
 
         userService.signUp(userSignUpDto);
@@ -54,7 +51,7 @@ class LoginControllerTest {
                 .build();
 
         mockMvc.perform(
-                        post("/login")
+                        post("/api/v1/login")
                                 .content(mapper.writeValueAsString(userLoginDto))
                                 .contentType(MediaType.APPLICATION_JSON)
                 ).andExpect(status().is2xxSuccessful())
@@ -76,7 +73,7 @@ class LoginControllerTest {
                 .build();
 
         mockMvc.perform(
-                        post("/login")
+                        post("/api/v1/login")
                                 .content(mapper.writeValueAsString(userLoginDto))
                                 .contentType(MediaType.APPLICATION_JSON)
                 ).andExpect(status().is4xxClientError())
