@@ -61,16 +61,12 @@ public class CustomOAuth2AuthorizationRequestResolver implements OAuth2Authoriza
 
     private void setClientSession(HttpServletRequest request, String state, String sns) {
         HttpSession session = request.getSession();
-        if (session != null) {
-            session.setAttribute(state, sns);
-        }
+        session.setAttribute(state, sns);
     }
 
     private void setStateSession(HttpServletRequest request, String state) {
         HttpSession session = request.getSession();
-        if (session != null) {
-            session.setAttribute(TokenProp.STATE.getName(), state);
-        }
+        session.setAttribute(TokenProp.STATE.getName(), state);
     }
 
 }

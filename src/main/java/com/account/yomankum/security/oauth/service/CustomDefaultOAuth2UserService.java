@@ -29,7 +29,7 @@ public class CustomDefaultOAuth2UserService extends DefaultOAuth2UserService {
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        log.info("유저 서비스 시작");
+        log.debug("유저 서비스 시작");
 
         OAuth2User oAuth2User = super.loadUser(userRequest);
         String client = userRequest.getClientRegistration().getRegistrationId();
@@ -45,23 +45,23 @@ public class CustomDefaultOAuth2UserService extends DefaultOAuth2UserService {
 
         // 기존 가입 멤버가 아니라면 ?
         if (user == null) {
-            log.info("{} 유저 가입 : {}", sns, uuidKey);
             user = snsUserService.signUp(sns, email, uuidKey);
+            log.info("{} 유저 가입 : {}", sns, uuidKey);
         }
         return new CustomUserDetails(user, oAuth2User.getAttributes());
     }
 
     private SnsUserInfo clientUserInfoCheck(OAuth2User oAuth2User, String client) {
-        String upperCaseSns = client.toUpperCase();
+        String sns = client.toUpperCase();
 
-        if(upperCaseSns.equals(Sns.GOOGLE.name())) {
+        if(sns.equals(Sns.GOOGLE.name())) {
             return new GoogleUserInfo(oAuth2User.getAttributes());
-        } else if(upperCaseSns.equals(Sns.NAVER.name())) {
+        } else if(sns.equals(Sns.NAVER.name())) {
             return new NaverUserInfo((Map<String, Object>) oAuth2User.getAttributes().get("response"));
-        } else if (upperCaseSns.equals(Sns.KAKAO.name())) {
+        } else if (sns.equals(Sns.KAKAO.name())) {
             return new KakaoUserInfo(oAuth2User.getAttributes());
         } else {
-            log.error("해당 SNS 찾을 수 없음 : {} ", upperCaseSns);
+            log.error("해당 SNS 찾을 수 없음 : {} ", sns);
             throw new InternalErrorException(Exception.SERVER_ERROR);
         }
     }
