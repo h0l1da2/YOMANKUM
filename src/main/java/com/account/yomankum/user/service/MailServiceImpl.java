@@ -1,10 +1,12 @@
 package com.account.yomankum.user.service;
 
-import com.account.yomankum.user.domain.type.Mail;
-import com.account.yomankum.common.exception.status4xx.CodeNotFoundException;
-import com.account.yomankum.common.exception.status4xx.CodeNotValidException;
+import com.account.yomankum.common.exception.BadRequestException;
+import com.account.yomankum.common.exception.Exception;
+import com.account.yomankum.common.exception.InternalErrorException;
+import com.account.yomankum.user.domain.type.MailType;
 import com.account.yomankum.util.RedisUtil;
-import com.account.yomankum.web.response.ResponseCode;
+import com.nimbusds.jose.shaded.gson.Gson;
+import com.nimbusds.jose.shaded.gson.JsonObject;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +20,9 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import java.util.Random;
 
-import static jakarta.mail.Message.*;
+import static com.account.yomankum.user.dto.MailDto.EmailRequestDto;
+import static jakarta.mail.Message.RecipientType;
+import static java.util.UUID.*;
 
 @Slf4j
 @Service
@@ -30,47 +34,66 @@ public class MailServiceImpl implements MailService {
     private final SpringTemplateEngine templateEngine;
     private final RedisUtil redisUtil;
 
+    private final String CODE = "code";
+    private final String UUID = "uuid";
+    private final int CODE_LENGTH = 5;
+    private final String CODE_VALUES = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    private final long EXPIRE_CODE_TIME = 60 * 5L;
+
+
     @Value("${mail.id}")
     private String fromEmail;
 
     @Override
-    public String mailSend(Mail mail, String userEmail) throws MessagingException {
+    public String mailSend(EmailRequestDto emailRequestDto) {
+        String userEmail = emailRequestDto.email();
 
         if (redisUtil.existData(userEmail)) {
             redisUtil.deleteData(userEmail);
         }
 
         String result = "";
-        String randomCode = "";
+        String templateCode = "";
+        MailType mailType = emailRequestDto.mailType();
 
-        if (mail.equals(Mail.JOIN)) {
-            randomCode = createCode();
-            result = randomCode;
+        if (mailType.equals(MailType.JOIN)) {
+            templateCode = createCode();
+
+            JsonObject code = new JsonObject();
+            code.addProperty(CODE, templateCode);
+
+            result = new Gson().toJson(code);
         }
 
-        MimeMessage template = setTemplate(mail, userEmail, randomCode);
+        if (mailType.equals(MailType.PASSWORD)) {
+            templateCode = randomUUID().toString();
+
+            JsonObject uuid = new JsonObject();
+            uuid.addProperty(UUID, templateCode);
+
+            result = new Gson().toJson(uuid);
+        }
+
+        MimeMessage template = setTemplate(mailType, userEmail, templateCode);
         sendMail(template);
 
-        log.info("이메일 코드 전송 : {}", userEmail);
         return result;
     }
 
     @Override
     public String createCode() {
-        String values = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        int codeLength = 5;
 
         Random random = new Random();
         StringBuilder builder = new StringBuilder();
 
-        for (int i = 0; i < codeLength; i++) {
-            int randomIndex = random.nextInt(values.length());
-            builder.append(values.charAt(randomIndex));
+        for (int i = 0; i < CODE_LENGTH; i++) {
+            int randomIndex = random.nextInt(CODE_VALUES.length());
+            builder.append(CODE_VALUES.charAt(randomIndex));
         }
         return builder.toString();
     }
     @Override
-    public MimeMessage setTemplate(Mail type, String userEmail, String randomCode) throws MessagingException {
+    public MimeMessage setTemplate(MailType type, String userEmail, String templateCode) {
 
         String key = "";
         String value = "";
@@ -78,17 +101,24 @@ public class MailServiceImpl implements MailService {
         String template = "";
 
 
-        if (type.equals(Mail.JOIN)) {
+        if (type.equals(MailType.JOIN)) {
             title = "YOMANKUM * 가입 코드 전송";
             template = "email/joinMailForm";
-            key = "code";
-            value = randomCode;
+            key = CODE;
+            value = templateCode;
+            redisUtil.setDataExpire(userEmail, templateCode, EXPIRE_CODE_TIME);
+        }
+
+        if (type.equals(MailType.PASSWORD)) {
+            title = "YOMANKUM * 비밀번호 재설정";
+            template = "email/passwordResetMailForm";
+            key = UUID;
+            value = templateCode;
+            redisUtil.setDataExpire(templateCode, userEmail, EXPIRE_CODE_TIME);
         }
 
         MimeMessage message = setMimeMessage(userEmail, key, value, title, template);
 
-        final long EXPIRE_CODE_TIME = 60 * 15L;
-        redisUtil.setDataExpire(userEmail, randomCode, EXPIRE_CODE_TIME);
 
         return message;
     }
@@ -105,29 +135,34 @@ public class MailServiceImpl implements MailService {
     }
 
     @Override
-    public void verifyEmailCode(String userEmail, String randomCode) throws CodeNotFoundException, CodeNotValidException {
+    public void verifyEmailCode(String userEmail, String templateCode) {
         String randomCodeByEmail = redisUtil.getData(userEmail);
 
         if (randomCodeByEmail == null) {
-            log.error("입력한 코드가 일치하지 않음 : {}", randomCode);
-            throw new CodeNotFoundException(ResponseCode.EMAIL_NOT_FOUND);
+            log.error("입력한 이메일이 일치하지 않음 : {}", userEmail);
+            throw new BadRequestException(Exception.EMAIL_NOT_FOUND);
         }
 
-        if (!randomCodeByEmail.matches(randomCode)) {
-            log.error("입력한 코드가 일치하지 않음 : {}", randomCode);
-            throw new CodeNotValidException(ResponseCode.EMAIL_CODE_NOT_MATCHED);
+        if (!randomCodeByEmail.matches(templateCode)) {
+            log.error("입력한 코드가 일치하지 않음 : {}", templateCode);
+            throw new BadRequestException(Exception.EMAIL_CODE_UN_MATCHED);
         }
+        redisUtil.deleteData(userEmail);
     }
 
-    private MimeMessage setMimeMessage(String userEmail, String key, String value, String title, String template) throws MessagingException {
+    private MimeMessage setMimeMessage(String userEmail, String key, String value, String title, String template) {
         String charset = "UTF-8";
         String html = "html";
 
         MimeMessage message = mailSender.createMimeMessage();
-        message.addRecipients(RecipientType.TO, userEmail);
-        message.setSubject(title);
-        message.setFrom(fromEmail);
-        message.setText(getContext(key, value, template), charset, html);
+        try {
+            message.addRecipients(RecipientType.TO, userEmail);
+            message.setSubject(title);
+            message.setFrom(fromEmail);
+            message.setText(getContext(key, value, template), charset, html);
+        } catch (MessagingException e) {
+            throw new InternalErrorException(Exception.SERVER_ERROR);
+        }
         return message;
     }
 

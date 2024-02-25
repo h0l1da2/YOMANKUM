@@ -1,14 +1,13 @@
 package com.account.yomankum.service.impl;
 
-import com.account.yomankum.user.domain.type.RoleName;
+import com.account.yomankum.common.exception.BadRequestException;
 import com.account.yomankum.user.domain.User;
-import com.account.yomankum.user.dto.LoginDto;
-import com.account.yomankum.user.dto.UserSignUpDto;
+import com.account.yomankum.user.domain.type.RoleName;
+import com.account.yomankum.user.dto.UserDto.UserSignUpDto;
+import com.account.yomankum.user.dto.response.LoginResDto;
 import com.account.yomankum.user.repository.UserRepository;
 import com.account.yomankum.user.service.UserService;
-import com.account.yomankum.security.oauth.type.Tokens;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +15,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Map;
+import static com.account.yomankum.user.dto.UserDto.UserLoginDto;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
-
-@Disabled
 @Transactional
 @SpringBootTest
 class UserServiceImplTest {
@@ -45,12 +42,12 @@ class UserServiceImplTest {
 
         userService.signUp(userSignUpDto);
 
-        User findUser = userRepository.findByEmailFetchRole(userSignUpDto.getEmail()).orElse(null);
+        User findUser = userRepository.findByEmailFetchRole(userSignUpDto.email()).orElse(null);
 
-        boolean pwdMatches = passwordEncoder.matches(userSignUpDto.getPassword(), findUser.getPassword());
+        boolean pwdMatches = passwordEncoder.matches(userSignUpDto.password(), findUser.getPassword());
 
         assertThat(findUser).isNotNull();
-        assertThat(findUser.getEmail()).isEqualTo(userSignUpDto.getEmail());
+        assertThat(findUser.getEmail()).isEqualTo(userSignUpDto.email());
         assertThat(findUser.getRole().getRoleName()).isEqualTo(RoleName.ROLE_USER);
         assertThat(pwdMatches).isTrue();
     }
@@ -64,7 +61,7 @@ class UserServiceImplTest {
         UserSignUpDto userSignUpDtoB = getUserSignUpDto();
 
         userService.signUp(userSignUpDtoA);
-        assertThrows(IllegalArgumentException.class, () -> userService.signUp(userSignUpDtoB));
+        assertThrows(BadRequestException.class, () -> userService.signUp(userSignUpDtoB));
 
     }
 
@@ -75,11 +72,11 @@ class UserServiceImplTest {
         UserSignUpDto userSignUpDto = getUserSignUpDto();
         userService.signUp(userSignUpDto);
 
-        LoginDto loginDto = getLoginDto(userSignUpDto);
-        Map<Tokens, String> tokenMap = userService.login(loginDto);
+        UserLoginDto userLoginDto = getLoginDto(userSignUpDto);
+        LoginResDto login = userService.login(userLoginDto);
 
-        String accessToken = tokenMap.get(Tokens.ACCESS_TOKEN);
-        String refreshToken = tokenMap.get(Tokens.REFRESH_TOKEN);
+        String accessToken = login.accessToken();
+        String refreshToken = login.refreshToken();
 
         assertThat(accessToken).isNotNull();
         assertThat(refreshToken).isNotNull();
@@ -89,12 +86,12 @@ class UserServiceImplTest {
     @DisplayName("실패 : 아이디 없는 사용자")
     void 로그인_실패_아이디없음() {
 
-        LoginDto loginDto = LoginDto.builder()
+        UserLoginDto userLoginDto = UserLoginDto.builder()
                 .email("username")
                 .password("password")
                 .build();
 
-        assertThrows(IllegalArgumentException.class, () -> userService.login(loginDto));
+        assertThrows(BadRequestException.class, () -> userService.login(userLoginDto));
     }
 
     @Test
@@ -104,19 +101,19 @@ class UserServiceImplTest {
         UserSignUpDto userSignUpDto = getUserSignUpDto();
         userService.signUp(userSignUpDto);
 
-        LoginDto loginDto = LoginDto.builder()
-                .email(userSignUpDto.getEmail())
+        UserLoginDto userLoginDto = UserLoginDto.builder()
+                .email(userSignUpDto.email())
                 .password("asd232112")
                 .build();
 
-        assertThrows(IllegalArgumentException.class, () -> userService.login(loginDto));
+        assertThrows(BadRequestException.class, () -> userService.login(userLoginDto));
 
     }
 
-    private LoginDto getLoginDto(UserSignUpDto userSignUpDto) {
-        return LoginDto.builder()
-                .email(userSignUpDto.getEmail())
-                .password(userSignUpDto.getPassword())
+    private UserLoginDto getLoginDto(UserSignUpDto userSignUpDto) {
+        return UserLoginDto.builder()
+                .email(userSignUpDto.email())
+                .password(userSignUpDto.password())
                 .build();
     }
 

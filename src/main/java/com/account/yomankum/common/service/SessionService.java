@@ -17,6 +17,5 @@ public class SessionService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return Long.parseLong(((UserDetails) authentication.getPrincipal()).getUsername());
     }
-
-
+    
 }

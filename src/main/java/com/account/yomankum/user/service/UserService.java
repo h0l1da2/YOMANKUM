@@ -1,13 +1,19 @@
 package com.account.yomankum.user.service;
 
-import com.account.yomankum.common.exception.status4xx.UserNotFoundException;
-import com.account.yomankum.user.dto.LoginDto;
-import com.account.yomankum.user.dto.UserSignUpDto;
-import com.account.yomankum.security.oauth.type.Tokens;
+import com.account.yomankum.security.service.CustomUserDetails;
+import com.account.yomankum.user.dto.request.FirstLoginUserInfoSaveDto;
+import com.account.yomankum.user.dto.request.UserInfoUpdateDto;
+import com.account.yomankum.user.dto.response.LoginResDto;
+import com.account.yomankum.user.dto.response.UserInfoDto;
 
-import java.util.Map;
+import static com.account.yomankum.user.dto.UserDto.UserLoginDto;
+import static com.account.yomankum.user.dto.UserDto.UserSignUpDto;
 
 public interface UserService {
-    void signUp(UserSignUpDto userSignUpDto) throws IllegalArgumentException, UserNotFoundException;
-    Map<Tokens, String> login(LoginDto loginDto) throws IllegalArgumentException, UserNotFoundException;
+    void signUp(UserSignUpDto userSignUpDto);
+    LoginResDto login(UserLoginDto userLoginDto);
+    UserInfoDto getUserInfo(CustomUserDetails userDetails);
+    void updatePassword(String uuid, String password);
+    void saveFirstLoginUserInfo(FirstLoginUserInfoSaveDto firstLoginUserInfoSaveDto, CustomUserDetails userDetails);
+    void updateUserInfo(CustomUserDetails userDetails, UserInfoUpdateDto dto);
 }

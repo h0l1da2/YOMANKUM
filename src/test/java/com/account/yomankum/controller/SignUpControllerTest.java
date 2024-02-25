@@ -1,13 +1,10 @@
 package com.account.yomankum.controller;
 
-import com.account.yomankum.user.dto.EmailCodeDto;
-import com.account.yomankum.user.dto.EmailDto;
-import com.account.yomankum.user.dto.UserSignUpDto;
+import com.account.yomankum.user.domain.type.MailType;
 import com.account.yomankum.user.repository.UserRepository;
 import com.account.yomankum.util.RedisUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +13,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static com.account.yomankum.user.dto.MailDto.EmailCodeDto;
+import static com.account.yomankum.user.dto.MailDto.EmailRequestDto;
+import static com.account.yomankum.user.dto.UserDto.UserSignUpDto;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Disabled
 @SpringBootTest
 @AutoConfigureMockMvc
 class SignUpControllerTest {
@@ -43,10 +41,9 @@ class SignUpControllerTest {
     @Test
     @DisplayName("회원가입 성공 : 성공")
     void 회원가입_성공() throws Exception {
-
         UserSignUpDto userSignUpDto = getUserSignUpDto();
         mockMvc.perform(
-                post("/signUp")
+                post("/api/v1/sign-up")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(userSignUpDto))
         ).andExpect(status().is2xxSuccessful())
@@ -62,7 +59,7 @@ class SignUpControllerTest {
                 .password("password").build();
 
         mockMvc.perform(
-                post("/signUp")
+                post("/api/v1/sign-up")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(userSignUpDto))
         ).andExpect(status().is4xxClientError())
@@ -78,7 +75,7 @@ class SignUpControllerTest {
                 .email("email@naver.com").build();
 
         mockMvc.perform(
-                post("/signUp")
+                post("/api/v1/sign-up")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(userSignUpDto))
         ).andExpect(status().is4xxClientError())
@@ -94,7 +91,7 @@ class SignUpControllerTest {
                 .email("email").password("1234aaaa").build();
 
         mockMvc.perform(
-                post("/signUp")
+                post("/api/v1/sign-up")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(userSignUpDto))
         ).andExpect(status().is4xxClientError())
@@ -110,7 +107,7 @@ class SignUpControllerTest {
                 .email("email@naver.com").password("12345").build();
 
         mockMvc.perform(
-                post("/signUp")
+                post("/api/v1/sign-up")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(userSignUpDto))
         ).andExpect(status().is4xxClientError())
@@ -123,10 +120,10 @@ class SignUpControllerTest {
     void 회원가입_성공_비밀번호_6자이상() throws Exception {
 
         UserSignUpDto userSignUpDto = UserSignUpDto.builder()
-                .email("email@naver.com").password("123456").build();
+                .email("email@naver.com").password("123456a!").build();
 
         mockMvc.perform(
-                post("/signUp")
+                post("/api/v1/sign-up")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(userSignUpDto))
         ).andExpect(status().is2xxSuccessful())
@@ -137,16 +134,13 @@ class SignUpControllerTest {
     @Test
     @DisplayName("메일 보내기 성공")
     void 메일_보내기_성공() throws Exception {
-
-        EmailDto emailDto = getEmailDto();
+        EmailRequestDto emailDto = getEmailDto();
 
         mockMvc.perform(
-                post("/signUp/email/send")
+                post("/api/v1/email")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(emailDto))
         ).andExpect(status().is2xxSuccessful())
-                .andExpect(jsonPath("$.data").isNotEmpty())
-                .andExpect(jsonPath("$.data.email").value(emailDto.email()))
                 .andDo(print());
 
     }
@@ -155,12 +149,12 @@ class SignUpControllerTest {
     @DisplayName("메일 보내기 실패 : 형식 이상")
     void 메일_보내기_실패_형식_이상() throws Exception {
 
-        EmailDto emailDto = EmailDto.builder()
+        EmailRequestDto emailDto = EmailRequestDto.builder()
                 .email("holicloud.com")
                 .build();
 
         mockMvc.perform(
-                post("/signUp/email/send")
+                post("/api/v1/email")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(emailDto))
         ).andExpect(status().is4xxClientError())
@@ -171,19 +165,15 @@ class SignUpControllerTest {
     @Test
     @DisplayName("이메일 코드 확인 성공")
     void 이메일_코드_확인_후_성공() throws Exception {
-
-        EmailDto emailDto = getEmailDto();
+        EmailRequestDto emailDto = getEmailDto();
 
         mockMvc.perform(
-                post("/signUp/email/send")
+                post("/api/v1/email")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(emailDto))
         ).andExpect(status().is2xxSuccessful())
-                .andExpect(jsonPath("$.data.email").value(emailDto.email()))
-                .andExpect(jsonPath("$.data.code")
-                        .value(redisUtil.getData(emailDto.email())))
                 .andExpect(
-                        mvc -> mockMvc.perform(post("/signUp/email/check")
+                        mvc -> mockMvc.perform(post("/api/v1/email/code/check")
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .content(mapper.writeValueAsString(EmailCodeDto.builder()
                                         .email(emailDto.email())
@@ -193,19 +183,19 @@ class SignUpControllerTest {
                                 .andDo(print())
                 )
                 .andDo(print());
-
     }
 
-    private EmailDto getEmailDto() {
-        return EmailDto.builder()
+    private EmailRequestDto getEmailDto() {
+        return EmailRequestDto.builder()
                 .email("holiday.k1@icloud.com")
+                .mailType(MailType.JOIN)
                 .build();
     }
 
     private UserSignUpDto getUserSignUpDto() {
         return UserSignUpDto.builder()
                 .email("email@naver.com")
-                .password("password")
+                .password("password!123")
                 .build();
     }
 }

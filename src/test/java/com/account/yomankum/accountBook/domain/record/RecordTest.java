@@ -3,6 +3,7 @@ import com.account.yomankum.accountBook.domain.AccountBook;
 import com.account.yomankum.accountBook.dto.request.RecordUpdateRequest;
 import com.account.yomankum.common.exception.BadRequestException;
 import com.account.yomankum.common.exception.Exception;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,7 +54,7 @@ class RecordTest {
                 List.of("명절"),
                 RecordType.EXPENDITURE,
                 50000,
-                LocalDateTime.now());
+                LocalDate.now());
     }
 
     @Test

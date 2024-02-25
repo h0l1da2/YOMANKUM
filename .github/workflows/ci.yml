@@ -1,0 +1,90 @@
+name: CI process (Making docker image and change argocd repo)
+
+on:
+  push:
+    branches:
+      - develop
+env:
+  IMAGE_NAME: back/back-app
+  HARBOR_URL: harbor.3trolls.me
+  HARBOR_PROJECT: yomankum
+jobs:
+  docker:
+    runs-on: [self-hosted, linux, x64, yomankum]
+    steps:
+      - 
+        name: Check out code
+        uses: actions/checkout@v3
+      -
+        name: Get verion
+        id: image
+        run: |
+          VERSION=$(echo ${{ github.sha }} | cut -c1-8)
+          echo VERSION=$VERSION
+          # echo "::set-output name=version::$VERSION"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo {steps.image.outputs.version}
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      -
+        name: Login to Harbor
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.HARBOR_URL }}
+          username: ${{ secrets.YOMANKUM_HARBOR_ID }}
+          password: ${{ secrets.YOMANKUM_HARBOR_PW }}
+      
+      - name: Build image manualy
+        run: docker build --tag ${{ env.HARBOR_URL }}/${{ env.HARBOR_PROJECT }}/${{ env.IMAGE_NAME }}:${{ steps.image.outputs.version }} .
+
+      - name: Check docker image
+        run: docker image ls
+      
+      - name: Push to harbor manualy
+        run: docker push ${{ env.HARBOR_URL }}/${{ env.HARBOR_PROJECT }}/${{ env.IMAGE_NAME }}:${{ steps.image.outputs.version }}
+ 
+  delivery:
+    runs-on: [self-hosted, linux, x64, yomankum]
+    needs: docker
+
+    steps:    
+      - name: Get verion
+        id: image
+        run: |
+          VERSION=$(echo ${{ github.sha }} | cut -c1-8)
+          echo VERSION=$VERSION
+          echo "::set-output name=version::$VERSION"
+
+      - name: Checkout Argocd Repository
+        uses: actions/checkout@v3
+        with:
+          repository: yomankum-project/argocd 
+          token: ${{ secrets.LARSHAVIN_TOKEN }} 
+          path: yomankum-argocd
+          
+      - name: change directory to yomankum-project/argocd 
+        run: |
+          cd yomankum-argocd/yomankum_back
+          ls -al
+
+      - name: Update Kubernetes resources by yq
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq --inplace '.spec.template.spec.containers[0].image="${{ env.HARBOR_URL }}/${{ env.HARBOR_PROJECT }}/${{ env.IMAGE_NAME }}:${{ steps.image.outputs.version }}"' ./yomankum-argocd/yomankum_back/back-app.yaml
+          
+      - name: show changed file's detail
+        working-directory: ./yomankum-argocd
+        run: |
+          cat yomankum_back/back-app.yaml
+          
+      - name: Commit files
+        working-directory: ./yomankum-argocd
+        run: |
+          git config --global user.email "gkdlgkdl@naver.com"
+          git config --global user.name "Larshavin"
+          git commit -am "Update backend image tag as ${{ steps.image.outputs.version }}"
+          git push -u origin main

@@ -1,9 +1,15 @@
 spring:
   datasource:
     url: ${DATA_URL}
-    driverClassName: com.mysql.cj.jdbc.Driver
     username: ${DATA_USERNAME}
     password: ${DATA_PASSWORD}
+
+  jpa:
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: create
+
   security:
     oauth2:
       client:
@@ -127,6 +133,11 @@ springdoc:
     disable-swagger-default-url: true
     display-request-duration: true
     operations-sorter: method
+
+commit:
+  final:
+    number: 55
+    datetime: 2024-02-25 22:51
 
 ---
 spring:

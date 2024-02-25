@@ -1,22 +1,51 @@
 package com.account.yomankum.accountBook.domain.record;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import org.springframework.cglib.core.Local;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@Getter
 @Builder
-public record RecordSearchCondition (
-        String majorTag,
-        String minorTag,
-        String content,
-        RecordType recordType,
-        // 날짜범위
-        LocalDateTime from,
-        LocalDateTime to,
-        // 사용 or 수입 내역 범위 검색
-        Integer minMoney,
-        Integer maxMoney,
-        // 페이지네이션
-        Integer page,
-        Integer pageSize
-) {}
+@NoArgsConstructor
+@AllArgsConstructor
+public class RecordSearchCondition{
+
+    private String majorTag;
+    private String minorTag;
+    private String content;
+    private RecordType recordType;
+    // 날짜범위
+    private LocalDate from;
+    private LocalDate to;
+    // 사용 or 수입 내역 범위 검색
+    private Integer minMoney;
+    private Integer maxMoney;
+    // 페이지네이션
+    private Integer page;
+    private Integer pageSize;
+
+    public static RecordSearchCondition of(LocalDate from, LocalDate to){
+        RecordSearchCondition condition = new RecordSearchCondition();
+        condition.from = from;
+        condition.to = to;
+        return condition;
+    }
+
+    public static RecordSearchCondition of(YearMonth yearMonth, RecordType recordType){
+        LocalDate from = yearMonth.atDay(1);
+        LocalDate to = yearMonth.atEndOfMonth();
+        RecordSearchCondition condition = of(from, to);
+        condition.recordType = recordType;
+        return condition;
+    }
+
+    public static RecordSearchCondition of(YearMonth yearMonth, RecordType recordType, String majorTag){
+        RecordSearchCondition condition = of(yearMonth,recordType);
+        condition.majorTag = majorTag;
+        return condition;
+    }
+
+}

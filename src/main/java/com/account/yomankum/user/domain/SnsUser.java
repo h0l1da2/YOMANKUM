@@ -1,11 +1,11 @@
 package com.account.yomankum.user.domain;
 
 import com.account.yomankum.user.domain.type.Gender;
-import com.account.yomankum.user.domain.type.Job;
 import com.account.yomankum.security.oauth.type.Sns;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -30,12 +30,12 @@ public class SnsUser {
     private Date birthday;
     @Enumerated(EnumType.STRING)
     private Gender gender;
-    @Enumerated(EnumType.STRING)
-    private Job job;
+    private String job;
 
-    private LocalDateTime joinDate;
-    private LocalDateTime pwdChangeDate;
-    private LocalDateTime stopDate;
-    private LocalDateTime removeDate;
+    private Instant joinDatetime;
+    private Instant lastLoginDatetime;
+    private Instant pwdChangeDatetime;
+    private Instant stopDatetime;
+    private Instant removeDatetime;
     private LocalDateTime token;
 }
