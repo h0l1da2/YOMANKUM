@@ -3,8 +3,15 @@ package com.account.yomankum.statistics.controller;
 import com.account.yomankum.statistics.dto.StatisticsResponse;
 import com.account.yomankum.statistics.service.StatisticsService;
 import com.account.yomankum.statistics.service.impl.monthly.MonthlyTotalStatisticRequest;
+import com.account.yomankum.statistics.service.impl.monthly.vo.MonthlyTotal;
 import com.account.yomankum.statistics.service.impl.tagRate.major.MajorTagRateStatisticsRequest;
 import com.account.yomankum.statistics.service.impl.tagRate.minor.MinorTagRateStatisticsRequest;
+import com.account.yomankum.statistics.service.impl.tagRate.vo.TagRate;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -22,16 +29,19 @@ public class StatisticsController {
     private final StatisticsService statisticsService;
 
     @GetMapping(value = "/monthly/total", produces = "application/json")
+    @Operation(summary = "월별 지출입 총합 통계", responses = {@ApiResponse(responseCode = "200", content = @Content(array = @ArraySchema(schema = @Schema(implementation = MonthlyTotal.class))))})
     public List<StatisticsResponse> getMonthlyTotalData(@Valid MonthlyTotalStatisticRequest request){
         return statisticsService.getMonthlyTotalData(request);
     }
 
     @GetMapping(value = "/monthly/expenditure/majorTagRate", produces = "application/json")
+    @Operation(summary = "한 달 동안의 대분류 비율 통계", responses = {@ApiResponse(responseCode = "200", content = @Content(array = @ArraySchema(schema = @Schema(implementation = TagRate.class))))})
     public List<StatisticsResponse> getMonthlyExpenditureMajorTagRate(@Valid MajorTagRateStatisticsRequest request){
         return statisticsService.getMonthlyMajorTagRate(request);
     }
 
     @GetMapping(value = "/monthly/expenditure/minorTagRate", produces = "application/json")
+    @Operation(summary = "(한 달 동안의) 하나의 대분류 내 소분류 비율", responses = {@ApiResponse(responseCode = "200", content = @Content(array = @ArraySchema(schema = @Schema(implementation = TagRate.class))))})
     public List<StatisticsResponse> getMonthlyExpenditureMinorTagRate(@Valid MinorTagRateStatisticsRequest request){
         return statisticsService.getMonthlyMinorTagRate(request);
     }

@@ -14,8 +14,11 @@ import lombok.Getter;
 @AllArgsConstructor
 public class MonthlyTotal implements StatisticsResponse, Comparable<MonthlyTotal> {
 
+    @Schema(description = "년도-달", example = "2024-01")
     private final YearMonth yearMonth;
+    @Schema(description = "총 수입", example = "10000000")
     private Long totalIncome;
+    @Schema(description = "총 지출", example = "4430000")
     private Long totalExpenditure;
 
     public void accumulate(Record record) {
