@@ -15,6 +15,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationCodeGrantFilter;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
+import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
@@ -28,6 +29,7 @@ import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VAL
 import static org.springframework.http.MediaType.valueOf;
 
 @Slf4j
+@Component
 public class CustomOAuth2AuthorizationCodeGrantFilter extends OAuth2AuthorizationCodeGrantFilter {
 
     private final SnsInfo snsInfo;

@@ -26,6 +26,11 @@ public class TokenServiceImpl implements TokenService {
     @Value("${token.keys.kakao.kid.second}")
     private String kakaoSecondKid;
 
+    private final KakaoFirstJwt kakaoFirstJwt;
+    private final KakaoSecondJwt kakaoSecondJwt;
+    private final GoogleFirstJwt googleFirstJwt;
+    private final GoogleSecondJwt googleSecondJwt;
+
     private final TokenProvider tokenProvider;
     private final TokenParser tokenParser;
 
@@ -60,11 +65,6 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public String getNicknameByToken(String token) {
-        return tokenParser.getNickname(token);
-    }
-
-    @Override
     public Long getIdByToken(String token) {
         return tokenParser.getId(token);
     }
@@ -89,9 +89,9 @@ public class TokenServiceImpl implements TokenService {
 
     private JwtValue getGoogleJwtValue(String kid) {
         if (kid.equals(googleFirstKid)) {
-            return new GoogleFirstJwt();
+            return googleFirstJwt;
         } else if (kid.equals(googleSecondKid)) {
-            return new GoogleSecondJwt();
+            return googleSecondJwt;
         } else {
             log.error("OAuth2 공개 키가 맞지 않음. : {}", Sns.GOOGLE);
             throw new InternalErrorException(Exception.SERVER_ERROR);
@@ -100,9 +100,9 @@ public class TokenServiceImpl implements TokenService {
 
     private JwtValue getKakaoJwtValue(String kid) {
         if (kid.equals(kakaoFirstKid)) {
-            return new KakaoFirstJwt();
+            return kakaoFirstJwt;
         } else if (kid.equals(kakaoSecondKid)) {
-            return new KakaoSecondJwt();
+            return kakaoSecondJwt;
         } else {
             log.error("OAuth2 공개 키가 맞지 않음. : {}", Sns.KAKAO);
             throw new InternalErrorException(Exception.SERVER_ERROR);
