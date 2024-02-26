@@ -15,6 +15,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationCodeGrantFilter;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
+import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
@@ -28,6 +29,7 @@ import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VAL
 import static org.springframework.http.MediaType.valueOf;
 
 @Slf4j
+@Component
 public class CustomOAuth2AuthorizationCodeGrantFilter extends OAuth2AuthorizationCodeGrantFilter {
 
     private final SnsInfo snsInfo;
@@ -49,40 +51,38 @@ public class CustomOAuth2AuthorizationCodeGrantFilter extends OAuth2Authorizatio
         }
 
         String requestURI = request.getRequestURL().toString();
-        HttpSession session = request.getSession(false);
+        HttpSession session = request.getSession();
 
-        if (session != null) {
-            String myState = String.valueOf(
-                    session.getAttribute(TokenProp.STATE.getName())
-            );
-            String snsSendState = request.getParameter(TokenProp.STATE.getName());
+        String myState = String.valueOf(
+                session.getAttribute(TokenProp.STATE.getName())
+        );
+        String snsSendState = request.getParameter(TokenProp.STATE.getName());
 
-            if (myState.equals("null") | snsSendState == null) {
-                log.error("{} 없음.", TokenProp.STATE.getName());
-                filterChain.doFilter(request, response);
-                return;
-            }
-
-            if (snsSendState.equals(myState) && StringUtils.hasText(code)) {
-                // state 값이 key 고 value 가 sns 명
-                String sns = String.valueOf(session.getAttribute(snsSendState));
-                String clientId = snsInfo.getClientId();
-                String clientSecret = snsInfo.getClientSecret();
-                String tokenUri = snsInfo.getTokenUri();
-
-                removeSessionAttributeState(session, myState);
-
-                HttpEntity<MultiValueMap<String, String>> httpEntity = setHttpEntity
-                        (code, requestURI, sns, clientId, clientSecret);
-                // https://kauth.kakao.com/oauth/token 으로 토큰 요청 보내기
-                ResponseEntity<TokenResponse> responseEntity = sendTokenRequest(tokenUri, httpEntity);
-
-
-                TokenResponse tokenResponse = responseEntity.getBody();
-                request.setAttribute(TokenProp.TOKEN_RESPONSE.name(), tokenResponse);
-                request.setAttribute(TokenProp.SNS.getName(), sns);
-            }
+        if (myState.equals("null") | snsSendState == null) {
+            log.error("{} 없음.", TokenProp.STATE.getName());
+            filterChain.doFilter(request, response);
+            return;
         }
+
+        if (snsSendState.equals(myState) && StringUtils.hasText(code)) {
+            // state 값이 key 고 value 가 sns 명
+            String sns = String.valueOf(session.getAttribute(snsSendState));
+            String clientId = snsInfo.getClientId();
+            String clientSecret = snsInfo.getClientSecret();
+            String tokenUri = snsInfo.getTokenUri();
+
+            removeSessionAttributeState(session, myState);
+
+            HttpEntity<MultiValueMap<String, String>> httpEntity = setHttpEntity
+                    (code, requestURI, sns, clientId, clientSecret);
+            // https://kauth.kakao.com/oauth/token 으로 토큰 요청 보내기
+            ResponseEntity<TokenResponse> responseEntity = sendTokenRequest(tokenUri, httpEntity);
+
+            TokenResponse tokenResponse = responseEntity.getBody();
+            request.setAttribute(TokenProp.TOKEN_RESPONSE.name(), tokenResponse);
+            request.setAttribute(TokenProp.SNS.getName(), sns);
+        }
+
 
         filterChain.doFilter(request, response);
     }

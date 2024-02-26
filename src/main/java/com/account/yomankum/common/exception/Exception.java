@@ -21,8 +21,8 @@ public enum Exception {
     SERVER_ERROR("서버 에러", 500),
 
     // 기타
-    REQUEST_NOT_FOUND("요청값을 찾을 수 없습니다.", 404)
-    ;
+    REQUEST_NOT_FOUND("요청값을 찾을 수 없습니다.", 404),
+    ACCESS_DENIED("권한 없음.", 403);
 
     private final String message;
     private final int code;

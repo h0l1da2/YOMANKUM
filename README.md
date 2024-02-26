@@ -54,6 +54,17 @@
 
 
 
-# 이렇게 개발 중이에요
-- [편리한 개발 환경 조성을 위해 도커 데몬 이용.](https://hyuil.tistory.com/262)
-  - [도커 컨테이너를 활용한 테스트 추가.](https://hyuil.tistory.com/264)
+## 🐳 Backend
+
+- [JWT + OAuth2 인증](https://hyuil.tistory.com/193)
+  - 공개 키 검증하는 JwtValue 클래스에 전략패턴 이용.
+  - `kid` 값이 첫 번째 공개키와 일치하면 `~FirstJwt` 두 번째와 일치하면 `~SecondJwt` 객체 사용.
+  - `OAuth2AuthorizationRequestResolver` 직접 구현으로 이전 페이지로 Redirection 가능
+- [사용자 정의 예외로 에러 핸들링](https://github.com/h0l1da2/MEMO-RE_BE/tree/master/src/main/java/sori/jakku/kkunkkyu/memore/common/exception)
+  - `BadRequestException` → 4xx 에러
+  - `InternalErrorException` → 5xx 에러
+  - `Exception` → 에러 코드
+- [비밀번호 자체 검증 애노테이션 사용](https://hyuil.tistory.com/288)
+- Docker container image → container 생성
+  - 빠른 빌드를 위해 `./gradlew build --exclude-task test` 로 테스트 비포함 빌드
+- Api 명세서 → Swagger 사용
