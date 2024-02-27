@@ -8,18 +8,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestResolver;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
+@Component
 public class CustomOAuth2AuthorizationRequestResolver implements OAuth2AuthorizationRequestResolver {
     private final String SNS_REQUEST_URI = "/oauth2/authorization/";
 
     @Override
     public OAuth2AuthorizationRequest resolve(HttpServletRequest request) {
-
         String requestURI = request.getRequestURI();
 
         if (requestURI.startsWith(SNS_REQUEST_URI)) {
@@ -61,16 +62,12 @@ public class CustomOAuth2AuthorizationRequestResolver implements OAuth2Authoriza
 
     private void setClientSession(HttpServletRequest request, String state, String sns) {
         HttpSession session = request.getSession();
-        if (session != null) {
-            session.setAttribute(state, sns);
-        }
+        session.setAttribute(state, sns);
     }
 
     private void setStateSession(HttpServletRequest request, String state) {
         HttpSession session = request.getSession();
-        if (session != null) {
-            session.setAttribute(TokenProp.STATE.getName(), state);
-        }
+        session.setAttribute(TokenProp.STATE.getName(), state);
     }
 
 }

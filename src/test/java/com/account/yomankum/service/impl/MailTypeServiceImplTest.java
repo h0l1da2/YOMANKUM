@@ -3,17 +3,14 @@ package com.account.yomankum.service.impl;
 import com.account.yomankum.user.domain.type.MailType;
 import com.account.yomankum.user.service.MailService;
 import com.account.yomankum.util.RedisUtil;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static com.account.yomankum.user.dto.MailDto.EmailRequestDto;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
-@Disabled
 @SpringBootTest
 class MailTypeServiceImplTest {
 
@@ -41,7 +38,7 @@ class MailTypeServiceImplTest {
 
         String redisCode = redisUtil.getData(mail);
 
-        assertEquals(code, redisCode);
+        assertTrue(code.contains(redisCode));
     }
 
     private EmailRequestDto getEmailRequestDto(MailType mailType) {

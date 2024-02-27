@@ -6,11 +6,12 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-import static java.time.LocalDateTime.*;
+import static java.time.Instant.now;
 
 public class CustomUserDetails implements UserDetails, OAuth2User {
 
@@ -53,17 +54,17 @@ public class CustomUserDetails implements UserDetails, OAuth2User {
     @Override
     public boolean isAccountNonExpired() {
         if (snsUser == null) {
-            return now().isBefore(user.getPwdChangeDate().plusMonths(3L));
+            return now().isBefore(user.getPwdChangeDatetime().plus(3L, ChronoUnit.MONTHS));
         }
-        return now().isBefore(snsUser.getPwdChangeDate().plusMonths(3L));
+        return now().isBefore(snsUser.getPwdChangeDatetime().plus(3L, ChronoUnit.MONTHS));
     }
 
     @Override
     public boolean isAccountNonLocked() {
         if (snsUser == null) {
-            return user.getStopDate() == null ? true : false;
+            return user.getStopDatetime() == null;
         }
-        return snsUser.getStopDate() == null ? true : false;
+        return snsUser.getStopDatetime() == null;
     }
 
     @Override
@@ -74,9 +75,9 @@ public class CustomUserDetails implements UserDetails, OAuth2User {
     @Override
     public boolean isEnabled() {
         if (snsUser == null) {
-            return user.getRemoveDate() == null ? true : false;
+            return user.getRemoveDatetime() == null;
         }
-        return snsUser.getRemoveDate() == null ? true : false;
+        return snsUser.getRemoveDatetime() == null;
     }
 
     private Collection<GrantedAuthority> getRoleList(User user) {

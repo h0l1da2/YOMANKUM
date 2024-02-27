@@ -7,7 +7,7 @@ import com.account.yomankum.user.domain.type.RoleName;
 import jakarta.validation.constraints.Email;
 import lombok.Builder;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 // TODO 합치기
 public record UserDto() {
@@ -24,7 +24,7 @@ public record UserDto() {
                     .role(new Role(RoleName.ROLE_USER))
                     .email(email)
                     .password(encodedPassword)
-                    .pwdChangeDate(LocalDateTime.now())
+                    .pwdChangeDatetime(Instant.now())
                     .build();
         }
     }

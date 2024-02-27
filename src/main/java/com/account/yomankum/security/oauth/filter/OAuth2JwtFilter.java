@@ -28,6 +28,7 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
@@ -37,6 +38,7 @@ import java.io.IOException;
 import java.time.Instant;
 
 @Slf4j
+@Component
 @RequiredArgsConstructor
 public class OAuth2JwtFilter extends OncePerRequestFilter {
 
@@ -44,7 +46,7 @@ public class OAuth2JwtFilter extends OncePerRequestFilter {
     private final TokenService tokenService;
     private final SnsUserService snsUserService;
     private final ClientRegistrationRepository clientRegistrationRepository;
-    private final CustomDefaultOAuth2UserService customDefaultOAuth2UserService;
+    private final CustomDefaultOAuth2UserService defaultOAuth2UserService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -88,7 +90,7 @@ public class OAuth2JwtFilter extends OncePerRequestFilter {
         String refreshToken = tokenService.createRefreshToken();
 
         setAuthenticationInSpringContext(sns, tokenResponse, accessToken);
-        setTokensAtReponse(response, accessToken, refreshToken);
+        setTokensAtResponse(response, accessToken, refreshToken);
         setIdAndNicknameAtSession(request, snsUser);
 
         response.sendRedirect("/");
@@ -114,7 +116,7 @@ public class OAuth2JwtFilter extends OncePerRequestFilter {
         return profileResponse.getResponse().getId();
     }
 
-    private void setTokensAtReponse(HttpServletResponse response, String accessToken, String refreshToken) {
+    private void setTokensAtResponse(HttpServletResponse response, String accessToken, String refreshToken) {
         response.setHeader(HttpHeaders.AUTHORIZATION, TokenProp.BEARER.getName() + " " + accessToken);
         response.addCookie(new Cookie(Tokens.REFRESH_TOKEN.name(), refreshToken));
     }
@@ -125,14 +127,13 @@ public class OAuth2JwtFilter extends OncePerRequestFilter {
     }
 
     private void setAuthenticationInSpringContext(String sns, TokenResponse tokenResponse, String accessToken) {
-
         ClientRegistration clientRegistration =
                 clientRegistrationRepository.findByRegistrationId(sns.toLowerCase());
         OAuth2AccessToken oAuth2AccessToken = getOAuth2AccessToken(tokenResponse);
 
         OAuth2UserRequest oAuth2UserRequest = new OAuth2UserRequest(clientRegistration, oAuth2AccessToken);
 
-        OAuth2User oAuth2User = customDefaultOAuth2UserService.loadUser(oAuth2UserRequest);
+        OAuth2User oAuth2User = defaultOAuth2UserService.loadUser(oAuth2UserRequest);
 
         UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(oAuth2User, accessToken, oAuth2User.getAuthorities());
