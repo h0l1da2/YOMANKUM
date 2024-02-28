@@ -4,21 +4,19 @@ import com.account.yomankum.accountBook.domain.record.Record;
 import com.account.yomankum.accountBook.domain.record.RecordSearchCondition;
 import com.account.yomankum.accountBook.domain.record.RecordType;
 import com.account.yomankum.accountBook.service.RecordFinder;
-import com.account.yomankum.statistics.service.StatisticsRequest;
-import com.account.yomankum.statistics.service.StatisticsService;
+import com.account.yomankum.statistics.dto.StatisticsRequest;
+import com.account.yomankum.statistics.dto.StatisticsResponse;
+import com.account.yomankum.statistics.service.StatisticsHandler;
 import com.account.yomankum.statistics.service.StatisticsType;
-import com.account.yomankum.statistics.service.impl.tagRate.vo.TagRate;
 import java.time.YearMonth;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
+@Component
 @RequiredArgsConstructor
-public class MinorTagRateStatisticsService implements StatisticsService {
+public class MinorTagRateStatisticsHandler implements StatisticsHandler {
 
     private final RecordFinder recordFinder;
 
@@ -28,7 +26,7 @@ public class MinorTagRateStatisticsService implements StatisticsService {
     }
 
     @Override
-    public Object get(StatisticsRequest request) {
+    public List<StatisticsResponse> getData(StatisticsRequest request) {
         MinorTagRateStatisticsRequest param = (MinorTagRateStatisticsRequest) request;
         YearMonth yearMonth = param.yearMonth();
         RecordType recordType = param.recordType();
@@ -37,7 +35,8 @@ public class MinorTagRateStatisticsService implements StatisticsService {
 
         RecordSearchCondition condition = RecordSearchCondition.of(yearMonth, recordType, majorTag);
         List<Record> records = recordFinder.searchRecords(accountBookId, condition);
-        return MinorTagRateDataMaker.createMinorTagRateData(records);
+        return MinorTagRateDataMaker.createMinorTagRateData(records)
+                .stream().map(data -> (StatisticsResponse) data).collect(Collectors.toList());
     }
 
 }
