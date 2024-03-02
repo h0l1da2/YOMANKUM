@@ -84,7 +84,7 @@ jobs:
       - name: Commit files
         working-directory: ./yomankum-argocd
         run: |
-          git config --global user.email "gkdlgkdl@naver.com"
+          git config --global user.email "gkdlgkdl2040@naver.com"
           git config --global user.name "Larshavin"
           git commit -am "Update backend image tag as ${{ steps.image.outputs.version }}"
           git push -u origin main
