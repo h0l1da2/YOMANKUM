@@ -64,11 +64,11 @@ class SecurityConfig {
 //                        oAuth2AuthorizedClientRepository,
 //                        authenticationManager,
 //                        snsInfo), OAuth2LoginAuthenticationFilter.class)
-                .addFilterAfter(oAuth2JwtFilter, OAuth2LoginAuthenticationFilter.class)
-                .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint(authenticationEntryPoint)
-                        .accessDeniedHandler(accessDeniedHandler)
-                )
+//                .addFilterAfter(oAuth2JwtFilter, OAuth2LoginAuthenticationFilter.class)
+//                .exceptionHandling(exception -> exception
+//                        .authenticationEntryPoint(authenticationEntryPoint)
+//                        .accessDeniedHandler(accessDeniedHandler)
+//                )
                 .oauth2Login(oauth -> oauth
                         .authorizationEndpoint(end -> end.authorizationRequestResolver(authorizationRequestResolver))
                         .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))

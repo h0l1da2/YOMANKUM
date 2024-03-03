@@ -40,7 +40,7 @@ import java.time.Instant;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class OAuth2JwtFilter extends OncePerRequestFilter {
+public class OAuth2JwtFilter{
 
     private final SnsInfo snsInfo;
     private final TokenService tokenService;
@@ -48,7 +48,7 @@ public class OAuth2JwtFilter extends OncePerRequestFilter {
     private final ClientRegistrationRepository clientRegistrationRepository;
     private final CustomDefaultOAuth2UserService defaultOAuth2UserService;
 
-    @Override
+//    @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         TokenResponse tokenResponse =
                 (TokenResponse) request.getAttribute(TokenProp.TOKEN_RESPONSE.name());
