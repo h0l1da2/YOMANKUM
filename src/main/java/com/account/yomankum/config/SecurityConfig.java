@@ -1,7 +1,6 @@
 package com.account.yomankum.config;
 
 import com.account.yomankum.security.jwt.JwtFilter;
-import com.account.yomankum.security.oauth.filter.CustomOAuth2AuthorizationCodeGrantFilter;
 import com.account.yomankum.security.oauth.filter.CustomOAuth2AuthorizationRequestResolver;
 import com.account.yomankum.security.oauth.filter.OAuth2JwtFilter;
 import com.account.yomankum.security.oauth.handler.CustomAccessDeniedHandler;
@@ -27,17 +26,16 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 class SecurityConfig {
 
     private final CustomOAuth2AuthorizationRequestResolver authorizationRequestResolver;
-    private final CustomOAuth2AuthorizationCodeGrantFilter oAuth2AuthorizationCodeGrantFilter;
     private final CustomDefaultOAuth2UserService oAuth2UserService;
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
     private final CustomAccessDeniedHandler accessDeniedHandler;
     private final JwtFilter jwtFilter;
     private final OAuth2JwtFilter oAuth2JwtFilter;
-
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
@@ -46,7 +44,6 @@ class SecurityConfig {
     public AuthenticationConfiguration authenticationConfiguration() {
         return new AuthenticationConfiguration();
     }
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
@@ -62,7 +59,11 @@ class SecurityConfig {
                 .logout(logout -> logout.logoutSuccessUrl("/api/v1/login").permitAll())
 
                 // OAuth2
-                .addFilterBefore(oAuth2AuthorizationCodeGrantFilter, OAuth2LoginAuthenticationFilter.class)
+//                .addFilterBefore(new CustomOAuth2AuthorizationCodeGrantFilter(
+//                        clientRegistrationRepository,
+//                        oAuth2AuthorizedClientRepository,
+//                        authenticationManager,
+//                        snsInfo), OAuth2LoginAuthenticationFilter.class)
                 .addFilterAfter(oAuth2JwtFilter, OAuth2LoginAuthenticationFilter.class)
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(authenticationEntryPoint)
