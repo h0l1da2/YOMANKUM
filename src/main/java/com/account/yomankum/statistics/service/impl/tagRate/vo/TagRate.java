@@ -1,10 +1,11 @@
 package com.account.yomankum.statistics.service.impl.tagRate.vo;
 
+import com.account.yomankum.statistics.dto.StatisticsResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 
 @Getter
-public class TagRate implements Comparable<TagRate> {
+public class TagRate implements StatisticsResponse, Comparable<TagRate> {
 
     @Schema(description = "태그 명", example = "식사")
     private final String tag;

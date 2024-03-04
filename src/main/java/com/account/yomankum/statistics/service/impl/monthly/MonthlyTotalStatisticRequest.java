@@ -1,6 +1,6 @@
 package com.account.yomankum.statistics.service.impl.monthly;
 
-import com.account.yomankum.statistics.service.StatisticsRequest;
+import com.account.yomankum.statistics.dto.StatisticsRequest;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import java.time.YearMonth;

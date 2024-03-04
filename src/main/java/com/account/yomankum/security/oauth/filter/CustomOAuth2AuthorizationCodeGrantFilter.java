@@ -34,7 +34,7 @@ public class CustomOAuth2AuthorizationCodeGrantFilter extends OAuth2Authorizatio
 
     private final SnsInfo snsInfo;
 
-    public CustomOAuth2AuthorizationCodeGrantFilter(final ClientRegistrationRepository clientRegistrationRepository, final OAuth2AuthorizedClientRepository authorizedClientRepository, final AuthenticationManager authenticationManager, final SnsInfo snsInfo) {
+    public CustomOAuth2AuthorizationCodeGrantFilter(ClientRegistrationRepository clientRegistrationRepository, OAuth2AuthorizedClientRepository authorizedClientRepository, AuthenticationManager authenticationManager, SnsInfo snsInfo) {
         super(clientRegistrationRepository, authorizedClientRepository, authenticationManager);
         this.snsInfo = snsInfo;
     }
