@@ -21,8 +21,12 @@ import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPublicKeySpec;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Map;
 
 @Slf4j
 @Component
@@ -31,30 +35,33 @@ public class TokenParser {
     private final JwtParser jwtParser;
     public TokenParser(@Value("${token.secret.key}") String secretKey) {
         Key key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
-        this.jwtParser = Jwts.parser().setSigningKey(key).build();
+        this.jwtParser = Jwts.parser().setSigningKey(key).clock(Date::new).build();
     }
 
     public boolean isValid(String token) {
-        Claims claims = getClaims(token);
-        if (claims.getSubject() != null) {
-            return !claims.getExpiration().before(new Date());
+        Map<String, Object> payload = getPayload(token);
+        if (!payload.isEmpty()) {
+            Long exp = (Long) payload.get("exp");
+            Instant instant = Instant.ofEpochSecond(exp);
+            LocalDateTime expLocalDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+            return !expLocalDateTime.isBefore(LocalDateTime.now());
         }
         return false;
     }
 
     public Long getId(String token) {
-        Claims claims = getClaims(token);
-        return Long.parseLong(claims.get(TokenProp.ID.name(), String.class));
+        Map<String, Object> payload = getPayload(token);
+        return Long.parseLong((String) payload.get(TokenProp.ID.getName()));
     }
 
     public String getNickname(String token) {
-        Claims claims = getClaims(token);
-        return claims.get(TokenProp.NICKNAME.name(), String.class);
+        Map<String, Object> payload = getPayload(token);
+        return (String) payload.get(TokenProp.NICKNAME.getName());
     }
 
     public String getRole(String token) {
-        Claims claims = getClaims(token);
-        return claims.get(TokenProp.ROLE.name(), String.class);
+        Map<String, Object> payload = getPayload(token);
+        return (String) payload.get(TokenProp.ROLE.getName());
     }
 
     public String getSnsTokenSecret(String token, String where, String what) {
@@ -102,7 +109,7 @@ public class TokenParser {
         }
 
         Claims snsClaims = getSnsClaims(token, publicKey);
-        return snsClaims.get(TokenProp.SUB.name(), String.class);
+        return snsClaims.get(TokenProp.SUB.getName(), String.class);
     }
 
     private boolean isSignatureValid(PublicKey publicKey, String token) {
@@ -154,7 +161,7 @@ public class TokenParser {
         return token.split("\\.");
     }
 
-    private Claims getClaims(String token) {
-        return jwtParser.parseClaimsJws(token).getBody();
+    private Map<String, Object> getPayload(String token) {
+        return (Map<String, Object>) jwtParser.parse(token).getPayload();
     }
 }
