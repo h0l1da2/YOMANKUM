@@ -22,7 +22,10 @@ public enum Exception {
 
     // 기타
     REQUEST_NOT_FOUND("요청값을 찾을 수 없습니다.", 404),
-    ACCESS_DENIED("권한 없음.", 403);
+    ACCESS_DENIED("권한 없음.", 403),
+    TOKEN_NOT_VALID("토큰이 유효하지 않습니다.", 401)
+
+    ;
 
     private final String message;
     private final int code;

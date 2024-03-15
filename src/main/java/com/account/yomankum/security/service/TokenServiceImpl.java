@@ -1,7 +1,10 @@
 package com.account.yomankum.security.service;
 
+import com.account.yomankum.common.exception.BadRequestException;
 import com.account.yomankum.common.exception.Exception;
 import com.account.yomankum.common.exception.InternalErrorException;
+import com.account.yomankum.security.dto.RefreshTokenReqDto;
+import com.account.yomankum.security.dto.TokenResDto;
 import com.account.yomankum.security.oauth.token.*;
 import com.account.yomankum.security.oauth.type.Sns;
 import com.account.yomankum.security.token.TokenParser;
@@ -74,6 +77,19 @@ public class TokenServiceImpl implements TokenService {
         String kid = tokenParser.getSnsTokenSecret(token, "header", "kid");
         JwtValue jwtValue = getJwtValue(sns, kid);
         return tokenParser.getSnsUUID(jwtValue, token);
+    }
+
+    @Override
+    public TokenResDto refreshTokenValid(RefreshTokenReqDto dto) {
+        boolean tokenValid = tokenValid(dto.refreshToken());
+        if (!tokenValid) {
+            throw new BadRequestException(Exception.TOKEN_NOT_VALID);
+        }
+
+        return TokenResDto.builder()
+                .accessToken(reCreateToken(dto.accessToken()))
+                .refreshToken(createRefreshToken())
+                .build();
     }
 
     private JwtValue getJwtValue(String sns, String kid) {

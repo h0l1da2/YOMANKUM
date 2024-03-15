@@ -12,6 +12,9 @@ import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 
 @Component
@@ -32,9 +35,7 @@ public class TokenProvider {
     }
 
     public String createToken(Long id, String username, RoleName name) {
-
         Claims claims = getClaims(Tokens.ACCESS_TOKEN, id, username, name);
-
 
     return Jwts.builder()
             .header().add(TokenProp.TYP.getName(), TokenProp.BEARER.getName()).and()
@@ -44,7 +45,6 @@ public class TokenProvider {
     }
 
     public String createRefreshToken() {
-
         Claims claims = getClaims(Tokens.REFRESH_TOKEN);
 
         return Jwts.builder()
@@ -54,24 +54,25 @@ public class TokenProvider {
     }
 
     private Claims getClaims(Tokens tokenType) {
-        Date now = new Date();
-
         return Jwts.claims()
                 .subject(tokenType.toString())
-                .issuedAt(now)
-                .expiration(new Date(now.getTime() + refreshTokenValidTime))
+                .issuedAt(nowDate())
+                .expiration(new Date(nowDate().getTime() + refreshTokenValidTime))
                 .build();
     }
     private Claims getClaims(Tokens tokenType, Long id, String nickname, RoleName name) {
-        Date now = new Date();
-
         return Jwts.claims()
                 .subject(tokenType.toString())
-                .issuedAt(now)
-                .expiration(new Date(now.getTime() + tokenValidTime))
+                .issuedAt(nowDate())
+                .expiration(new Date(nowDate().getTime() + tokenValidTime))
                 .add(TokenProp.ID.getName(), id.toString())
                 .add(TokenProp.NICKNAME.getName(), nickname)
                 .add(TokenProp.ROLE.getName(), name)
                 .build();
+    }
+
+    private Date nowDate() {
+        Instant instant = LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant();
+        return Date.from(instant);
     }
 }
