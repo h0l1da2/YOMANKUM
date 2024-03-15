@@ -114,10 +114,10 @@ token:
         first: first
         second: second
   valid:
-    time: ENC(rTCyWpbl2jwQNSF2prYWWA==)
+    time: 3600000
   refresh:
     valid:
-      time: ENC(8U+v/B6+HM/9LEJQNE08bQ==) # 30일
+      time: 86400000
   secret:
     key: ENC(9Kt1awvcH4hXAVFrnCtrH6OOzyPaYZiFkrzmFUw4lO5e6MZyFwDOLFmaWzMikJdiZ5H5Mgec1Sscua5zivXloiHZctp81GiBElApm7DJ2ksAleAJvNZDqRaXsqxMR+Dn6iSBYJE/qDa/11w5zEKdTJlHyUnKkMObimFQpKex4enHOlIybnPDXtfxlWY2tsOq)
 
