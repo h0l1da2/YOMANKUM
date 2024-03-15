@@ -16,7 +16,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -69,10 +68,10 @@ class SecurityConfig {
 //                        .authenticationEntryPoint(authenticationEntryPoint)
 //                        .accessDeniedHandler(accessDeniedHandler)
 //                )
-                .oauth2Login(oauth -> oauth
-                        .authorizationEndpoint(end -> end.authorizationRequestResolver(authorizationRequestResolver))
-                        .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
-                )
+//                .oauth2Login(oauth -> oauth
+//                        .authorizationEndpoint(end -> end.authorizationRequestResolver(authorizationRequestResolver))
+//                        .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
+//                )
                 .build();
     }
 }
