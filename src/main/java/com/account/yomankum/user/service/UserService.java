@@ -14,6 +14,6 @@ public interface UserService {
     LoginResDto login(UserLoginDto userLoginDto);
     UserInfoDto getUserInfo(CustomUserDetails userDetails);
     void updatePassword(String uuid, String password);
-    void saveFirstLoginUserInfo(FirstLoginUserInfoSaveDto firstLoginUserInfoSaveDto, CustomUserDetails userDetails);
+    void saveFirstLoginUserInfo(FirstLoginUserInfoSaveDto firstLoginUserInfoSaveDto);
     void updateUserInfo(CustomUserDetails userDetails, UserInfoUpdateDto dto);
 }

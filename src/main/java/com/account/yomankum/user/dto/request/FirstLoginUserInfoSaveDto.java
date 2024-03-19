@@ -7,6 +7,8 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 public record FirstLoginUserInfoSaveDto(
+        @NotNull
+        Long id,
         @NotBlank
         String nickname,
         @NotNull
