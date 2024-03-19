@@ -72,9 +72,8 @@ public class UserServiceImpl implements UserService {
 
         String accessToken = tokenService.creatToken(findUser.getId(), findUser.getNickname(), findUser.getRole().getRoleName());
         String refreshToken = tokenService.createRefreshToken();
-        String nickname = findUser.getNickname();
 
-        return LoginResDto.of(accessToken, refreshToken, nickname);
+        return LoginResDto.of(accessToken, refreshToken, findUser);
     }
 
     @Override
@@ -108,11 +107,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void saveFirstLoginUserInfo(FirstLoginUserInfoSaveDto firstLoginUserInfoSaveDto, CustomUserDetails userDetails) {
-        User findUser = userRepository.findByEmailFetchRole(userDetails.getUsername())
+    public void saveFirstLoginUserInfo(FirstLoginUserInfoSaveDto dto) {
+        User findUser = userRepository.findById(dto.id())
                 .orElseThrow(() -> new BadRequestException(Exception.USER_NOT_FOUND));
 
-        findUser.updateFirstUserInfo(firstLoginUserInfoSaveDto);
+        findUser.updateFirstUserInfo(dto);
         userRepository.save(findUser);
     }
 
