@@ -1,6 +1,7 @@
 package com.account.yomankum.accountBook.domain;
 
 import com.account.yomankum.accountBook.domain.record.Record;
+import com.account.yomankum.accountBook.domain.tag.Tag;
 import com.account.yomankum.common.domain.UserBaseEntity;
 import com.account.yomankum.common.exception.BadRequestException;
 import com.account.yomankum.common.exception.Exception;
@@ -40,6 +41,12 @@ public class AccountBook extends UserBaseEntity {
             orphanRemoval = true,
             fetch = FetchType.LAZY)
     private List<Record> records = new ArrayList<>();
+    @Default
+    @OneToMany(mappedBy = "accountBook",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY)
+    private List<Tag> mainTags = new ArrayList<>();
 
     public void updateName(String name, Long requesterId) {
         checkAuthorizedUser(requesterId);
@@ -66,5 +73,10 @@ public class AccountBook extends UserBaseEntity {
         if(!getCreateUserId().equals(requesterId)){
             throw new BadRequestException(Exception.ACCOUNT_BOOK_NOT_FOUND);
         }
+    }
+
+    public void addTags(List<Tag> defaultTags) {
+        mainTags.addAll(defaultTags);
+        defaultTags.forEach(tag -> tag.assignAccountBook(this));
     }
 }

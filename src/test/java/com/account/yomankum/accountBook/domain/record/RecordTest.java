@@ -1,11 +1,11 @@
 package com.account.yomankum.accountBook.domain.record;
 import com.account.yomankum.accountBook.domain.AccountBook;
+import com.account.yomankum.accountBook.domain.tag.Tag;
 import com.account.yomankum.accountBook.dto.request.RecordUpdateRequest;
 import com.account.yomankum.common.exception.BadRequestException;
 import com.account.yomankum.common.exception.Exception;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -41,17 +41,17 @@ class RecordTest {
                 .id(1L)
                 .accountBook(accountBook)
                 .content("초기 내역")
-                .majorTag(DefaultCategory.FOOD.getTitle())
-                .minorTag(List.of("마라탕", "배민"))
-                .recordType(RecordType.INCOME)
-                .money(10000)
+                .mainTag(Tag.of(1L))
+                .subTags(Set.of("마라탕", "배민"))
+                .recordType(RecordType.EXPENDITURE)
+                .amount(10000)
                 .build();
     }
 
     private RecordUpdateRequest createUpdateRequest() {
         return new RecordUpdateRequest("업데이트 내역",
-                DefaultCategory.BONUS.getTitle(),
-                List.of("명절"),
+                1L,
+                Set.of("명절"),
                 RecordType.EXPENDITURE,
                 50000,
                 LocalDate.now());
@@ -66,8 +66,8 @@ class RecordTest {
         record.update(recordUpdateRequest, ownerId);
 
         assertNotEquals(sameRecord.getContent(), record.getContent());
-        assertNotEquals(sameRecord.getMajorTag(), record.getMajorTag());
-        assertNotEquals(sameRecord.getMoney(), record.getMoney());
+        assertNotEquals(sameRecord.getMainTag(), record.getMainTag());
+        assertNotEquals(sameRecord.getAmount(), record.getAmount());
     }
 
     @Test

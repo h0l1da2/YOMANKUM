@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.account.yomankum.accountBook.domain.AccountBook;
 import com.account.yomankum.accountBook.domain.AccountBookRepository;
 import com.account.yomankum.accountBook.domain.AccountBookType;
+import com.account.yomankum.accountBook.domain.tag.DefaultTag;
+import com.account.yomankum.accountBook.domain.tag.MainTagRepository;
 import com.account.yomankum.accountBook.dto.request.AccountBookCreateRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,11 +22,9 @@ import org.springframework.transaction.annotation.Transactional;
 @WithMockUser(username = "1")
 public class AccountBookServiceIntegrationTest {
 
-    @Autowired
-    private AccountBookService accountBookService;
-
-    @Autowired
-    private AccountBookRepository accountBookRepository;
+    @Autowired private AccountBookService accountBookService;
+    @Autowired private AccountBookRepository accountBookRepository;
+    @Autowired private MainTagRepository mainTagRepository;
 
     @Test
     public void testCreateAccountBook() {
@@ -34,6 +34,8 @@ public class AccountBookServiceIntegrationTest {
         AccountBook foundAccountBook = accountBookRepository.findById(accountBookId).orElse(null);
         assertNotNull(foundAccountBook);
         assertEquals("Test AccountBook", foundAccountBook.getName());
+        assertEquals(DefaultTag.values().length, foundAccountBook.getMainTags().size());
+        assertEquals(DefaultTag.values().length, mainTagRepository.findByAccountBookId(foundAccountBook.getId()).size());
     }
 
     @Test

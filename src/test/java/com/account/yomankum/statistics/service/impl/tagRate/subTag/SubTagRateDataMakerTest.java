@@ -1,21 +1,22 @@
-package com.account.yomankum.statistics.service.impl.tagRate.minor;
+package com.account.yomankum.statistics.service.impl.tagRate.subTag;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.account.yomankum.accountBook.domain.record.Record;
 import com.account.yomankum.statistics.service.impl.tagRate.vo.TagRate;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.List;
 
-public class MinorTagRateDataMakerTest {
+public class SubTagRateDataMakerTest {
 
     @Test
     @DisplayName("빈 record 리스트에 대하여 빈 결과 데이터를 반환한다.")
     public void emptyRecordList() {
         List<Record> records = List.of();
 
-        List<TagRate> result = MinorTagRateDataMaker.createMinorTagRateData(records);
+        List<TagRate> result = SubTagRateDataMaker.createSubTagRateData(records);
 
         assertTrue(result.isEmpty());
     }
@@ -27,7 +28,7 @@ public class MinorTagRateDataMakerTest {
         Record record2 = makeRecord(5000, "교통");
         List<Record> records = Arrays.asList(record1, record2);
 
-        List<TagRate> result = MinorTagRateDataMaker.createMinorTagRateData(records);
+        List<TagRate> result = SubTagRateDataMaker.createSubTagRateData(records);
 
         assertEquals(3, result.size());
         assertEquals(result.get(0).getRate(),40);
@@ -43,16 +44,16 @@ public class MinorTagRateDataMakerTest {
         Record record2 = makeRecord(3000, "아침");
         List<Record> records = Arrays.asList(record1, record2);
 
-        List<TagRate> result = MinorTagRateDataMaker.createMinorTagRateData(records);
+        List<TagRate> result = SubTagRateDataMaker.createSubTagRateData(records);
 
         assertEquals(1, result.size());
         assertEquals(result.get(0).getRate(), 100);
     }
 
-    private Record makeRecord(long money, String... minorTags){
+    private Record makeRecord(long amount, String... subTags){
         return Record.builder()
-                .money(money)
-                .minorTag(Arrays.stream(minorTags).toList())
+                .amount(amount)
+                .subTags(Arrays.stream(subTags).collect(Collectors.toSet()))
                 .build();
     }
 

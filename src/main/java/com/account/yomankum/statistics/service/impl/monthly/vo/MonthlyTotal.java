@@ -3,9 +3,7 @@ package com.account.yomankum.statistics.service.impl.monthly.vo;
 import com.account.yomankum.accountBook.domain.record.Record;
 import com.account.yomankum.accountBook.domain.record.RecordType;
 import com.account.yomankum.statistics.dto.StatisticsResponse;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.io.Serializable;
 import java.time.YearMonth;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,9 +21,9 @@ public class MonthlyTotal implements StatisticsResponse, Comparable<MonthlyTotal
 
     public void accumulate(Record record) {
         if(record.getRecordType() == RecordType.EXPENDITURE){
-            this.addExpenditure(record.getMoney());
+            this.addExpenditure(record.getAmount());
         } else {
-            this.addIncome(record.getMoney());
+            this.addIncome(record.getAmount());
         }
     }
 

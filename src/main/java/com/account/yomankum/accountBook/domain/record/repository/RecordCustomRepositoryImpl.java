@@ -6,15 +6,12 @@ import com.account.yomankum.accountBook.domain.record.Record;
 import com.account.yomankum.accountBook.domain.record.RecordSearchCondition;
 import com.account.yomankum.accountBook.domain.record.RecordType;
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 @Repository
@@ -41,22 +38,28 @@ public class RecordCustomRepositoryImpl implements RecordCustomRepository {
 
     private BooleanBuilder allCondition(RecordSearchCondition condition){
         return new BooleanBuilder()
-                .and(majorTagContains(condition.getMajorTag()))
-                .and(minorTagContains(condition.getMinorTag()))
+                .and(mainTagEquals(condition.getMainTagId()))
+                .and(mainTagContains(condition.getMainTagName()))
+                .and(subTagContains(condition.getSubTagName()))
                 .and(contentContains(condition.getContent()))
                 .and(recordTypeEquals(condition.getRecordType()))
                 .and(date(condition.getFrom(), condition.getTo()))
-                .and(moneyRange(condition.getMinMoney(), condition.getMaxMoney()));
+                .and(amountRange(condition.getMinMoney(), condition.getMaxMoney()));
     }
 
-    private BooleanExpression majorTagContains(String tag){
-        return StringUtils.hasText(tag)?
-                record.majorTag.contains(tag) : null;
+    private BooleanExpression mainTagEquals(Long mainTagId){
+        return mainTagId != null?
+                record.mainTag.id.eq(mainTagId) : null;
     }
 
-    private BooleanExpression minorTagContains(String tag) {
+    private BooleanExpression mainTagContains(String tag){
         return StringUtils.hasText(tag)?
-                record.minorTag.contains(tag) : null;
+                record.mainTag.name.contains(tag) : null;
+    }
+
+    private BooleanExpression subTagContains(String tag) {
+        return StringUtils.hasText(tag)?
+                record.subTags.contains(tag) : null;
     }
 
     private BooleanExpression contentContains(String content) {
@@ -64,11 +67,11 @@ public class RecordCustomRepositoryImpl implements RecordCustomRepository {
                 record.content.contains(content) : null;
     }
 
-    private BooleanExpression moneyRange(Integer min, Integer max) {
-        BooleanExpression moneyGoe = min != null ? record.money.goe(min) : null;
-        BooleanExpression moneyLoe = max != null ? record.money.loe(max) : null;
+    private BooleanExpression amountRange(Integer min, Integer max) {
+        BooleanExpression amountGoe = min != null ? record.amount.goe(min) : null;
+        BooleanExpression amountLoe = max != null ? record.amount.loe(max) : null;
 
-        return moneyGoe != null ? moneyGoe.and(moneyLoe) : moneyLoe;
+        return amountGoe != null ? amountGoe.and(amountLoe) : amountLoe;
     }
 
     private BooleanExpression recordTypeEquals(RecordType recordType) {
