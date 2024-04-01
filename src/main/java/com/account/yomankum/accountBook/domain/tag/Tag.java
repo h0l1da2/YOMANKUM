@@ -48,9 +48,17 @@ public class Tag {
         this.accountBook = accountBook;
     }
 
+    public void checkAuthorizedUser(Long userId){
+        accountBook.checkAuthorizedUser(userId);
+    }
+
     public static Tag of(Long id) {
         return Tag.builder()
                 .id(id)
                 .build();
+    }
+
+    public void update(String name) {
+        this.name = name;
     }
 }

@@ -8,6 +8,7 @@ public enum Exception {
     // 가계부
     ACCOUNT_BOOK_NOT_FOUND("가계부를 찾을 수 없습니다.", 404),
     RECORD_BOOK_NOT_FOUND("내역을 찾을 수 없습니다.", 404),
+    TAG_NOT_FOUND("내역을 찾을 수 없습니다.", 404),
 
     // 유저
     USER_NOT_FOUND("유저를 찾을 수 없습니다.", 404),
