@@ -21,7 +21,8 @@ import lombok.Getter;
 @EqualsAndHashCode(of = {"id"})
 public class Tag {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     @ManyToOne(fetch = FetchType.LAZY)
@@ -30,35 +31,36 @@ public class Tag {
     @Embedded
     private Color color;
 
-    public Tag() {}
+    public Tag() {
+    }
 
-    public static Tag of(String name){
+    public static Tag of(String name) {
         Tag tag = new Tag();
         tag.name = name;
         return tag;
     }
 
-    public static Tag of(String name, Color color){
+    public static Tag of(String name, Color color) {
         Tag tag = of(name);
         tag.color = color;
         return tag;
     }
 
-    public void assignAccountBook(AccountBook accountBook){
+    public void assignAccountBook(AccountBook accountBook) {
         this.accountBook = accountBook;
     }
 
-    public void checkAuthorizedUser(Long userId){
+    public void checkAuthorizedUser(Long userId) {
         accountBook.checkAuthorizedUser(userId);
     }
 
-    public static Tag of(Long id) {
-        return Tag.builder()
-                .id(id)
-                .build();
-    }
-
-    public void update(String name) {
+    public void update(String name, Long requesterId) {
+        accountBook.checkAuthorizedUser(requesterId);
         this.name = name;
     }
+
+    public void delete(Long sessionUserId) {
+        accountBook.deleteTag(this, sessionUserId);
+    }
+
 }

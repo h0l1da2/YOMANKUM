@@ -1,9 +1,11 @@
 package com.account.yomankum.statistics.service.impl.tagRate.mainTag;
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.account.yomankum.accountBook.domain.record.DefaultCategory;
 import com.account.yomankum.accountBook.domain.record.Record;
 import com.account.yomankum.accountBook.domain.tag.Tag;
 import com.account.yomankum.statistics.service.impl.tagRate.vo.TagRate;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import java.util.Arrays;
@@ -21,8 +23,15 @@ public class MainTagRateDataMakerTest {
         assertTrue(result.isEmpty());
     }
 
-    private Tag food = new Tag();
-    private Tag travel = new Tag();
+    private Tag food;
+    private Tag travel;
+
+    @BeforeEach
+    public void setup() {
+        food = Tag.builder().id(1L).name(DefaultCategory.FOOD.name()).build();
+        travel = Tag.builder().id(2L).name(DefaultCategory.TRAVEL.name()).build();
+
+    }
 
     @Test
     @DisplayName("대분류 태그 비율 통계 - 전체 태그 중 식비 90%, 교통 10% 사용")
@@ -35,9 +44,9 @@ public class MainTagRateDataMakerTest {
         List<TagRate> result = MainTagRateDataMaker.createMainTagRateData(records);
 
         assertEquals(2, result.size());
-        assertEquals(food, result.get(0).getTag());
+        assertEquals(food.getName(), result.get(0).getTag());
         assertEquals(90, result.get(0).getRate());
-        assertEquals(travel, result.get(1).getTag());
+        assertEquals(travel.getName(), result.get(1).getTag());
         assertEquals(10, result.get(1).getRate());
     }
 
@@ -52,7 +61,7 @@ public class MainTagRateDataMakerTest {
         List<TagRate> result = MainTagRateDataMaker.createMainTagRateData(records);
 
         assertEquals(1, result.size());
-        assertEquals(food, result.get(0).getTag());
+        assertEquals(food.getName(), result.get(0).getTag());
         assertEquals(100, result.get(0).getRate());
     }
 
@@ -66,7 +75,7 @@ public class MainTagRateDataMakerTest {
         List<TagRate> result = MainTagRateDataMaker.createMainTagRateData(records);
 
         assertEquals(2, result.size());
-        assertEquals(travel, result.get(0).getTag());
+        assertEquals(travel.getName(), result.get(0).getTag());
         assertEquals(100, result.get(0).getRate());
     }
 

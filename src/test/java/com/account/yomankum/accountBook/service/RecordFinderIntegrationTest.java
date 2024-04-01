@@ -9,6 +9,9 @@ import com.account.yomankum.accountBook.domain.AccountBookType;
 import com.account.yomankum.accountBook.domain.record.Record;
 import com.account.yomankum.accountBook.domain.record.RecordSearchCondition;
 import com.account.yomankum.accountBook.domain.record.RecordType;
+import com.account.yomankum.accountBook.domain.tag.DefaultTag;
+import com.account.yomankum.accountBook.domain.tag.MainTagRepository;
+import com.account.yomankum.accountBook.domain.tag.Tag;
 import com.account.yomankum.accountBook.dto.request.RecordCreateRequest;
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -36,6 +39,8 @@ public class RecordFinderIntegrationTest {
     private RecordService recordService;
     @Autowired
     private AccountBookRepository accountBookRepository;
+    @Autowired
+    private MainTagRepository mainTagRepository;
 
     private AccountBook accountBook;
     private LocalDate today;
@@ -44,8 +49,9 @@ public class RecordFinderIntegrationTest {
 
     @BeforeEach
     public void setup() {
-        accountBook = createAccountBook();
+        accountBook = accountBook();
         accountBookRepository.save(accountBook);
+        mainTagRepository.save(makeTag(1L, DefaultTag.FOOD.getName()));
         today = LocalDate.now();
         yesterday = LocalDate.now().minusDays(1);
         twoDaysAgo = LocalDate.now().minusDays(2);
@@ -55,6 +61,10 @@ public class RecordFinderIntegrationTest {
                 makeRecordRequest("지출 내역2", yesterday, 1L, RecordType.EXPENDITURE, 20000, "소분류2", "소분류3"));
         recordService.addRecord(accountBook.getId(),
                 makeRecordRequest("수입 내역1", twoDaysAgo, 1L, RecordType.INCOME, 30000, "소분류3","소분류4"));
+    }
+
+    private Tag makeTag(Long id, String name) {
+        return Tag.builder().id(id).name(name).build();
     }
 
     private RecordCreateRequest makeRecordRequest(
@@ -67,7 +77,7 @@ public class RecordFinderIntegrationTest {
         return new RecordCreateRequest(content, mainTagId, Arrays.stream(subTags).collect(Collectors.toSet()), recordType, money, date);
     }
 
-    private AccountBook createAccountBook() {
+    private AccountBook accountBook() {
         return AccountBook.builder()
                 .type(AccountBookType.PRIVATE)
                 .name("test account book")

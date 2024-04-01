@@ -1,5 +1,6 @@
 package com.account.yomankum.accountBook.domain.record;
 import com.account.yomankum.accountBook.domain.AccountBook;
+import com.account.yomankum.accountBook.domain.tag.DefaultTag;
 import com.account.yomankum.accountBook.domain.tag.Tag;
 import com.account.yomankum.accountBook.dto.request.RecordUpdateRequest;
 import com.account.yomankum.common.exception.BadRequestException;
@@ -32,38 +33,18 @@ class RecordTest {
         doThrow(new BadRequestException(Exception.ACCOUNT_BOOK_NOT_FOUND)).when(accountBook)
                 .deleteRecord(record, otherUserId);
 
-        record = createRecord();
-        recordUpdateRequest = createUpdateRequest();
-    }
-
-    private Record createRecord() {
-        return Record.builder()
-                .id(1L)
-                .accountBook(accountBook)
-                .content("초기 내역")
-                .mainTag(Tag.of(1L))
-                .subTags(Set.of("마라탕", "배민"))
-                .recordType(RecordType.EXPENDITURE)
-                .amount(10000)
-                .build();
-    }
-
-    private RecordUpdateRequest createUpdateRequest() {
-        return new RecordUpdateRequest("업데이트 내역",
-                1L,
-                Set.of("명절"),
-                RecordType.EXPENDITURE,
-                50000,
-                LocalDate.now());
+        record = record();
+        recordUpdateRequest = updateRequest();
     }
 
     @Test
     @DisplayName("권한이 있는 사용자가 가계부 내역을 수정한다.")
     void update_success() {
-        Record record = createRecord();
-        Record sameRecord = createRecord();
+        Record record = record();
+        Record sameRecord = record();
+        Tag newTag = makeTag(2L, DefaultTag.BONUS.getName());
 
-        record.update(recordUpdateRequest, ownerId);
+        record.update(recordUpdateRequest, newTag, ownerId);
 
         assertNotEquals(sameRecord.getContent(), record.getContent());
         assertNotEquals(sameRecord.getMainTag(), record.getMainTag());
@@ -73,8 +54,10 @@ class RecordTest {
     @Test
     @DisplayName("권한이 있는 사용자가 가계부 내역을 수정하면 에러가 발생한다.")
     void update_fail_unauthorizedUser() {
+        Tag newTag = makeTag(2L, DefaultTag.BONUS.getName());
+
         assertThrows(BadRequestException.class, () ->
-                record.update(recordUpdateRequest, otherUserId));
+                record.update(recordUpdateRequest, newTag, otherUserId));
     }
 
     @Test
@@ -82,6 +65,34 @@ class RecordTest {
     void delete_success() {
         record.delete(ownerId);
         verify(accountBook, times(1)).deleteRecord(record, ownerId);
+    }
+
+    private Record record() {
+        return Record.builder()
+                .id(1L)
+                .accountBook(accountBook)
+                .content("초기 내역")
+                .mainTag(makeTag(1L, DefaultTag.FOOD.getName()))
+                .subTags(Set.of("마라탕", "배민"))
+                .recordType(RecordType.EXPENDITURE)
+                .amount(10000)
+                .build();
+    }
+
+    private Tag makeTag(Long id, String name){
+        return Tag.builder()
+                .id(id)
+                .name(name)
+                .build();
+    }
+
+    private RecordUpdateRequest updateRequest() {
+        return new RecordUpdateRequest("업데이트 내역",
+                2L,
+                Set.of("명절"),
+                RecordType.INCOME,
+                50000,
+                LocalDate.now());
     }
 
 }

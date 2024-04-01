@@ -6,6 +6,7 @@ import lombok.Getter;
 @Getter
 public enum DefaultCategory {
 
+    TRAVEL("여행"),
     FOOD("식비"),
     WEAR("의류"),
     BONUS("보너스"),

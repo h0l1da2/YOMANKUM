@@ -2,7 +2,8 @@ package com.account.yomankum.accountBook.service;
 
 import com.account.yomankum.accountBook.domain.tag.MainTagRepository;
 import com.account.yomankum.accountBook.domain.tag.Tag;
-import com.account.yomankum.common.service.SessionService;
+import com.account.yomankum.common.exception.BadRequestException;
+import com.account.yomankum.common.exception.Exception;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,4 +18,7 @@ public class MainTagFinder {
         return mainTagRepository.findByAccountBookId(accountBookId);
     }
 
+    public Tag findById(Long tagId) {
+        return mainTagRepository.findById(tagId).orElseThrow(()->new BadRequestException(Exception.TAG_NOT_FOUND));
+    }
 }

@@ -25,14 +25,12 @@ public class MainTagService {
 
     public void delete(Long tagId) {
         Tag tag = findTag(tagId);
-        checkAuthorizedRequest(tag);
-        mainTagRepository.delete(tag);
+        tag.delete(sessionService.getSessionUserId());
     }
 
     public void update(Long tagId, MainTagRequest mainTagRequest) {
         Tag tag = findTag(tagId);
-        checkAuthorizedRequest(tag);
-        tag.update(mainTagRequest.tagName());
+        tag.update(mainTagRequest.tagName(), sessionService.getSessionUserId());
     }
 
     private Tag findTag(Long tagId){

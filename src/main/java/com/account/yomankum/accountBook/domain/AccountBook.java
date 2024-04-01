@@ -68,6 +68,11 @@ public class AccountBook extends UserBaseEntity {
         records.remove(record);
     }
 
+    public void deleteTag(Tag tag, Long requesterId) {
+        checkAuthorizedUser(requesterId);
+        mainTags.remove(tag);
+    }
+
     // 보안을 위해 '접근권한이 없음'이 아닌 '가계부가 없음' 메세지를 준다.
     public void checkAuthorizedUser(Long requesterId) {
         if(!getCreateUserId().equals(requesterId)){

@@ -22,10 +22,10 @@ public record RecordCreateRequest (
         @DateTimeFormat(pattern = "yyyy-MM-dd EEE")
         LocalDate date
 ){
-    public Record toEntity(){
+    public Record toEntity(Tag tag){
         return Record.builder()
                 .content(content)
-                .mainTag(Tag.of(mainTagId))
+                .mainTag(tag)
                 .subTags(subTags)
                 .recordType(recordType)
                 .amount(amount)
