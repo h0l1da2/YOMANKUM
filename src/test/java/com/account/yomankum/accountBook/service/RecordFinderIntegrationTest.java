@@ -55,6 +55,10 @@ public class RecordFinderIntegrationTest {
         today = LocalDate.now();
         yesterday = LocalDate.now().minusDays(1);
         twoDaysAgo = LocalDate.now().minusDays(2);
+        addRecord();
+    }
+
+    private void addRecord(){
         recordService.addRecord(accountBook.getId(),
                 makeRecordRequest("지출 내역1", today, 1L, RecordType.EXPENDITURE, 10000, "소분류1", "소분류2"));
         recordService.addRecord(accountBook.getId(),
