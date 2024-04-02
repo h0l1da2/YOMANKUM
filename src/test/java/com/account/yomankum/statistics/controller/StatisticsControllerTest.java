@@ -72,7 +72,7 @@ class StatisticsControllerTest extends AbstractRestDocsTests {
 
         mockMvc.perform(get("/api/v1/statistics/monthly/expenditure/subTagRate")
                         .param("accountBookId", "11")
-                        .param("tagName", "월급")
+                        .param("mainTagId", "1")
                         .param("yearMonth", "2023-01")
                         .param("recordType", "INCOME")
                         .accept(MediaType.APPLICATION_JSON_VALUE)

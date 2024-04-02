@@ -29,7 +29,6 @@ import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VAL
 import static org.springframework.http.MediaType.valueOf;
 
 @Slf4j
-@Component
 public class CustomOAuth2AuthorizationCodeGrantFilter extends OAuth2AuthorizationCodeGrantFilter {
 
     private final SnsInfo snsInfo;
