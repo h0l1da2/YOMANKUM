@@ -30,19 +30,19 @@ public class StatisticsController {
 
     @GetMapping(value = "/monthly/total", produces = "application/json")
     @Operation(summary = "월별 지출입 총합 통계", responses = {@ApiResponse(responseCode = "200", content = @Content(array = @ArraySchema(schema = @Schema(implementation = MonthlyTotal.class))))})
-    public List<StatisticsResponse> getMonthlyTotalData(@Valid MonthlyTotalStatisticRequest request){
+    public List<MonthlyTotal> getMonthlyTotalData(@Valid MonthlyTotalStatisticRequest request){
         return statisticsService.getMonthlyTotalData(request);
     }
 
     @GetMapping(value = "/monthly/expenditure/mainTagRate", produces = "application/json")
     @Operation(summary = "한 달 동안의 대분류 비율 통계", responses = {@ApiResponse(responseCode = "200", content = @Content(array = @ArraySchema(schema = @Schema(implementation = TagRate.class))))})
-    public List<StatisticsResponse> getMonthlyExpenditureMainTagRate(@Valid MainTagRateStatisticsRequest request){
+    public List<TagRate> getMonthlyExpenditureMainTagRate(@Valid MainTagRateStatisticsRequest request){
         return statisticsService.getMonthlyMainTagRate(request);
     }
 
     @GetMapping(value = "/monthly/expenditure/subTagRate", produces = "application/json")
     @Operation(summary = "(한 달 동안의) 하나의 대분류 내 소분류 비율", responses = {@ApiResponse(responseCode = "200", content = @Content(array = @ArraySchema(schema = @Schema(implementation = TagRate.class))))})
-    public List<StatisticsResponse> getMonthlyExpenditureSubTagRate(@Valid SubTagRateStatisticsRequest request){
+    public List<TagRate> getMonthlyExpenditureSubTagRate(@Valid SubTagRateStatisticsRequest request){
         return statisticsService.getMonthlySubTagRate(request);
     }
 

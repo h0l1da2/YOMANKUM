@@ -43,6 +43,7 @@ public class RecordFinderIntegrationTest {
     private MainTagRepository mainTagRepository;
 
     private AccountBook accountBook;
+    private Tag mainTag;
     private LocalDate today;
     private LocalDate yesterday;
     private LocalDate twoDaysAgo;
@@ -51,7 +52,8 @@ public class RecordFinderIntegrationTest {
     public void setup() {
         accountBook = accountBook();
         accountBookRepository.save(accountBook);
-        mainTagRepository.save(makeTag(1L, DefaultTag.FOOD.getName()));
+        mainTag = Tag.of(DefaultTag.FOOD.getName());
+        mainTagRepository.save(mainTag);
         today = LocalDate.now();
         yesterday = LocalDate.now().minusDays(1);
         twoDaysAgo = LocalDate.now().minusDays(2);
@@ -60,15 +62,11 @@ public class RecordFinderIntegrationTest {
 
     private void addRecord(){
         recordService.addRecord(accountBook.getId(),
-                makeRecordRequest("지출 내역1", today, 1L, RecordType.EXPENDITURE, 10000, "소분류1", "소분류2"));
+                makeRecordRequest("지출 내역1", today, mainTag.getId(), RecordType.EXPENDITURE, 10000, "소분류1", "소분류2"));
         recordService.addRecord(accountBook.getId(),
-                makeRecordRequest("지출 내역2", yesterday, 1L, RecordType.EXPENDITURE, 20000, "소분류2", "소분류3"));
+                makeRecordRequest("지출 내역2", yesterday, mainTag.getId(), RecordType.EXPENDITURE, 20000, "소분류2", "소분류3"));
         recordService.addRecord(accountBook.getId(),
-                makeRecordRequest("수입 내역1", twoDaysAgo, 1L, RecordType.INCOME, 30000, "소분류3","소분류4"));
-    }
-
-    private Tag makeTag(Long id, String name) {
-        return Tag.builder().id(id).name(name).build();
+                makeRecordRequest("수입 내역1", twoDaysAgo, mainTag.getId(), RecordType.INCOME, 30000, "소분류3","소분류4"));
     }
 
     private RecordCreateRequest makeRecordRequest(
