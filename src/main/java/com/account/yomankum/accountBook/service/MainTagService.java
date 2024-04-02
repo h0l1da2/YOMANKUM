@@ -1,5 +1,6 @@
 package com.account.yomankum.accountBook.service;
 
+import com.account.yomankum.accountBook.domain.AccountBook;
 import com.account.yomankum.accountBook.domain.tag.MainTagRepository;
 import com.account.yomankum.accountBook.domain.tag.Tag;
 import com.account.yomankum.accountBook.dto.request.MainTagRequest;
@@ -13,14 +14,14 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class MainTagService {
 
+    private final AccountBookFinder accountBookFinder;
     private final MainTagRepository mainTagRepository;
     private final SessionService sessionService;
 
-    public Long save(MainTagRequest mainTagCreateRequest) {
+    public void save(Long accountBookId, MainTagRequest mainTagCreateRequest) {
+        AccountBook accountBook = accountBookFinder.findById(accountBookId);
         Tag tag = mainTagCreateRequest.toEntity();
-        checkAuthorizedRequest(tag);
-        mainTagRepository.save(tag);
-        return tag.getId();
+        accountBook.addTag(tag, sessionService.getSessionUserId());
     }
 
     public void delete(Long tagId) {
@@ -33,12 +34,8 @@ public class MainTagService {
         tag.update(mainTagRequest.tagName(), sessionService.getSessionUserId());
     }
 
-    private Tag findTag(Long tagId){
-        return mainTagRepository.findById(tagId).orElseThrow(()->new BadRequestException(Exception.TAG_NOT_FOUND));
+    private Tag findTag(Long tagId) {
+        return mainTagRepository.findById(tagId).orElseThrow(() -> new BadRequestException(Exception.TAG_NOT_FOUND));
     }
 
-    private void checkAuthorizedRequest(Tag tag){
-        Long userId = sessionService.getSessionUserId();
-        tag.checkAuthorizedUser(userId);
-    }
 }

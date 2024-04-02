@@ -25,7 +25,7 @@ public class AccountBookService {
         AccountBook accountBook = accountBookWriteDto.toEntity();
         accountBookRepository.save(accountBook);
         List<Tag> defaultTags = DefaultTag.getDefaultMainTags();
-        accountBook.addTags(defaultTags);
+        accountBook.addTags(defaultTags, sessionService.getSessionUserId());
         return accountBook.getId();
     }
 

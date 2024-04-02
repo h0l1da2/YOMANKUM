@@ -80,8 +80,13 @@ public class AccountBook extends UserBaseEntity {
         }
     }
 
-    public void addTags(List<Tag> defaultTags) {
-        mainTags.addAll(defaultTags);
-        defaultTags.forEach(tag -> tag.assignAccountBook(this));
+    public void addTag(Tag tag, Long requesterId){
+        checkAuthorizedUser(requesterId);
+        mainTags.add(tag);
+        tag.assignAccountBook(this);
+    }
+
+    public void addTags(List<Tag> tags, Long requesterId) {
+        tags.forEach(tag -> addTag(tag, requesterId));
     }
 }

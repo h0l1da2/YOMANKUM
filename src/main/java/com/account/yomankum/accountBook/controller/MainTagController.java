@@ -33,8 +33,8 @@ public class MainTagController {
 
     @PostMapping("/{accountBookId}")
     @Operation(summary = "대분류 태그 등록")
-    public Long registerMainTag(@PathVariable Long accountBookId, @RequestBody MainTagRequest mainTagRequest){
-        return tagService.save(mainTagRequest);
+    public void registerMainTag(@PathVariable Long accountBookId, @RequestBody MainTagRequest mainTagRequest){
+        tagService.save(accountBookId, mainTagRequest);
     }
 
     @PutMapping("/{tagId}")
@@ -45,7 +45,7 @@ public class MainTagController {
 
     @DeleteMapping("/{tagId}")
     @Operation(summary = "태그 삭제")
-    public void deleteTag(@PathVariable Long accountBookId, @PathVariable Long tagId){
+    public void deleteTag(@PathVariable Long tagId){
         tagService.delete(tagId);
     }
 
