@@ -18,20 +18,24 @@ public class MainTagService {
     private final MainTagRepository mainTagRepository;
     private final SessionService sessionService;
 
-    public void create(Long accountBookId, MainTagRequest mainTagCreateRequest) {
-        AccountBook accountBook = accountBookFinder.findById(accountBookId);
+    public Tag create(Long accountBookId, MainTagRequest mainTagCreateRequest) {
         Tag tag = mainTagCreateRequest.toEntity();
+        mainTagRepository.save(tag);
+        AccountBook accountBook = accountBookFinder.findById(accountBookId);
         accountBook.addTag(tag, sessionService.getSessionUserId());
+        return tag;
     }
 
     public void delete(Long tagId) {
         Tag tag = findTag(tagId);
         tag.delete(sessionService.getSessionUserId());
+        mainTagRepository.delete(tag);
     }
 
-    public void update(Long tagId, MainTagRequest mainTagRequest) {
+    public Tag update(Long tagId, MainTagRequest mainTagRequest) {
         Tag tag = findTag(tagId);
         tag.update(mainTagRequest.tagName(), sessionService.getSessionUserId());
+        return tag;
     }
 
     private Tag findTag(Long tagId) {
