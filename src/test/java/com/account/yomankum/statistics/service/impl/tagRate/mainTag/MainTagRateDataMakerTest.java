@@ -27,7 +27,7 @@ public class MainTagRateDataMakerTest {
     private Tag travel;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         food = Tag.builder().id(1L).name(DefaultCategory.FOOD.name()).build();
         travel = Tag.builder().id(2L).name(DefaultCategory.TRAVEL.name()).build();
 

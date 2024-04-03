@@ -49,7 +49,7 @@ public class RecordFinderIntegrationTest {
     private LocalDate twoDaysAgo;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         accountBook = accountBook();
         accountBookRepository.save(accountBook);
         mainTag = Tag.of(DefaultTag.FOOD.getName());

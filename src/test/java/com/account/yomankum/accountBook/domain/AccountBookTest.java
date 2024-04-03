@@ -100,7 +100,7 @@ class AccountBookTest {
 
     @Test
     @DisplayName("대분류 태그를 추가한다")
-    void addMainTag(){
+    void add_mainTag(){
         int originMainTagSize = accountBook.getMainTags().size();
         Tag tag = Tag.builder().id(2L).name("new tag").build();
         accountBook.addTag(tag, ownerId);
@@ -111,7 +111,7 @@ class AccountBookTest {
 
     @Test
     @DisplayName("대분류 태그를 추가한다")
-    void removeMainTag(){
+    void remove_mainTag(){
         int originMainTagSize = accountBook.getMainTags().size();
         accountBook.deleteTag(tag, ownerId);
 

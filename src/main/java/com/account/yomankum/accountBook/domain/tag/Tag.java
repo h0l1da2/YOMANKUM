@@ -50,10 +50,6 @@ public class Tag {
         this.accountBook = accountBook;
     }
 
-    public void checkAuthorizedUser(Long userId) {
-        accountBook.checkAuthorizedUser(userId);
-    }
-
     public void update(String name, Long requesterId) {
         accountBook.checkAuthorizedUser(requesterId);
         this.name = name;
