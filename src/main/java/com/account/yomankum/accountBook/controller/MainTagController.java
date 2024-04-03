@@ -34,7 +34,7 @@ public class MainTagController {
     @PostMapping("/{accountBookId}")
     @Operation(summary = "대분류 태그 등록")
     public void registerMainTag(@PathVariable Long accountBookId, @RequestBody MainTagRequest mainTagRequest){
-        tagService.save(accountBookId, mainTagRequest);
+        tagService.create(accountBookId, mainTagRequest);
     }
 
     @PutMapping("/{tagId}")

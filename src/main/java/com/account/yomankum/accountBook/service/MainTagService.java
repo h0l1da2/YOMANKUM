@@ -18,7 +18,7 @@ public class MainTagService {
     private final MainTagRepository mainTagRepository;
     private final SessionService sessionService;
 
-    public void save(Long accountBookId, MainTagRequest mainTagCreateRequest) {
+    public void create(Long accountBookId, MainTagRequest mainTagCreateRequest) {
         AccountBook accountBook = accountBookFinder.findById(accountBookId);
         Tag tag = mainTagCreateRequest.toEntity();
         accountBook.addTag(tag, sessionService.getSessionUserId());
