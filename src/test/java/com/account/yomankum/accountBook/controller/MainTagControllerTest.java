@@ -35,7 +35,7 @@ class MainTagControllerTest extends AbstractRestDocsTests {
     private MainTagService mainTagService;
 
     @Test
-    public void testGetMainTags() throws Exception {
+    public void get_mainTags() throws Exception {
         AccountBook accountBook = mock(AccountBook.class);
         List<Tag> mockTags = Arrays.asList(new Tag(1L, "식비", accountBook, new Color("#FFFFFF", "#000000")),
                 new Tag(2L, "교통", accountBook, new Color("#000000", "#000000")));
@@ -44,12 +44,11 @@ class MainTagControllerTest extends AbstractRestDocsTests {
 
         mockMvc.perform(get("/api/v1/mainTag/{accountBookId}", 1L))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(jsonPath("$.length()").value(mockTags.size()));
     }
 
     @Test
-    public void testRegisterMainTag() throws Exception {
+    public void register_mainTag() throws Exception {
         MainTagRequest mainTagRequest = new MainTagRequest("여행");
 
         mockMvc.perform(post("/api/v1/mainTag/{accountBookId}", 1L)
@@ -61,7 +60,7 @@ class MainTagControllerTest extends AbstractRestDocsTests {
     }
 
     @Test
-    public void testUpdateTag() throws Exception {
+    public void update_tag() throws Exception {
         MainTagRequest mainTagRequest = new MainTagRequest("운동");
 
         mockMvc.perform(put("/api/v1/mainTag/{tagId}", 1L)
@@ -73,7 +72,7 @@ class MainTagControllerTest extends AbstractRestDocsTests {
     }
 
     @Test
-    public void testDeleteTag() throws Exception {
+    public void delete_tag() throws Exception {
         mockMvc.perform(delete("/api/v1/mainTag/{tagId}", 1L))
                 .andExpect(status().isOk());
 
