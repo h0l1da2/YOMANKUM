@@ -2,10 +2,17 @@ package com.account.yomankum.accountBook.controller;
 
 import com.account.yomankum.accountBook.domain.tag.Tag;
 import com.account.yomankum.accountBook.dto.request.MainTagRequest;
+import com.account.yomankum.accountBook.dto.response.TagResponse;
 import com.account.yomankum.accountBook.service.MainTagFinder;
 import com.account.yomankum.accountBook.service.MainTagService;
+import com.account.yomankum.statistics.service.impl.monthly.vo.MonthlyTotal;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,9 +33,9 @@ public class MainTagController {
     private final MainTagService tagService;
 
     @GetMapping("/{accountBookId}")
-    @Operation(summary = "특정 가계부에서 사용되는 모든 대분류 태그")
-    public List<Tag> getMainTags(@PathVariable Long accountBookId){
-        return tagFinder.findMainTagsByAccountBook(accountBookId);
+    @Operation(summary = "특정 가계부에서 사용되는 모든 대분류 태그", responses = {@ApiResponse(responseCode = "200", content = @Content(array = @ArraySchema(schema = @Schema(implementation = TagResponse.class))))})
+    public List<TagResponse> getMainTags(@PathVariable Long accountBookId){
+        return tagFinder.findMainTagsByAccountBook(accountBookId).stream().map(TagResponse::from).collect(Collectors.toList());
     }
 
     @PostMapping("/{accountBookId}")
