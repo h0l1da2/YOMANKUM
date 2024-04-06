@@ -6,6 +6,7 @@ import com.account.yomankum.security.oauth.filter.OAuth2JwtFilter;
 import com.account.yomankum.security.oauth.handler.CustomAccessDeniedHandler;
 import com.account.yomankum.security.oauth.handler.CustomAuthenticationEntryPoint;
 import com.account.yomankum.security.oauth.service.CustomDefaultOAuth2UserService;
+import com.account.yomankum.security.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +16,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -24,12 +26,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 class SecurityConfig {
 
-    private final CustomOAuth2AuthorizationRequestResolver authorizationRequestResolver;
-    private final CustomDefaultOAuth2UserService oAuth2UserService;
-    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
-    private final CustomAccessDeniedHandler accessDeniedHandler;
-    private final JwtFilter jwtFilter;
-    private final OAuth2JwtFilter oAuth2JwtFilter;
+    private final TokenService tokenService;
+    private final UserDetailsService userDetailsService;
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -45,6 +43,7 @@ class SecurityConfig {
     }
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        JwtFilter jwtFilter = new JwtFilter(tokenService, userDetailsService);
         return http
                 .csrf(AbstractHttpConfigurer::disable)
 

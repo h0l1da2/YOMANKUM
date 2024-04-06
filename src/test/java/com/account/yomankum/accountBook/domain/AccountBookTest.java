@@ -3,8 +3,12 @@ package com.account.yomankum.accountBook.domain;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.account.yomankum.accountBook.domain.record.Record;
+import com.account.yomankum.accountBook.domain.tag.Color;
+import com.account.yomankum.accountBook.domain.tag.Tag;
 import com.account.yomankum.common.exception.BadRequestException;
 import com.account.yomankum.common.exception.Exception;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,14 +21,19 @@ class AccountBookTest {
     private AccountBook accountBook;
     private Long ownerId;
     private Long otherUserId;
+    private Tag tag;
 
     @BeforeEach
     void setUp() {
         ownerId = 1L;
         otherUserId = 2L;
+        List<Tag> tags = new ArrayList<>();
+        tag = new Tag(1L,"main tag 1",accountBook, new Color());
+        tags.add(tag);
         accountBook = AccountBook.builder()
                 .id(1L)
                 .name(ACCOUNT_BOOK_NAME)
+                .mainTags(tags)
                 .build();
         setUserAsCreator(accountBook, ownerId);
     }
@@ -87,6 +96,27 @@ class AccountBookTest {
         BadRequestException exception = assertThrows(BadRequestException.class, () ->
                 accountBook.checkAuthorizedUser(otherUserId));
         assertEquals(Exception.ACCOUNT_BOOK_NOT_FOUND.getMessage(), exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("대분류 태그를 추가한다")
+    void add_mainTag(){
+        int originMainTagSize = accountBook.getMainTags().size();
+        Tag tag = Tag.builder().id(2L).name("new tag").build();
+        accountBook.addTag(tag, ownerId);
+
+        assertNotEquals(originMainTagSize, accountBook.getMainTags().size());
+        assertTrue(accountBook.getMainTags().contains(tag));
+    }
+
+    @Test
+    @DisplayName("대분류 태그를 추가한다")
+    void remove_mainTag(){
+        int originMainTagSize = accountBook.getMainTags().size();
+        accountBook.deleteTag(tag, ownerId);
+
+        assertNotEquals(originMainTagSize, accountBook.getMainTags().size());
+        assertTrue(accountBook.getMainTags().isEmpty());
     }
 
     private Record createNewRecord() {

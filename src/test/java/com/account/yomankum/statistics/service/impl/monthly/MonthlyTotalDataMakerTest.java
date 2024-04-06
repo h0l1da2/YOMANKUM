@@ -61,10 +61,10 @@ public class MonthlyTotalDataMakerTest {
         assertEquals(monthlyTotals.size(), 0);
     }
 
-    private Record makeRecord(RecordType type, long money, LocalDate date){
+    private Record makeRecord(RecordType type, long amount, LocalDate date){
         return Record.builder()
                 .recordType(type)
-                .money(money)
+                .amount(amount)
                 .date(date)
                 .build();
     }

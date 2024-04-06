@@ -1,9 +1,12 @@
 package com.account.yomankum.statistics.service;
 
+import com.account.yomankum.accountBook.domain.tag.Tag;
 import com.account.yomankum.statistics.dto.StatisticsResponse;
 import com.account.yomankum.statistics.service.impl.monthly.MonthlyTotalStatisticRequest;
-import com.account.yomankum.statistics.service.impl.tagRate.major.MajorTagRateStatisticsRequest;
-import com.account.yomankum.statistics.service.impl.tagRate.minor.MinorTagRateStatisticsRequest;
+import com.account.yomankum.statistics.service.impl.monthly.vo.MonthlyTotal;
+import com.account.yomankum.statistics.service.impl.tagRate.mainTag.MainTagRateStatisticsRequest;
+import com.account.yomankum.statistics.service.impl.tagRate.subTag.SubTagRateStatisticsRequest;
+import com.account.yomankum.statistics.service.impl.tagRate.vo.TagRate;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -19,16 +22,19 @@ public class StatisticsService {
                 .collect(Collectors.toMap(StatisticsHandler::getSupportType, service -> service));
     }
 
-    public List<StatisticsResponse> getMonthlyTotalData(MonthlyTotalStatisticRequest request) {
-        return services.get(StatisticsType.MONTHLY_TOTAL).getData(request);
+    public List<MonthlyTotal> getMonthlyTotalData(MonthlyTotalStatisticRequest request) {
+        return services.get(StatisticsType.MONTHLY_TOTAL).getData(request).stream()
+                .map(response -> (MonthlyTotal) response).collect(Collectors.toList());
     }
 
-    public List<StatisticsResponse> getMonthlyMajorTagRate(MajorTagRateStatisticsRequest request) {
-        return services.get(StatisticsType.MAJOR_TAG_RATE).getData(request);
+    public List<TagRate> getMonthlyMainTagRate(MainTagRateStatisticsRequest request) {
+        return services.get(StatisticsType.MAIN_TAG_RATE).getData(request).stream()
+                .map(response -> (TagRate) response).collect(Collectors.toList());
     }
 
-    public List<StatisticsResponse> getMonthlyMinorTagRate(MinorTagRateStatisticsRequest request) {
-        return services.get(StatisticsType.MINOR_TAG_RATE).getData(request);
+    public List<TagRate> getMonthlySubTagRate(SubTagRateStatisticsRequest request) {
+        return services.get(StatisticsType.SUB_TAG_RATE).getData(request).stream()
+                .map(response -> (TagRate) response).collect(Collectors.toList());
     }
 
 }

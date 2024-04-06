@@ -1,6 +1,7 @@
 package com.account.yomankum.accountBook.domain;
 
 import com.account.yomankum.accountBook.domain.record.Record;
+import com.account.yomankum.accountBook.domain.tag.Tag;
 import com.account.yomankum.common.domain.UserBaseEntity;
 import com.account.yomankum.common.exception.BadRequestException;
 import com.account.yomankum.common.exception.Exception;
@@ -40,6 +41,12 @@ public class AccountBook extends UserBaseEntity {
             orphanRemoval = true,
             fetch = FetchType.LAZY)
     private List<Record> records = new ArrayList<>();
+    @Default
+    @OneToMany(mappedBy = "accountBook",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY)
+    private List<Tag> mainTags = new ArrayList<>();
 
     public void updateName(String name, Long requesterId) {
         checkAuthorizedUser(requesterId);
@@ -61,10 +68,25 @@ public class AccountBook extends UserBaseEntity {
         records.remove(record);
     }
 
+    public void deleteTag(Tag tag, Long requesterId) {
+        checkAuthorizedUser(requesterId);
+        mainTags.remove(tag);
+    }
+
     // 보안을 위해 '접근권한이 없음'이 아닌 '가계부가 없음' 메세지를 준다.
     public void checkAuthorizedUser(Long requesterId) {
         if(!getCreateUserId().equals(requesterId)){
             throw new BadRequestException(Exception.ACCOUNT_BOOK_NOT_FOUND);
         }
+    }
+
+    public void addTag(Tag tag, Long requesterId){
+        checkAuthorizedUser(requesterId);
+        mainTags.add(tag);
+        tag.assignAccountBook(this);
+    }
+
+    public void addTags(List<Tag> tags, Long requesterId) {
+        tags.forEach(tag -> addTag(tag, requesterId));
     }
 }

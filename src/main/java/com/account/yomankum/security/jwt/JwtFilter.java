@@ -3,6 +3,7 @@ package com.account.yomankum.security.jwt;
 import com.account.yomankum.security.oauth.type.TokenProp;
 import com.account.yomankum.security.oauth.type.Tokens;
 import com.account.yomankum.security.service.TokenService;
+import com.account.yomankum.security.service.TokenServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -22,7 +23,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 @Slf4j
-@Component
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
 

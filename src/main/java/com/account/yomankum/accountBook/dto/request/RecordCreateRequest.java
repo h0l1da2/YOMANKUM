@@ -2,13 +2,12 @@ package com.account.yomankum.accountBook.dto.request;
 
 import com.account.yomankum.accountBook.domain.record.Record;
 import com.account.yomankum.accountBook.domain.record.RecordType;
+import com.account.yomankum.accountBook.domain.tag.Tag;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Set;
 import org.springframework.format.annotation.DateTimeFormat;
-
-import java.time.LocalDateTime;
 
 public record RecordCreateRequest (
         @NotBlank
@@ -16,20 +15,20 @@ public record RecordCreateRequest (
         String content,
         @NotBlank
         @Size(min = 1, max = 10)
-        String majorTag,
-        List<String> minorTag,
+        Long mainTagId,
+        Set<String> subTags,
         RecordType recordType,
-        int money,
+        long amount,
         @DateTimeFormat(pattern = "yyyy-MM-dd EEE")
         LocalDate date
 ){
-    public Record toEntity(){
+    public Record toEntity(Tag tag){
         return Record.builder()
                 .content(content)
-                .majorTag(majorTag)
-                .minorTag(minorTag)
+                .mainTag(tag)
+                .subTags(subTags)
                 .recordType(recordType)
-                .money(money)
+                .amount(amount)
                 .date(date)
                 .build();
     }

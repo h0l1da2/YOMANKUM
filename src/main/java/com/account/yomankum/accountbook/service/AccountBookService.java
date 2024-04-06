@@ -1,11 +1,13 @@
 package com.account.yomankum.accountBook.service;
 
 import com.account.yomankum.accountBook.domain.AccountBook;
+import com.account.yomankum.accountBook.domain.tag.DefaultTag;
+import com.account.yomankum.accountBook.domain.tag.MainTagRepository;
+import com.account.yomankum.accountBook.domain.tag.Tag;
 import com.account.yomankum.accountBook.dto.request.AccountBookCreateRequest;
-import com.account.yomankum.common.exception.BadRequestException;
-import com.account.yomankum.common.exception.Exception;
 import com.account.yomankum.common.service.SessionService;
 import com.account.yomankum.accountBook.domain.AccountBookRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +24,8 @@ public class AccountBookService {
     public Long create(AccountBookCreateRequest accountBookWriteDto) {
         AccountBook accountBook = accountBookWriteDto.toEntity();
         accountBookRepository.save(accountBook);
+        List<Tag> defaultTags = DefaultTag.getDefaultMainTags();
+        accountBook.addTags(defaultTags, sessionService.getSessionUserId());
         return accountBook.getId();
     }
 

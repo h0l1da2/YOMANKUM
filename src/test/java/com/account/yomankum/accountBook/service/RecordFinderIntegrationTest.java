@@ -9,11 +9,14 @@ import com.account.yomankum.accountBook.domain.AccountBookType;
 import com.account.yomankum.accountBook.domain.record.Record;
 import com.account.yomankum.accountBook.domain.record.RecordSearchCondition;
 import com.account.yomankum.accountBook.domain.record.RecordType;
+import com.account.yomankum.accountBook.domain.tag.DefaultTag;
+import com.account.yomankum.accountBook.domain.tag.MainTagRepository;
+import com.account.yomankum.accountBook.domain.tag.Tag;
 import com.account.yomankum.accountBook.dto.request.RecordCreateRequest;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,38 +39,47 @@ public class RecordFinderIntegrationTest {
     private RecordService recordService;
     @Autowired
     private AccountBookRepository accountBookRepository;
+    @Autowired
+    private MainTagRepository mainTagRepository;
 
     private AccountBook accountBook;
+    private Tag mainTag;
     private LocalDate today;
     private LocalDate yesterday;
     private LocalDate twoDaysAgo;
 
     @BeforeEach
-    public void setup() {
-        accountBook = createAccountBook();
+    void setup() {
+        accountBook = accountBook();
         accountBookRepository.save(accountBook);
+        mainTag = Tag.of(DefaultTag.FOOD.getName());
+        mainTagRepository.save(mainTag);
         today = LocalDate.now();
         yesterday = LocalDate.now().minusDays(1);
         twoDaysAgo = LocalDate.now().minusDays(2);
+        addRecord();
+    }
+
+    private void addRecord(){
         recordService.addRecord(accountBook.getId(),
-                makeRecordRequest("지출 내역1", today, "대분류1", RecordType.EXPENDITURE, 10000, "소분류1", "소분류2"));
+                makeRecordRequest("지출 내역1", today, mainTag.getId(), RecordType.EXPENDITURE, 10000, "소분류1", "소분류2"));
         recordService.addRecord(accountBook.getId(),
-                makeRecordRequest("지출 내역2", yesterday, "대분류2", RecordType.EXPENDITURE, 20000, "소분류2", "소분류3"));
+                makeRecordRequest("지출 내역2", yesterday, mainTag.getId(), RecordType.EXPENDITURE, 20000, "소분류2", "소분류3"));
         recordService.addRecord(accountBook.getId(),
-                makeRecordRequest("수입 내역1", twoDaysAgo, "대분류3", RecordType.INCOME, 30000, "소분류3","소분류4"));
+                makeRecordRequest("수입 내역1", twoDaysAgo, mainTag.getId(), RecordType.INCOME, 30000, "소분류3","소분류4"));
     }
 
     private RecordCreateRequest makeRecordRequest(
             String content,
             LocalDate date,
-            String majorTag,
+            Long mainTagId,
             RecordType recordType,
             int money,
-            String... minorTag) {
-        return new RecordCreateRequest(content, majorTag, Arrays.stream(minorTag).toList(), recordType, money, date);
+            String... subTags) {
+        return new RecordCreateRequest(content, mainTagId, Arrays.stream(subTags).collect(Collectors.toSet()), recordType, money, date);
     }
 
-    private AccountBook createAccountBook() {
+    private AccountBook accountBook() {
         return AccountBook.builder()
                 .type(AccountBookType.PRIVATE)
                 .name("test account book")
@@ -111,7 +123,7 @@ public class RecordFinderIntegrationTest {
         List<Record> records = recordFinder.searchRecords(accountBook.getId(), recordSearchCondition);
 
         assertEquals(1, records.size());
-        assertTrue(15000 <= records.get(0).getMoney() &&records.get(0).getRecordType() == RecordType.EXPENDITURE);
+        assertTrue(15000 <= records.get(0).getAmount() &&records.get(0).getRecordType() == RecordType.EXPENDITURE);
     }
 
     @Test
@@ -123,14 +135,14 @@ public class RecordFinderIntegrationTest {
         List<Record> records = recordFinder.searchRecords(accountBook.getId(), recordSearchCondition);
 
         assertEquals(2, records.size());
-        assertTrue(15000 <= records.get(0).getMoney());
-        assertTrue(15000 <= records.get(1).getMoney());
+        assertTrue(15000 <= records.get(0).getAmount());
+        assertTrue(15000 <= records.get(1).getAmount());
     }
 
     @Test
-    public void searchByMinorTag(){
+    public void searchBySubTag(){
         RecordSearchCondition recordSearchCondition = RecordSearchCondition.builder()
-                .minorTag("소분류3")
+                .subTagName("소분류3")
                 .pageSize(100)
                 .build();
         List<Record> records = recordFinder.searchRecords(accountBook.getId(), recordSearchCondition);

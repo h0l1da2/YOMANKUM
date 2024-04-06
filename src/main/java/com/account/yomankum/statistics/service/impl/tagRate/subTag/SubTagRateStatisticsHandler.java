@@ -1,4 +1,4 @@
-package com.account.yomankum.statistics.service.impl.tagRate.major;
+package com.account.yomankum.statistics.service.impl.tagRate.subTag;
 
 import com.account.yomankum.accountBook.domain.record.Record;
 import com.account.yomankum.accountBook.domain.record.RecordSearchCondition;
@@ -16,25 +16,26 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class MajorTagRateStatisticsHandler implements StatisticsHandler {
+public class SubTagRateStatisticsHandler implements StatisticsHandler {
 
     private final RecordFinder recordFinder;
 
     @Override
     public StatisticsType getSupportType() {
-        return StatisticsType.MAJOR_TAG_RATE;
+        return StatisticsType.SUB_TAG_RATE;
     }
 
     @Override
     public List<StatisticsResponse> getData(StatisticsRequest request) {
-        MajorTagRateStatisticsRequest param = (MajorTagRateStatisticsRequest) request;
+        SubTagRateStatisticsRequest param = (SubTagRateStatisticsRequest) request;
         YearMonth yearMonth = param.yearMonth();
         RecordType recordType = param.recordType();
         Long accountBookId = param.accountBookId();
+        Long mainTagId = param.mainTagId();
 
-        RecordSearchCondition condition = RecordSearchCondition.of(yearMonth, recordType);
+        RecordSearchCondition condition = RecordSearchCondition.of(yearMonth, recordType, mainTagId);
         List<Record> records = recordFinder.searchRecords(accountBookId, condition);
-        return MajorTagRateDataMaker.createMajorTagRateData(records)
+        return SubTagRateDataMaker.createSubTagRateData(records)
                 .stream().map(data -> (StatisticsResponse) data).collect(Collectors.toList());
     }
 
