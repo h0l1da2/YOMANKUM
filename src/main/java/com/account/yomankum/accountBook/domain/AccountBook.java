@@ -5,22 +5,16 @@ import com.account.yomankum.accountBook.domain.tag.Tag;
 import com.account.yomankum.common.domain.UserBaseEntity;
 import com.account.yomankum.common.exception.BadRequestException;
 import com.account.yomankum.common.exception.Exception;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.List;
+import jakarta.persistence.*;
 import jdk.jfr.Name;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Builder.Default;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Builder
@@ -47,6 +41,12 @@ public class AccountBook extends UserBaseEntity {
             orphanRemoval = true,
             fetch = FetchType.LAZY)
     private List<Tag> mainTags = new ArrayList<>();
+    @Default
+    @OneToMany(mappedBy = "accountBook",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY)
+    private List<AccountBookUser> accountBookUsers = new ArrayList<>();
 
     public void updateName(String name, Long requesterId) {
         checkAuthorizedUser(requesterId);

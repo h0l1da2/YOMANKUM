@@ -1,5 +1,6 @@
 package com.account.yomankum.user.domain;
 
+import com.account.yomankum.accountBook.domain.AccountBookUser;
 import com.account.yomankum.user.domain.type.Gender;
 import com.account.yomankum.user.dto.request.FirstLoginUserInfoSaveDto;
 import com.account.yomankum.user.dto.request.UserInfoUpdateDto;
@@ -8,6 +9,8 @@ import lombok.*;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -32,6 +35,13 @@ public class User {
     private UserType userType;
     private String job;
     private Integer salary;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "accountBook",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY)
+    private List<AccountBookUser> accountBooks = new ArrayList<>();
 
     private Instant joinDatetime;
     private Instant lastLoginDatetime; // 마지막 로그인이 NULL 일 경우, 첫 로그인
