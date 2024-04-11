@@ -2,6 +2,7 @@ package com.account.yomankum.security.token;
 
 import com.account.yomankum.security.oauth.type.TokenProp;
 import com.account.yomankum.security.oauth.type.Tokens;
+import com.account.yomankum.user.domain.UserType;
 import com.account.yomankum.user.domain.type.RoleName;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -34,8 +35,8 @@ public class TokenProvider {
         key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String createToken(Long id, String username, RoleName name) {
-        Claims claims = getClaims(Tokens.ACCESS_TOKEN, id, username, name);
+    public String createToken(Long id, String username, UserType userType) {
+        Claims claims = getClaims(Tokens.ACCESS_TOKEN, id, username, userType);
 
     return Jwts.builder()
             .header().add(TokenProp.TYP.getName(), TokenProp.BEARER.getName()).and()
@@ -60,14 +61,14 @@ public class TokenProvider {
                 .expiration(new Date(nowDate().getTime() + refreshTokenValidTime))
                 .build();
     }
-    private Claims getClaims(Tokens tokenType, Long id, String nickname, RoleName name) {
+    private Claims getClaims(Tokens tokenType, Long id, String nickname, UserType userType) {
         return Jwts.claims()
                 .subject(tokenType.toString())
                 .issuedAt(nowDate())
                 .expiration(new Date(nowDate().getTime() + tokenValidTime))
                 .add(TokenProp.ID.getName(), id.toString())
                 .add(TokenProp.NICKNAME.getName(), nickname)
-                .add(TokenProp.ROLE.getName(), name)
+                .add(TokenProp.ROLE.getName(), userType)
                 .build();
     }
 

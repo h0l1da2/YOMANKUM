@@ -28,6 +28,8 @@ public class User {
     private LocalDate birthday;
     @Enumerated(EnumType.STRING)
     private Gender gender;
+    @Enumerated(EnumType.STRING)
+    private UserType userType;
     private String job;
     private Integer salary;
 
