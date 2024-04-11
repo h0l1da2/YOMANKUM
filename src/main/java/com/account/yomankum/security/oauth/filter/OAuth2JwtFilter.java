@@ -10,6 +10,7 @@ import com.account.yomankum.security.oauth.user.SnsInfo;
 import com.account.yomankum.security.service.SnsUserService;
 import com.account.yomankum.security.service.TokenService;
 import com.account.yomankum.user.domain.SnsUser;
+import com.account.yomankum.user.domain.UserType;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -86,7 +87,7 @@ public class OAuth2JwtFilter{
 
         // 토큰 만들기
         SnsUser snsUser = snsUserService.login(snsEnum, snsUuidKey); // throws UserNotFoundException
-        String accessToken = tokenService.creatToken(snsUser.getId(), snsUser.getNickname(), snsUser.getRole().getRoleName());
+        String accessToken = tokenService.creatToken(snsUser.getId(), snsUser.getNickname(), UserType.USER);
         String refreshToken = tokenService.createRefreshToken();
 
         setAuthenticationInSpringContext(sns, tokenResponse, accessToken);

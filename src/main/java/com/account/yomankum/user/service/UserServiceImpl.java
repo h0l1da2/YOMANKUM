@@ -70,7 +70,7 @@ public class UserServiceImpl implements UserService {
 
         findUser.updateLastLoginDatetime();
 
-        String accessToken = tokenService.creatToken(findUser.getId(), findUser.getNickname(), findUser.getRole().getRoleName());
+        String accessToken = tokenService.creatToken(findUser.getId(), findUser.getNickname(), findUser.getUserType());
         String refreshToken = tokenService.createRefreshToken();
 
         return LoginResDto.of(accessToken, refreshToken, findUser);
