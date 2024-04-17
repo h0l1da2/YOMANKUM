@@ -1,29 +1,16 @@
 package com.account.yomankum.accountBook.domain.record;
 
 import com.account.yomankum.accountBook.domain.AccountBook;
+import com.account.yomankum.accountBook.domain.AccountBookUser;
 import com.account.yomankum.accountBook.domain.tag.Tag;
 import com.account.yomankum.accountBook.dto.request.RecordUpdateRequest;
 import com.account.yomankum.common.domain.UserBaseEntity;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
+import jdk.jfr.Name;
+import lombok.*;
+
 import java.time.LocalDate;
 import java.util.Set;
-import jdk.jfr.Name;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
-import lombok.Setter;
 
 @Entity
 @Builder
@@ -48,6 +35,9 @@ public class Record extends UserBaseEntity {
     private RecordType recordType;
     private long amount;
     private LocalDate date;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "accountBookUser_id")
+    private AccountBookUser accountBookUser;
 
     public void appointAccountBook(AccountBook accountBook) {
         this.accountBook = accountBook;

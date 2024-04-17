@@ -1,6 +1,8 @@
 package com.account.yomankum.user.domain;
 
 import com.account.yomankum.accountBook.domain.AccountBookUser;
+import com.account.yomankum.common.exception.BadRequestException;
+import com.account.yomankum.common.exception.Exception;
 import com.account.yomankum.user.domain.type.Gender;
 import com.account.yomankum.user.dto.request.FirstLoginUserInfoSaveDto;
 import com.account.yomankum.user.dto.request.UserInfoUpdateDto;
@@ -68,5 +70,17 @@ public class User {
         this.birthday = dto.birthDate();
         this.job = dto.job();
         this.salary = dto.salary();
+    }
+
+    // 보안을 위해 '접근권한이 없음'이 아닌 '가계부가 없음' 메세지를 준다.
+    public void checkAuthorizedUser(Long requesterId) {
+        if(!id.equals(requesterId)){
+            throw new BadRequestException(Exception.USER_NOT_FOUND);
+        }
+    }
+
+    public void addAccountBook(AccountBookUser accountBookUser, Long requesterId) {
+        checkAuthorizedUser(requesterId);
+        accountBooks.add(accountBookUser);
     }
 }

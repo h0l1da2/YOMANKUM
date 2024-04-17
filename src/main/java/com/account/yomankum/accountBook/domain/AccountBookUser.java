@@ -20,10 +20,10 @@ public class AccountBookUser extends UserBaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Name("userAccountBook_id")
     private Long id;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "accountBook_id")
     private AccountBook accountBook;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private User user;
     private String nickname;
