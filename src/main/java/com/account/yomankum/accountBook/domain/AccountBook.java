@@ -89,4 +89,8 @@ public class AccountBook extends UserBaseEntity {
     public void addTags(List<Tag> tags, Long requesterId) {
         tags.forEach(tag -> addTag(tag, requesterId));
     }
+
+    public void addAccountBookUser(AccountBookUser accountBookUser) {
+        accountBookUsers.add(accountBookUser);
+    }
 }
