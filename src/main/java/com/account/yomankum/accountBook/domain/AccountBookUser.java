@@ -29,4 +29,6 @@ public class AccountBookUser extends UserBaseEntity {
     private String nickname;
     @Enumerated(EnumType.STRING)
     private AccountBookRole accountBookRole;
+    @Enumerated(EnumType.STRING)
+    private UserStatus status;
 }

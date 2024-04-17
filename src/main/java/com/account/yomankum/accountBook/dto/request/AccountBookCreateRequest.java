@@ -1,9 +1,6 @@
 package com.account.yomankum.accountBook.dto.request;
 
-import com.account.yomankum.accountBook.domain.AccountBook;
-import com.account.yomankum.accountBook.domain.AccountBookRole;
-import com.account.yomankum.accountBook.domain.AccountBookType;
-import com.account.yomankum.accountBook.domain.AccountBookUser;
+import com.account.yomankum.accountBook.domain.*;
 import com.account.yomankum.user.domain.User;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -31,6 +28,7 @@ public record AccountBookCreateRequest (
                 .user(user)
                 .nickname(nickname)
                 .accountBookRole(role)
+                .status(UserStatus.PARTICIPATING)
                 .build();
     }
 

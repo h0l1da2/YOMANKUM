@@ -41,6 +41,7 @@ public class AccountBookService {
         AccountBookUser accountBookUser =
                 accountBookUserRepository.save(accountBookWriteDto.toAccountBookUserEntity(accountBook, user));
         user.addAccountBook(accountBookUser, sessionUserId);
+        accountBook.addAccountBookUser(accountBookUser);
         return accountBook.getId();
     }
 
