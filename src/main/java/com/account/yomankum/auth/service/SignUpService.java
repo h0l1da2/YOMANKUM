@@ -6,14 +6,10 @@ import com.account.yomankum.common.exception.BadRequestException;
 import com.account.yomankum.common.exception.Exception;
 import com.account.yomankum.mail.SendMailRequest;
 import com.account.yomankum.mail.service.MailService;
-import com.account.yomankum.mail.service.MailServiceTemp;
-import com.account.yomankum.security.service.TokenService;
 import com.account.yomankum.user.domain.User;
 import com.account.yomankum.user.service.UserFinder;
 import com.account.yomankum.user.service.UserService;
 import com.account.yomankum.util.RandomCodeGenerator;
-import com.account.yomankum.util.RedisUtil;
-import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -28,19 +24,24 @@ public class SignUpService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final SignupAuthCodeRepository signupAuthCodeRepository;
     private final MailService mailService;
-    @Value("${mail.template.signup}")
-    private final String mailTemplatePath;
 
-    public void sendAuthCode(String email) {
+    @Value("${mail.template.signup}")
+    private String signupMailTemplate;
+
+    public void sendAuthCodeMail(String email) {
         String randomCode = RandomCodeGenerator.generateFiveDigitsCode();
         signupAuthCodeRepository.saveCodeByEmail(email, randomCode);
-        SendMailRequest request = new SendMailRequest(mailTemplatePath, email);
+        SendMailRequest request = SendMailRequest.signUpMailRequest(signupMailTemplate, email, randomCode);
         mailService.sendMail(request);
     }
 
     public boolean verifyEmailCode(String email, String inputCode) {
         String originalCode = signupAuthCodeRepository.findByEmail(email);
-        return inputCode.equals(originalCode);
+        if(inputCode.equals(originalCode)){
+            signupAuthCodeRepository.deleteCodeByEmail(email);
+            return true;
+        }
+        return false;
     }
 
     public void signUp(UserSignUpRequest userSignUpDto) {
