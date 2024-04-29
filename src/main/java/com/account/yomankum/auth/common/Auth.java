@@ -1,4 +1,4 @@
-package com.account.yomankum.auth;
+package com.account.yomankum.auth.common;
 import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 

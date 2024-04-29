@@ -1,8 +1,7 @@
-package com.account.yomankum.auth.infra;
+package com.account.yomankum.auth.local.infra;
 
-import com.account.yomankum.auth.repository.SignupAuthCodeRepository;
+import com.account.yomankum.auth.local.repository.SignupAuthCodeRepository;
 import lombok.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Repository;
 

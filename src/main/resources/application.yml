@@ -123,6 +123,9 @@ token:
 
 mail:
   id: ${MAIL_ID}
+  template:
+    signup: email/joinMailForm
+    password: email/passwordResetMailForm
 
 springdoc:
   packages-to-scan: com.account.yomankum
@@ -138,6 +141,12 @@ commit:
   final:
     number: 68
     datetime: 2024-03-19 23:47
+
+auth:
+  code:
+    duration:
+      signup: 900
+      password: 900
 
 ---
 spring:

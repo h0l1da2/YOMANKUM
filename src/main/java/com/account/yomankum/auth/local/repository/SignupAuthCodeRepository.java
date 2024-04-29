@@ -1,4 +1,4 @@
-package com.account.yomankum.auth.repository;
+package com.account.yomankum.auth.local.repository;
 
 public interface SignupAuthCodeRepository {
     void saveCodeByEmail(String mail, String randomCode);

@@ -1,8 +1,8 @@
-package com.account.yomankum.auth.controller;
+package com.account.yomankum.auth.local.controller;
 
-import com.account.yomankum.auth.dto.request.UserSignUpRequest;
-import com.account.yomankum.auth.service.SignUpService;
-import com.account.yomankum.auth.dto.MailDto;
+import com.account.yomankum.auth.local.dto.request.UserSignUpRequest;
+import com.account.yomankum.auth.local.dto.MailDto;
+import com.account.yomankum.auth.local.service.SignUpService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -25,10 +25,10 @@ public class SignUpController {
         signUpService.signUp(userSignUpDto);
     }
 
-    @PostMapping("/send/mail/{mail}")
+    @PostMapping("/send/mail/{email}")
     @Operation(summary = "이메일 인증 메일 전송", description = "인증 메일 보내기")
-    public void sendEmailCode(@PathVariable String mail) {
-        signUpService.sendAuthCode(mail);
+    public void sendEmailCode(@PathVariable String email) {
+        signUpService.sendAuthCodeMail(email);
     }
 
     @PostMapping("/check/code")

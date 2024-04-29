@@ -1,4 +1,4 @@
-package com.account.yomankum.auth;
+package com.account.yomankum.auth.common;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;

@@ -1,7 +1,7 @@
-package com.account.yomankum.auth.service;
+package com.account.yomankum.auth.local.service;
 
-import com.account.yomankum.auth.dto.request.UserSignUpRequest;
-import com.account.yomankum.auth.repository.SignupAuthCodeRepository;
+import com.account.yomankum.auth.local.dto.request.UserSignUpRequest;
+import com.account.yomankum.auth.local.repository.SignupAuthCodeRepository;
 import com.account.yomankum.common.exception.BadRequestException;
 import com.account.yomankum.common.exception.Exception;
 import com.account.yomankum.mail.SendMailRequest;

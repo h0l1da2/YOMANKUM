@@ -11,12 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static com.account.yomankum.user.dto.MailDto.EmailCodeDto;
-import static com.account.yomankum.user.dto.MailDto.EmailRequestDto;
-import static com.account.yomankum.user.dto.UserDto.UserSignUpDto;
+import static com.account.yomankum.auth.local.dto.MailDto.EmailCodeDto;
+import static com.account.yomankum.auth.local.dto.MailDto.EmailRequestDto;
+import static com.account.yomankum.user.dto.UserDto.UserSignUpRequest;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -42,7 +41,7 @@ class SignUpControllerTest {
     @Test
     @DisplayName("회원가입 성공 : 성공")
     void 회원가입_성공() throws Exception {
-        UserSignUpDto userSignUpDto = getUserSignUpDto();
+        UserSignUpRequest userSignUpDto = getUserSignUpDto();
         mockMvc.perform(
                 post("/api/v1/sign-up")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -56,7 +55,7 @@ class SignUpControllerTest {
     @DisplayName("회원가입 실패 : 아이디 NULL")
     void 회원가입_실패_아이디_NULL() throws Exception {
 
-        UserSignUpDto userSignUpDto = UserSignUpDto.builder()
+        UserSignUpRequest userSignUpDto = UserSignUpRequest.builder()
                 .password("password").build();
 
         mockMvc.perform(
@@ -72,7 +71,7 @@ class SignUpControllerTest {
     @DisplayName("회원가입 실패 : 비밀번호 NULL")
     void 회원가입_실패_비밀번호_NULL() throws Exception {
 
-        UserSignUpDto userSignUpDto = UserSignUpDto.builder()
+        UserSignUpRequest userSignUpDto = UserSignUpRequest.builder()
                 .email("email@naver.com").build();
 
         mockMvc.perform(
@@ -88,7 +87,7 @@ class SignUpControllerTest {
     @DisplayName("회원가입 실패 : 이메일 형식 이상")
     void 회원가입_실패_이메일형식_FAIL() throws Exception {
 
-        UserSignUpDto userSignUpDto = UserSignUpDto.builder()
+        UserSignUpRequest userSignUpDto = UserSignUpRequest.builder()
                 .email("email").password("1234aaaa").build();
 
         mockMvc.perform(
@@ -104,7 +103,7 @@ class SignUpControllerTest {
     @DisplayName("회원가입 실패 : 비밀번호 5자 이하")
     void 회원가입_실패_비밀번호_5자이하() throws Exception {
 
-        UserSignUpDto userSignUpDto = UserSignUpDto.builder()
+        UserSignUpRequest userSignUpDto = UserSignUpRequest.builder()
                 .email("email@naver.com").password("12345").build();
 
         mockMvc.perform(
@@ -120,7 +119,7 @@ class SignUpControllerTest {
     @DisplayName("회원가입 성공 : 비밀번호 6자 이상")
     void 회원가입_성공_비밀번호_6자이상() throws Exception {
 
-        UserSignUpDto userSignUpDto = UserSignUpDto.builder()
+        UserSignUpRequest userSignUpDto = UserSignUpRequest.builder()
                 .email("email@naver.com").password("123456a!").build();
 
         mockMvc.perform(
@@ -193,8 +192,8 @@ class SignUpControllerTest {
                 .build();
     }
 
-    private UserSignUpDto getUserSignUpDto() {
-        return UserSignUpDto.builder()
+    private UserSignUpRequest getUserSignUpDto() {
+        return UserSignUpRequest.builder()
                 .email("email@naver.com")
                 .password("password!123")
                 .build();
