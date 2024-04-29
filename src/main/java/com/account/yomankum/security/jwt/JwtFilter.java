@@ -2,8 +2,7 @@ package com.account.yomankum.security.jwt;
 
 import com.account.yomankum.security.oauth.type.TokenProp;
 import com.account.yomankum.security.oauth.type.Tokens;
-import com.account.yomankum.security.service.TokenService;
-import com.account.yomankum.security.service.TokenServiceImpl;
+import com.account.yomankum.auth.common.jwt.TokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -16,7 +15,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -48,7 +46,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         setAuthenticationToSecurityContextHolder(token);
 
-        response.setHeader(HttpHeaders.AUTHORIZATION, TokenProp.BEARER.getName() + " " + token);
+        response.setHeader(HttpHeaders.AUTHORIZATION, TokenProp.BEARER.getKey() + " " + token);
         setCookieInRefreshToken(response, refreshToken);
 
         filterChain.doFilter(request, response);
