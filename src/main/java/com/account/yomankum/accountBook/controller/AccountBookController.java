@@ -1,6 +1,7 @@
 package com.account.yomankum.accountBook.controller;
 
 import com.account.yomankum.accountBook.dto.request.AccountBookCreateRequest;
+import com.account.yomankum.accountBook.dto.request.AccountBookInviteRequest;
 import com.account.yomankum.accountBook.dto.response.AccountBookSimpleDto;
 import com.account.yomankum.accountBook.service.AccountBookFinder;
 import com.account.yomankum.accountBook.service.AccountBookService;
@@ -37,6 +38,11 @@ public class AccountBookController {
     @GetMapping
     public List<AccountBookSimpleDto> get(){
         return accountBookFinder.findByUser();
+    }
+
+    @PostMapping("/{id}/invite")
+    public void invite(@PathVariable("id") Long id, @RequestBody AccountBookInviteRequest accountBookInviteRequest) {
+        accountBookService.invite(id, accountBookInviteRequest);
     }
 
 }

@@ -75,7 +75,11 @@ public class AccountBook extends UserBaseEntity {
 
     // 보안을 위해 '접근권한이 없음'이 아닌 '가계부가 없음' 메세지를 준다.
     public void checkAuthorizedUser(Long requesterId) {
-        if(!getCreateUserId().equals(requesterId)){
+        // 유저목록을 하나씩 돌면서 실제 있는 유저인지 확인한다.
+        boolean checkUser = accountBookUsers.stream()
+                .noneMatch(accountBookUser ->
+                        accountBookUser.getUser().getId().equals(requesterId));
+        if(!checkUser){
             throw new BadRequestException(Exception.ACCOUNT_BOOK_NOT_FOUND);
         }
     }

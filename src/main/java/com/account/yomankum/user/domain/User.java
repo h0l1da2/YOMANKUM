@@ -39,7 +39,7 @@ public class User {
     private Integer salary;
 
     @Builder.Default
-    @OneToMany(mappedBy = "accountBook",
+    @OneToMany(mappedBy = "user",
             cascade = CascadeType.ALL,
             orphanRemoval = true,
             fetch = FetchType.LAZY)
@@ -79,8 +79,8 @@ public class User {
         }
     }
 
-    public void addAccountBook(AccountBookUser accountBookUser, Long requesterId) {
-        checkAuthorizedUser(requesterId);
+    public void addAccountBook(AccountBookUser accountBookUser) {
+        checkAuthorizedUser(accountBookUser.getId());
         accountBooks.add(accountBookUser);
     }
 }
