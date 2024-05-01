@@ -1,15 +1,16 @@
-package com.account.yomankum.auth.service;
+package com.account.yomankum.auth.local.service;
 
-import com.account.yomankum.auth.dto.response.LoginResDto;
+import com.account.yomankum.auth.common.jwt.TokenService;
+import com.account.yomankum.auth.local.dto.request.LoginRequest;
+import com.account.yomankum.auth.local.dto.response.LoginResDto;
 import com.account.yomankum.common.exception.BadRequestException;
 import com.account.yomankum.common.exception.Exception;
 import com.account.yomankum.user.domain.User;
-import com.account.yomankum.user.dto.UserDto;
 import com.account.yomankum.user.dto.request.FirstLoginUserInfoSaveDto;
 import com.account.yomankum.user.service.UserFinder;
+import com.account.yomankum.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,22 +19,16 @@ import org.springframework.transaction.annotation.Transactional;
 public class LoginService {
 
     private final UserFinder userFinder;
+    private final UserService userService;
     private final PasswordEncoder passwordEncoder;
+    private final TokenService tokenService;
 
     @Transactional
-    public LoginResDto login(UserDto.UserLoginDto userLoginDto) {
-        String email = userLoginDto.email();
-        String password = userLoginDto.password();
+    public LoginResDto login(LoginRequest loginRequest) {
+        User findUser = userFinder.findByEmail(loginRequest.email()).orElseThrow(this::authenticateFailException);
 
-        User findUser = userFinder.findByEmail(email)
-                .orElseThrow(() -> new BadRequestException(Exception.USER_NOT_FOUND));
-        String findUserPassword = findUser.getPassword();
-
-        boolean pwdMatches = passwordEncoder.matches(password, findUserPassword);
-
-        if (!pwdMatches) {
-            log.error("비밀번호가 안 맞음");
-            throw new BadRequestException(Exception.USER_NOT_FOUND);
+        if (!passwordEncoder.matches(loginRequest.password(), findUser.getPassword())) {
+            throw authenticateFailException();
         }
 
         findUser.updateLastLoginDatetime();
@@ -45,11 +40,12 @@ public class LoginService {
     }
 
     public void saveFirstLoginUserInfo(Long userId, FirstLoginUserInfoSaveDto dto) {
-        User findUser = userRepository.findById(userId)
-                .orElseThrow(() -> new BadRequestException(Exception.USER_NOT_FOUND));
+        userService.updateUserInfo(userId, dto.toUserInfoUpdateDto());
+    }
 
-        findUser.updateFirstUserInfo(dto);
-        userRepository.save(findUser);
+    // 보안의 이유로 로그인 실패 시 user not found 에러 던지는 것으로 통일
+    private BadRequestException authenticateFailException(){
+        return new BadRequestException(Exception.USER_NOT_FOUND);
     }
 
 }

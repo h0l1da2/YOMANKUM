@@ -1,4 +1,4 @@
-package com.account.yomankum.auth.dto.response;
+package com.account.yomankum.auth.local.dto.response;
 
 import com.account.yomankum.user.domain.User;
 import lombok.Builder;

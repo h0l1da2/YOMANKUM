@@ -1,4 +1,4 @@
-package com.account.yomankum.auth;
+package com.account.yomankum.auth.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

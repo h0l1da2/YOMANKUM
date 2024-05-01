@@ -1,11 +1,11 @@
-package com.account.yomankum.auth.controller;
+package com.account.yomankum.auth.local.controller;
 
-import com.account.yomankum.auth.Auth;
-import com.account.yomankum.auth.LoginUser;
-import com.account.yomankum.auth.service.LoginService;
+import com.account.yomankum.auth.common.Auth;
+import com.account.yomankum.auth.common.LoginUser;
+import com.account.yomankum.auth.local.dto.request.LoginRequest;
+import com.account.yomankum.auth.local.dto.response.LoginResDto;
+import com.account.yomankum.auth.local.service.LoginService;
 import com.account.yomankum.user.dto.request.FirstLoginUserInfoSaveDto;
-import com.account.yomankum.auth.dto.response.LoginResDto;
-import com.account.yomankum.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -29,8 +29,8 @@ public class LoginController {
 
     @PostMapping
     @Operation(summary = "일반 회원 로그인", description = "일반 회원용 로그인")
-    public LoginResDto login(@RequestBody @Valid UserLoginDto userLoginDto) {
-        return loginService.login(userLoginDto);
+    public LoginResDto login(@RequestBody @Valid LoginRequest loginRequest) {
+        return loginService.login(loginRequest);
     }
 
     @PostMapping("/first")
