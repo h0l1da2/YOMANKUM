@@ -1,19 +1,42 @@
 package com.account.yomankum.user.service;
 
-import com.account.yomankum.security.service.CustomUserDetails;
-import com.account.yomankum.user.dto.request.FirstLoginUserInfoSaveDto;
-import com.account.yomankum.user.dto.request.UserInfoUpdateDto;
-import com.account.yomankum.user.dto.response.LoginResDto;
-import com.account.yomankum.user.dto.response.UserInfoDto;
+import com.account.yomankum.common.exception.BadRequestException;
+import com.account.yomankum.common.exception.Exception;
+import com.account.yomankum.user.domain.User;
+import com.account.yomankum.user.dto.request.UserInfoUpdateRequest;
+import com.account.yomankum.user.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
-import static com.account.yomankum.user.dto.UserDto.UserLoginDto;
-import static com.account.yomankum.user.dto.UserDto.UserSignUpDto;
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class UserService {
 
-public interface UserService {
-    void signUp(UserSignUpDto userSignUpDto);
-    LoginResDto login(UserLoginDto userLoginDto);
-    UserInfoDto getUserInfo(CustomUserDetails userDetails);
-    void updatePassword(String uuid, String password);
-    void saveFirstLoginUserInfo(FirstLoginUserInfoSaveDto firstLoginUserInfoSaveDto);
-    void updateUserInfo(CustomUserDetails userDetails, UserInfoUpdateDto dto);
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    public void create(User user) {
+        userRepository.save(user);
+    }
+
+    public void updateUserInfo(Long userId, UserInfoUpdateRequest request) {
+        User findUser = userRepository.findById(userId)
+                .orElseThrow(() -> new BadRequestException(Exception.USER_NOT_FOUND));
+        findUser.updateUserInfo(request);
+    }
+
+    public void updatePassword(Long userId, String password){
+        User findUser = userRepository.findById(userId)
+                .orElseThrow(()->new BadRequestException(Exception.USER_NOT_FOUND));
+        findUser.updatePassword(passwordEncoder, password);
+    }
+
+    public void updatePassword(String email, String password){
+        User findUser = userRepository.findByEmail(email)
+                .orElseThrow(()->new BadRequestException(Exception.USER_NOT_FOUND));
+        findUser.updatePassword(passwordEncoder, password);
+    }
 }

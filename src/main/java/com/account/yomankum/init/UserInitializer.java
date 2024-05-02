@@ -1,15 +1,10 @@
 package com.account.yomankum.init;
 
-import com.account.yomankum.user.domain.Role;
 import com.account.yomankum.user.domain.User;
 import com.account.yomankum.user.domain.UserType;
-import com.account.yomankum.user.domain.type.RoleName;
-import com.account.yomankum.user.dto.UserDto.UserSignUpDto;
 import com.account.yomankum.user.repository.UserRepository;
-import com.account.yomankum.user.service.UserService;
 import jakarta.annotation.PostConstruct;
-import java.time.Instant;
-import java.util.List;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -36,12 +31,11 @@ public class UserInitializer {
 
     private User newUser(String email){
         return User.builder()
-                .role(new Role(RoleName.ROLE_USER))
                 .userType(UserType.USER)
                 .email(email)
                 .userType(UserType.ADMIN)
                 .password(passwordEncoder.encode(COMMON_PWD))
-                .pwdChangeDatetime(Instant.now())
+                .pwdChangeDatetime(LocalDateTime.now())
                 .build();
     }
 
