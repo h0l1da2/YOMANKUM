@@ -1,13 +1,13 @@
 package com.account.yomankum.user.domain;
 
 import com.account.yomankum.user.domain.type.Gender;
-import com.account.yomankum.user.dto.request.FirstLoginUserInfoSaveDto;
-import com.account.yomankum.user.dto.request.UserInfoUpdateDto;
+import com.account.yomankum.user.dto.request.UserInfoUpdateRequest;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -24,39 +24,39 @@ public class User {
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Role role;
     private String nickname;
+    @Enumerated(EnumType.STRING)
+    private UserType userType;
+    @Enumerated(EnumType.STRING)
+    private AuthType authType;
 
     private LocalDate birthday;
     @Enumerated(EnumType.STRING)
     private Gender gender;
-    @Enumerated(EnumType.STRING)
-    private UserType userType;
     private String job;
     private Integer salary;
 
-    private Instant joinDatetime;
-    private Instant lastLoginDatetime; // 마지막 로그인이 NULL 일 경우, 첫 로그인
-    private Instant stopDatetime;
-    private Instant pwdChangeDatetime;
-    private Instant removeDatetime;
+//    @Embedded
+//    private UserAdditionalInfo additionalInfo;
 
-    public void updatePassword(String password) {
-        this.password = password;
+    private LocalDateTime joinDatetime;
+    private LocalDateTime lastLoginDatetime;
+    private LocalDateTime stopDatetime;
+    private LocalDateTime pwdChangeDatetime;
+    private LocalDateTime removeDatetime;
+
+
+    public void updatePassword(PasswordEncoder passwordEncoder, String password) {
+        this.password = passwordEncoder.encode(password);
     }
 
     public void updateLastLoginDatetime() {
-        this.lastLoginDatetime = Instant.now();
+        this.lastLoginDatetime = LocalDateTime.now();
     }
 
-    public void updateFirstUserInfo(FirstLoginUserInfoSaveDto dto) {
-        this.nickname = dto.nickname();
-        this.gender = dto.gender();
-        this.birthday = dto.birthDate();
-    }
-
-    public void updateUserInfo(UserInfoUpdateDto dto) {
-        this.gender = dto.gender();
-        this.birthday = dto.birthDate();
-        this.job = dto.job();
-        this.salary = dto.salary();
+    public void updateUserInfo(UserInfoUpdateRequest request) {
+        this.gender = request.gender();
+        this.birthday = request.birthDate();
+        this.job = request.job();
+        this.salary = request.salary();
     }
 }
