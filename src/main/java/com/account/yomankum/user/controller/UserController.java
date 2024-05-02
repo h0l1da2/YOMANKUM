@@ -1,18 +1,17 @@
 package com.account.yomankum.user.controller;
 
-import com.account.yomankum.security.service.CustomUserDetails;
-import com.account.yomankum.user.dto.request.UserInfoUpdateDto;
+import com.account.yomankum.auth.common.Auth;
+import com.account.yomankum.auth.common.LoginUser;
+import com.account.yomankum.user.dto.request.UserInfoUpdateRequest;
 import com.account.yomankum.user.dto.response.UserInfoDto;
+import com.account.yomankum.user.service.UserFinder;
 import com.account.yomankum.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.security.Principal;
 
 @Slf4j
 @RestController
@@ -22,23 +21,23 @@ import java.security.Principal;
 public class UserController {
 
     private final UserService userService;
+    private final UserFinder userFinder;
 
-    @GetMapping("/my-page")
-    @Operation(summary = "마이 페이지", description = "마이 페이지 정보 가져오기")
-    public UserInfoDto myPage(@AuthenticationPrincipal Principal principal) {
-        return userService.getUserInfo((CustomUserDetails) principal);
+    @GetMapping("/info")
+    @Operation(summary = "유저 정보", description = "유저 정보 가져오기")
+    public UserInfoDto myPage(@Auth LoginUser loginUser) {
+        return userFinder.getUserInfo(loginUser.getUserId());
     }
 
-    @PutMapping("/my-page")
-    @Operation(summary = "마이 페이지", description = "마이 페이지 정보 가져오기")
-    public void updateMyPage(@AuthenticationPrincipal Principal principal, @RequestBody @Valid UserInfoUpdateDto dto) {
-        userService.updateUserInfo((CustomUserDetails) principal, dto);
+    @PutMapping("/info")
+    @Operation(summary = "유저 정보 수정", description = "유저 정보 수정")
+    public void updateMyPage(@Auth LoginUser loginUser, @RequestBody @Valid UserInfoUpdateRequest request) {
+        userService.updateUserInfo(loginUser.getUserId(), request);
     }
 
-
-    @PutMapping("/password/{uuid}")
-    @Operation(summary = "패스워드 변경", description = "패스워드 변경하기")
-    public void updatePassword(@PathVariable String uuid, @RequestBody String password) {
-        userService.updatePassword(uuid, password);
+    @PutMapping("/password")
+    @Operation(summary = "패스워드 변경", description = "로그인 상태에서 패스워드 변경하기")
+    public void updatePassword(@Auth LoginUser loginUser, @RequestBody String password) {
+        userService.updatePassword(loginUser.getUserId(), password);
     }
 }
