@@ -29,7 +29,7 @@ public class AccountBookServiceIntegrationTest {
 
     @Test
     public void testCreateAccountBook() {
-        AccountBookCreateRequest createRequest = new AccountBookCreateRequest("Test AccountBook", "nickname", AccountBookRole.OWNER, AccountBookType.PRIVATE);
+        AccountBookCreateRequest createRequest = new AccountBookCreateRequest("Test AccountBook", AccountBookRole.OWNER, AccountBookType.PRIVATE);
         Long accountBookId = accountBookService.create(createRequest);
 
         AccountBook foundAccountBook = accountBookRepository.findById(accountBookId).orElse(null);
@@ -41,7 +41,7 @@ public class AccountBookServiceIntegrationTest {
 
     @Test
     public void testUpdateAccountBook() {
-        AccountBookCreateRequest createRequest = new AccountBookCreateRequest("Test AccountBook", "nickname", AccountBookRole.OWNER, AccountBookType.PRIVATE);
+        AccountBookCreateRequest createRequest = new AccountBookCreateRequest("Test AccountBook", AccountBookRole.OWNER, AccountBookType.PRIVATE);
         Long accountBookId = accountBookService.create(createRequest);
 
         accountBookService.update(accountBookId, "Updated Name");
@@ -53,7 +53,7 @@ public class AccountBookServiceIntegrationTest {
 
     @Test
     public void testDeleteAccountBook() {
-        AccountBookCreateRequest createRequest = new AccountBookCreateRequest("Test AccountBook", "nickname", AccountBookRole.OWNER, AccountBookType.PRIVATE);
+        AccountBookCreateRequest createRequest = new AccountBookCreateRequest("Test AccountBook", AccountBookRole.OWNER, AccountBookType.PRIVATE);
         Long accountBookId = accountBookService.create(createRequest);
 
         accountBookService.delete(accountBookId);

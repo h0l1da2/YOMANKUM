@@ -1,11 +1,6 @@
 package com.account.yomankum.accountBook.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import com.account.yomankum.accountBook.domain.AccountBook;
-import com.account.yomankum.accountBook.domain.AccountBookRepository;
-import com.account.yomankum.accountBook.domain.AccountBookType;
+import com.account.yomankum.accountBook.domain.*;
 import com.account.yomankum.accountBook.domain.record.Record;
 import com.account.yomankum.accountBook.domain.record.RecordSearchCondition;
 import com.account.yomankum.accountBook.domain.record.RecordType;
@@ -13,19 +8,25 @@ import com.account.yomankum.accountBook.domain.tag.DefaultTag;
 import com.account.yomankum.accountBook.domain.tag.MainTagRepository;
 import com.account.yomankum.accountBook.domain.tag.Tag;
 import com.account.yomankum.accountBook.dto.request.RecordCreateRequest;
-import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
+import com.account.yomankum.user.domain.User;
+import com.account.yomankum.user.repository.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
@@ -41,6 +42,8 @@ public class RecordFinderIntegrationTest {
     private AccountBookRepository accountBookRepository;
     @Autowired
     private MainTagRepository mainTagRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     private AccountBook accountBook;
     private Tag mainTag;
@@ -50,8 +53,11 @@ public class RecordFinderIntegrationTest {
 
     @BeforeEach
     void setup() {
+        User user = userRepository.save(User.builder().id(1L).build());
         accountBook = accountBook();
         accountBookRepository.save(accountBook);
+        accountBook.addNewUser(user, AccountBookRole.OWNER);
+
         mainTag = Tag.of(DefaultTag.FOOD.getName());
         mainTagRepository.save(mainTag);
         today = LocalDate.now();

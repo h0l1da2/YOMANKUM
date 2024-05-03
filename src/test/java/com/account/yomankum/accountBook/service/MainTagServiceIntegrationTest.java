@@ -1,16 +1,14 @@
 package com.account.yomankum.accountBook.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import com.account.yomankum.accountBook.domain.AccountBook;
 import com.account.yomankum.accountBook.domain.AccountBookRepository;
+import com.account.yomankum.accountBook.domain.AccountBookRole;
 import com.account.yomankum.accountBook.domain.tag.Color;
 import com.account.yomankum.accountBook.domain.tag.MainTagRepository;
 import com.account.yomankum.accountBook.domain.tag.Tag;
 import com.account.yomankum.accountBook.dto.request.MainTagRequest;
+import com.account.yomankum.user.domain.User;
+import com.account.yomankum.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,6 +19,8 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @Transactional
@@ -30,15 +30,18 @@ class MainTagServiceIntegrationTest {
     @Autowired private MainTagService mainTagService;
     @Autowired private MainTagRepository mainTagRepository;
     @Autowired private AccountBookRepository accountBookRepository;
+    @Autowired private UserRepository userRepository;
     private AccountBook accountBook;
     private Tag tag;
 
     @BeforeEach
     void setup(){
+        User user = userRepository.save(User.builder().id(1L).build());
         accountBook = AccountBook.builder()
                 .name("new account book")
                 .build();
         accountBookRepository.save(accountBook);
+        accountBook.addNewUser(user, AccountBookRole.OWNER);
         tag = new Tag(null, "main tag1", accountBook, new Color());
         mainTagRepository.save(tag);
         accountBook.getMainTags().add(tag);
