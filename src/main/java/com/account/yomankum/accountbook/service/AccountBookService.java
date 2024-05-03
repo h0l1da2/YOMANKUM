@@ -5,12 +5,10 @@ import com.account.yomankum.accountBook.domain.tag.DefaultTag;
 import com.account.yomankum.accountBook.domain.tag.Tag;
 import com.account.yomankum.accountBook.dto.request.AccountBookCreateRequest;
 import com.account.yomankum.accountBook.dto.request.AccountBookInviteRequest;
-import com.account.yomankum.common.exception.BadRequestException;
-import com.account.yomankum.common.exception.Exception;
 import com.account.yomankum.common.service.SessionService;
 import com.account.yomankum.notice.service.NoticeService;
 import com.account.yomankum.user.domain.User;
-import com.account.yomankum.user.repository.UserRepository;
+import com.account.yomankum.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,25 +23,22 @@ public class AccountBookService {
     private final AccountBookRepository accountBookRepository;
     private final AccountBookFinder accountBookFinder;
     private final AccountBookUserService accountBookUserService;
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final SessionService sessionService;
     private final NoticeService noticeService;
 
-
     public Long create(AccountBookCreateRequest accountBookWriteDto) {
-        AccountBook accountBook = accountBookWriteDto.toAccountBookEntity();
-        accountBookRepository.save(accountBook);
-        List<Tag> defaultTags = DefaultTag.getDefaultMainTags();
+        // 가계부유저 추가
         Long sessionUserId = sessionService.getSessionUserId();
+        User user = userService.findById(sessionUserId);
+
+        AccountBook accountBook = accountBookWriteDto.toAccountBookEntity();
+        accountBook.addNewUser(user, accountBookWriteDto.role());
+        accountBookRepository.save(accountBook);
+
+        List<Tag> defaultTags = DefaultTag.getDefaultMainTags();
         accountBook.addTags(defaultTags, sessionUserId);
 
-        // FIXME 나중에 UseFinder 에서 findById 하게 수정필요
-        User user = userRepository.findById(sessionUserId)
-                .orElseThrow(() -> new BadRequestException(Exception.USER_NOT_FOUND));
-        AccountBookUser accountBookUser =
-                accountBookUserService.save(accountBookWriteDto.toAccountBookUserEntity(accountBook, user));
-        user.addAccountBook(accountBookUser);
-        accountBook.addAccountBookUser(accountBookUser);
         return accountBook.getId();
     }
 
@@ -62,8 +57,7 @@ public class AccountBookService {
         AccountBook accountBook = accountBookFinder.findById(id);
         accountBook.checkAuthorizedUser(sessionService.getSessionUserId());
 
-        User user = userRepository.findByEmail(accountBookInviteRequest.email())
-                .orElseThrow(() -> new BadRequestException(Exception.USER_NOT_FOUND));
+        User user = userService.findByEmail(accountBookInviteRequest.email());
 
         AccountBookUser accountBookUser = accountBookUserService.save(
                 AccountBookUser.builder()
@@ -71,8 +65,7 @@ public class AccountBookService {
                         .accountBookRole(AccountBookRole.READ_ONLY)
                         .status(UserStatus.INVITING)
                         .accountBook(accountBook)
-                        .build()
-        );
+                        .build());
 
         user.addAccountBook(accountBookUser);
         accountBook.addAccountBookUser(accountBookUser);

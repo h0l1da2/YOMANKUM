@@ -80,7 +80,7 @@ public class User {
     }
 
     public void addAccountBook(AccountBookUser accountBookUser) {
-        checkAuthorizedUser(accountBookUser.getId());
+        checkAuthorizedUser(accountBookUser.getUser().getId());
         accountBooks.add(accountBookUser);
     }
 }

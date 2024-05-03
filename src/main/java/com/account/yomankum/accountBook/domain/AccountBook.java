@@ -5,6 +5,7 @@ import com.account.yomankum.accountBook.domain.tag.Tag;
 import com.account.yomankum.common.domain.UserBaseEntity;
 import com.account.yomankum.common.exception.BadRequestException;
 import com.account.yomankum.common.exception.Exception;
+import com.account.yomankum.user.domain.User;
 import jakarta.persistence.*;
 import jdk.jfr.Name;
 import lombok.AllArgsConstructor;
@@ -78,7 +79,7 @@ public class AccountBook extends UserBaseEntity {
     public void checkAuthorizedUser(Long requesterId) {
         // 유저목록을 하나씩 돌면서 실제 있는 유저인지 확인한다.
         boolean checkUser = accountBookUsers.stream()
-                .noneMatch(accountBookUser ->
+                .anyMatch(accountBookUser ->
                         accountBookUser.getUser().getId().equals(requesterId));
         if(!checkUser){
             throw new BadRequestException(Exception.ACCOUNT_BOOK_NOT_FOUND);
@@ -97,5 +98,18 @@ public class AccountBook extends UserBaseEntity {
 
     public void addAccountBookUser(AccountBookUser accountBookUser) {
         accountBookUsers.add(accountBookUser);
+    }
+
+    public void addNewUser(User user, AccountBookRole role) {
+        AccountBookUser accountBookUser = AccountBookUser.builder()
+                .accountBook(this)
+                .user(user)
+                .nickname(user.getNickname())
+                .accountBookRole(role)
+                .status(UserStatus.PARTICIPATING)
+                .build();
+
+        addAccountBookUser(accountBookUser);
+        user.addAccountBook(accountBookUser);
     }
 }
