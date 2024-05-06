@@ -67,12 +67,6 @@ spring:
     port: ${REDIS_PORT}
     password: ${REDIS_PASSWORD}
 
-jasypt:
-  encryptor:
-    password: ${JASYPT_ENCRYPTOR_PASSWORD}
-    algorithm: PBEWithMD5AndDES
-    ivGeneratorClassname: org.jasypt.iv.NoIvGenerator
-
 token:
   keys:
     kakao: # https://kauth.kakao.com/.well-known/jwks.json
@@ -126,6 +120,9 @@ mail:
   template:
     signup: email/joinMailForm
     password: email/passwordResetMailForm
+  title:
+    signup: YOMANKUM * 가입 코드 전송
+    password: YOMANKUM * 비밀번호 재설정
 
 springdoc:
   packages-to-scan: com.account.yomankum
