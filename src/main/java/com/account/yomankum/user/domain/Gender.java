@@ -1,4 +1,4 @@
-package com.account.yomankum.user.domain.type;
+package com.account.yomankum.user.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,7 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum Gender {
 
-    MALE("남자"), FEMALE("여자"), NONE("없음");
+    MALE("남자"), FEMALE("여자");
 
     private final String genderName;
 
