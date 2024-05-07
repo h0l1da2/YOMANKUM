@@ -1,5 +1,7 @@
 package com.account.yomankum.auth.common;
 
+import com.account.yomankum.auth.jwt.service.TokenService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
@@ -13,6 +15,8 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 @RequiredArgsConstructor
 public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
 
+    private final TokenService tokenService;
+
     @Override
     public boolean supportsParameter(final MethodParameter parameter) {
         return parameter.hasParameterAnnotation(Auth.class);
@@ -21,10 +25,10 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
     @Override
     public LoginUser resolveArgument(final MethodParameter parameter, final ModelAndViewContainer mavContainer,
                                   final NativeWebRequest webRequest, final WebDataBinderFactory binderFactory) {
-//        HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-//        String accessToken = AuthorizationExtractor.extract(request);
-//        Long id = authService.extractMemberId(accessToken);
-        return new LoginUser(0L);
+        HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
+        String accessToken = tokenService.resolveToken(request);
+        Long id = tokenService.getUserIdByToken(accessToken);
+        return new LoginUser(id);
     }
 
 }
