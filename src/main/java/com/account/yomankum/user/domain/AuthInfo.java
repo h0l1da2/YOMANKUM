@@ -1,0 +1,31 @@
+package com.account.yomankum.user.domain;
+
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@Embeddable
+@NoArgsConstructor
+public class AuthInfo {
+
+    private String refreshToken;
+    @Enumerated(EnumType.STRING)
+    private AuthType authType;
+    private String oauthId;
+
+    protected void setRefreshToken(String token){
+        refreshToken = token;
+    }
+
+    public AuthInfo(AuthType type, String oauthId){
+        this.authType = type;
+        this.oauthId = oauthId;
+    }
+
+    public void setOauthId(String oauthId) {
+        this.oauthId = oauthId;
+    }
+}
