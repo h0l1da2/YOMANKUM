@@ -27,7 +27,7 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
                                   final NativeWebRequest webRequest, final WebDataBinderFactory binderFactory) {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         String accessToken = tokenService.resolveToken(request);
-        Long id = tokenService.getUserIdByToken(accessToken);
+        Long id = tokenService.getUserId(accessToken);
         return new LoginUser(id);
     }
 
