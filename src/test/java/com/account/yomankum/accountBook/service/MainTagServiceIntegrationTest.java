@@ -31,6 +31,7 @@ class MainTagServiceIntegrationTest {
     @Autowired private MainTagRepository mainTagRepository;
     @Autowired private AccountBookRepository accountBookRepository;
     @Autowired private UserRepository userRepository;
+    @Autowired private AccountBookService accountBookService;
     private AccountBook accountBook;
     private Tag tag;
 
@@ -41,7 +42,7 @@ class MainTagServiceIntegrationTest {
                 .name("new account book")
                 .build();
         accountBookRepository.save(accountBook);
-        accountBook.addNewUser(user, AccountBookRole.OWNER);
+        accountBookService.addNewUser(accountBook, user, AccountBookRole.OWNER);
         tag = new Tag(null, "main tag1", accountBook, new Color());
         mainTagRepository.save(tag);
         accountBook.getMainTags().add(tag);
