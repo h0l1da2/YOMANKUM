@@ -19,12 +19,12 @@ public record UserSignUpRequest(
         String password
 
 ){
-    public User toEntity(PasswordEncoder passwordEncoder) {
+    public User toEntity() {
         return User.builder()
                 .role(new Role(RoleName.ROLE_USER))
                 .userType(UserType.USER)
                 .email(email)
-                .password(passwordEncoder.encode(password))
+                .password(password)
                 .pwdChangeDatetime(LocalDateTime.now())
                 .build();
     }

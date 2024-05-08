@@ -1,6 +1,6 @@
 package com.account.yomankum.user.dto.request;
 
-import com.account.yomankum.user.domain.type.Gender;
+import com.account.yomankum.user.domain.Gender;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
