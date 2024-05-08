@@ -38,6 +38,6 @@ public class UserController {
     @PutMapping("/password")
     @Operation(summary = "패스워드 변경", description = "로그인 상태에서 패스워드 변경하기")
     public void updatePassword(@Auth LoginUser loginUser, @RequestBody String password) {
-        userService.updatePassword(loginUser.getUserId(), password);
+        userService.updatePasswordByUserId(loginUser.getUserId(), password);
     }
 }

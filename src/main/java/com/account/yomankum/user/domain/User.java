@@ -1,9 +1,10 @@
 package com.account.yomankum.user.domain;
 
-import com.account.yomankum.user.domain.type.Gender;
+import com.account.yomankum.common.annotation.Password;
 import com.account.yomankum.user.dto.request.UserInfoUpdateRequest;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
@@ -21,13 +22,12 @@ public class User {
     private Long id;
     private String email;
     private String password;
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Role role;
     private String nickname;
+    private String picture;
     @Enumerated(EnumType.STRING)
     private UserType userType;
     @Enumerated(EnumType.STRING)
-    private AuthType authType;
+    private AuthInfo authInfo;
 
     private LocalDate birthday;
     @Enumerated(EnumType.STRING)
@@ -39,19 +39,10 @@ public class User {
 //    private UserAdditionalInfo additionalInfo;
 
     private LocalDateTime joinDatetime;
-    private LocalDateTime lastLoginDatetime;
     private LocalDateTime stopDatetime;
     private LocalDateTime pwdChangeDatetime;
     private LocalDateTime removeDatetime;
 
-
-    public void updatePassword(PasswordEncoder passwordEncoder, String password) {
-        this.password = passwordEncoder.encode(password);
-    }
-
-    public void updateLastLoginDatetime() {
-        this.lastLoginDatetime = LocalDateTime.now();
-    }
 
     public void updateUserInfo(UserInfoUpdateRequest request) {
         this.gender = request.gender();
@@ -59,4 +50,21 @@ public class User {
         this.job = request.job();
         this.salary = request.salary();
     }
+
+    public String getRefreshToken(){
+        return authInfo.getRefreshToken();
+    }
+
+    public void encryptPassword(PasswordEncoder encoder) {
+        this.password = encoder.encode(password);
+    }
+
+    public void changePassword(String password) {
+        this.password = password;
+    }
+
+    public void changeRefreshToken(String token) {
+        this.authInfo.setRefreshToken(token);
+    }
+
 }
