@@ -2,7 +2,6 @@ package com.account.yomankum.accountBook.service;
 
 import com.account.yomankum.accountBook.domain.AccountBook;
 import com.account.yomankum.accountBook.domain.AccountBookRepository;
-import com.account.yomankum.accountBook.domain.AccountBookRole;
 import com.account.yomankum.accountBook.domain.tag.Color;
 import com.account.yomankum.accountBook.domain.tag.MainTagRepository;
 import com.account.yomankum.accountBook.domain.tag.Tag;
@@ -42,7 +41,7 @@ class MainTagServiceIntegrationTest {
                 .name("new account book")
                 .build();
         accountBookRepository.save(accountBook);
-        accountBookService.addNewUser(accountBook, user, AccountBookRole.OWNER);
+        accountBookService.addNewUser(accountBook, user);
         tag = new Tag(null, "main tag1", accountBook, new Color());
         mainTagRepository.save(tag);
         accountBook.getMainTags().add(tag);

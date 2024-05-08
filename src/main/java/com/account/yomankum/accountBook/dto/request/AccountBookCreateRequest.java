@@ -1,7 +1,6 @@
 package com.account.yomankum.accountBook.dto.request;
 
 import com.account.yomankum.accountBook.domain.AccountBook;
-import com.account.yomankum.accountBook.domain.AccountBookRole;
 import com.account.yomankum.accountBook.domain.AccountBookType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -9,8 +8,6 @@ import jakarta.validation.constraints.NotNull;
 public record AccountBookCreateRequest (
         @NotBlank
         String name,
-        @NotNull
-        AccountBookRole role,
         @NotNull
         AccountBookType type
 ){

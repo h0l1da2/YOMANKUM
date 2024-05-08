@@ -61,7 +61,7 @@ public class RecordFinderIntegrationTest {
         User user = userRepository.save(User.builder().id(1L).build());
         accountBook = accountBook();
         accountBookRepository.save(accountBook);
-        accountBookService.addNewUser(accountBook, user, AccountBookRole.OWNER);
+        accountBookService.addNewUser(accountBook, user);
 
         mainTag = Tag.of(DefaultTag.FOOD.getName());
         mainTagRepository.save(mainTag);
