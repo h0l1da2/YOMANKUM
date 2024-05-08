@@ -4,8 +4,7 @@ import com.account.yomankum.accountBook.domain.record.RecordType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 import org.springframework.format.annotation.DateTimeFormat;
 
 public record RecordUpdateRequest(
@@ -14,8 +13,8 @@ public record RecordUpdateRequest(
         String content,
         @NotBlank
         @Size(min = 1, max = 10)
-        String majorTag,
-        List<String> minorTag,
+        Long mainTagId,
+        Set<String> subTags,
         RecordType recordType,
         int money,
         @DateTimeFormat(pattern = "yyyy-MM-dd EEE")

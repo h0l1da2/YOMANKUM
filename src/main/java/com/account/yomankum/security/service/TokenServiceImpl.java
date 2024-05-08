@@ -9,6 +9,7 @@ import com.account.yomankum.security.oauth.token.*;
 import com.account.yomankum.security.oauth.type.Sns;
 import com.account.yomankum.security.token.TokenParser;
 import com.account.yomankum.security.token.TokenProvider;
+import com.account.yomankum.user.domain.UserType;
 import com.account.yomankum.user.domain.type.RoleName;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,8 +39,8 @@ public class TokenServiceImpl implements TokenService {
     private final TokenParser tokenParser;
 
     @Override
-    public String creatToken(Long id, String nickname, RoleName name) {
-        return tokenProvider.createToken(id, nickname, name);
+    public String creatToken(Long id, String nickname, UserType userType) {
+        return tokenProvider.createToken(id, nickname, userType);
     }
 
     @Override
@@ -59,7 +60,7 @@ public class TokenServiceImpl implements TokenService {
             name = RoleName.ROLE_ADMIN;
         }
 
-        return tokenProvider.createToken(id, nickname, name);
+        return tokenProvider.createToken(id, nickname, UserType.valueOf(role));
     }
 
     @Override

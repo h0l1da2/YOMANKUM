@@ -1,25 +1,20 @@
 package com.account.yomankum.accountBook.domain;
 
 import com.account.yomankum.accountBook.domain.record.Record;
+import com.account.yomankum.accountBook.domain.tag.Tag;
 import com.account.yomankum.common.domain.UserBaseEntity;
 import com.account.yomankum.common.exception.BadRequestException;
 import com.account.yomankum.common.exception.Exception;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.List;
+import jakarta.persistence.*;
 import jdk.jfr.Name;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Builder.Default;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Builder
@@ -40,6 +35,18 @@ public class AccountBook extends UserBaseEntity {
             orphanRemoval = true,
             fetch = FetchType.LAZY)
     private List<Record> records = new ArrayList<>();
+    @Default
+    @OneToMany(mappedBy = "accountBook",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY)
+    private List<Tag> mainTags = new ArrayList<>();
+    @Default
+    @OneToMany(mappedBy = "accountBook",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY)
+    private List<AccountBookUser> accountBookUsers = new ArrayList<>();
 
     public void updateName(String name, Long requesterId) {
         checkAuthorizedUser(requesterId);
@@ -54,6 +61,7 @@ public class AccountBook extends UserBaseEntity {
 
     public void delete(Long requesterId) {
         checkAuthorizedUser(requesterId);
+        accountBookUsers.removeIf(accountBookUser -> accountBookUser.getUser().getId().equals(requesterId));
     }
 
     public void deleteRecord(Record record, Long requesterId) {
@@ -61,10 +69,34 @@ public class AccountBook extends UserBaseEntity {
         records.remove(record);
     }
 
+    public void deleteTag(Tag tag, Long requesterId) {
+        checkAuthorizedUser(requesterId);
+        mainTags.remove(tag);
+    }
+
     // 보안을 위해 '접근권한이 없음'이 아닌 '가계부가 없음' 메세지를 준다.
     public void checkAuthorizedUser(Long requesterId) {
-        if(!getCreateUserId().equals(requesterId)){
+        // 유저목록을 하나씩 돌면서 실제 있는 유저인지 확인한다.
+        boolean checkUser = accountBookUsers.stream()
+                .anyMatch(accountBookUser ->
+                        accountBookUser.getUser().getId().equals(requesterId));
+        if(!checkUser){
             throw new BadRequestException(Exception.ACCOUNT_BOOK_NOT_FOUND);
         }
     }
+
+    public void addTag(Tag tag, Long requesterId){
+        checkAuthorizedUser(requesterId);
+        mainTags.add(tag);
+        tag.assignAccountBook(this);
+    }
+
+    public void addTags(List<Tag> tags, Long requesterId) {
+        tags.forEach(tag -> addTag(tag, requesterId));
+    }
+
+    public void addAccountBookUser(AccountBookUser accountBookUser) {
+        accountBookUsers.add(accountBookUser);
+    }
+
 }

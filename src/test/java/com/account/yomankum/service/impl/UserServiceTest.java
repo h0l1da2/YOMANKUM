@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Transactional
 @SpringBootTest
-class UserServiceImplTest {
+class UserServiceTest {
 
     @Autowired
     private UserRepository userRepository;

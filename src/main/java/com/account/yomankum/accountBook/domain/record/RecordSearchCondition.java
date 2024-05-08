@@ -13,8 +13,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RecordSearchCondition{
 
-    private String majorTag;
-    private String minorTag;
+    private Long mainTagId;
+    private String mainTagName;
+    private String subTagName;
     private String content;
     private RecordType recordType;
     // 날짜범위
@@ -42,9 +43,9 @@ public class RecordSearchCondition{
         return condition;
     }
 
-    public static RecordSearchCondition of(YearMonth yearMonth, RecordType recordType, String majorTag){
+    public static RecordSearchCondition of(YearMonth yearMonth, RecordType recordType, Long mainTagId){
         RecordSearchCondition condition = of(yearMonth,recordType);
-        condition.majorTag = majorTag;
+        condition.mainTagId = mainTagId;
         return condition;
     }
 

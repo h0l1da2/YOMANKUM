@@ -126,8 +126,8 @@ mail:
 
 springdoc:
   packages-to-scan: com.account.yomankum
-  default-consumes-media-type: application/json;charset=UTF-8
-  default-produces-media-type: application/json;charset=UTF-8
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
   swagger-ui:
     path: /yomankum/api-docs
     disable-swagger-default-url: true
@@ -136,8 +136,8 @@ springdoc:
 
 commit:
   final:
-    number: 65
-    datetime: 2024-03-15 13:14
+    number: 68
+    datetime: 2024-03-19 23:47
 
 ---
 spring:
