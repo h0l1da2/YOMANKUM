@@ -1,7 +1,6 @@
 package com.account.yomankum.auth.local.controller;
 
 import com.account.yomankum.auth.local.dto.request.UserSignUpRequest;
-import com.account.yomankum.auth.local.dto.MailDto;
 import com.account.yomankum.auth.local.service.SignUpService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -31,10 +30,10 @@ public class SignUpController {
         signUpService.sendAuthCodeMail(email);
     }
 
-    @PostMapping("/check/code")
+    @PostMapping("/check/code/{email}/{code}")
     @Operation(summary = "메일 인증 코드 체크", description = "메일 인증 코드 체크")
-    public boolean checkEmailCode(@RequestBody @Valid MailDto.EmailCodeDto emailCodeDto) {
-        return signUpService.verifyEmailCode(emailCodeDto.email(), emailCodeDto.code());
+    public boolean checkEmailCode(@PathVariable String email, @PathVariable String code) {
+        return signUpService.verifyEmailCode(email, code);
     }
 
 }
