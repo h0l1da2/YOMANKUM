@@ -1,4 +1,4 @@
-package com.account.yomankum.auth.oauth.infra.oauth.kakao.response;
+package com.account.yomankum.auth.oauth.infra.kakao.response;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;

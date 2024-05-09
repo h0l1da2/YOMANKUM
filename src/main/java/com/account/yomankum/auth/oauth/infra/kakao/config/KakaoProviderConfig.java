@@ -1,4 +1,4 @@
-package com.account.yomankum.auth.oauth.infra.oauth.kakao.config;
+package com.account.yomankum.auth.oauth.infra.kakao.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
