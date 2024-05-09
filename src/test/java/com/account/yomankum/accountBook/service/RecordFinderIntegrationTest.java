@@ -1,6 +1,9 @@
 package com.account.yomankum.accountBook.service;
 
-import com.account.yomankum.accountBook.domain.*;
+import com.account.yomankum.accountBook.domain.AccountBook;
+import com.account.yomankum.accountBook.domain.AccountBookRepository;
+import com.account.yomankum.accountBook.domain.AccountBookRole;
+import com.account.yomankum.accountBook.domain.AccountBookType;
 import com.account.yomankum.accountBook.domain.record.Record;
 import com.account.yomankum.accountBook.domain.record.RecordSearchCondition;
 import com.account.yomankum.accountBook.domain.record.RecordType;
@@ -44,6 +47,8 @@ public class RecordFinderIntegrationTest {
     private MainTagRepository mainTagRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private AccountBookService accountBookService;
 
     private AccountBook accountBook;
     private Tag mainTag;
@@ -56,7 +61,7 @@ public class RecordFinderIntegrationTest {
         User user = userRepository.save(User.builder().id(1L).build());
         accountBook = accountBook();
         accountBookRepository.save(accountBook);
-        accountBook.addNewUser(user, AccountBookRole.OWNER);
+        accountBookService.addNewUser(accountBook, user);
 
         mainTag = Tag.of(DefaultTag.FOOD.getName());
         mainTagRepository.save(mainTag);

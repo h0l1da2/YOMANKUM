@@ -2,7 +2,6 @@ package com.account.yomankum.accountBook.service;
 
 import com.account.yomankum.accountBook.domain.AccountBook;
 import com.account.yomankum.accountBook.domain.AccountBookRepository;
-import com.account.yomankum.accountBook.domain.AccountBookRole;
 import com.account.yomankum.accountBook.domain.AccountBookType;
 import com.account.yomankum.accountBook.domain.tag.DefaultTag;
 import com.account.yomankum.accountBook.domain.tag.MainTagRepository;
@@ -29,7 +28,7 @@ public class AccountBookServiceIntegrationTest {
 
     @Test
     public void testCreateAccountBook() {
-        AccountBookCreateRequest createRequest = new AccountBookCreateRequest("Test AccountBook", AccountBookRole.OWNER, AccountBookType.PRIVATE);
+        AccountBookCreateRequest createRequest = new AccountBookCreateRequest("Test AccountBook", AccountBookType.PRIVATE);
         Long accountBookId = accountBookService.create(createRequest);
 
         AccountBook foundAccountBook = accountBookRepository.findById(accountBookId).orElse(null);
@@ -41,7 +40,7 @@ public class AccountBookServiceIntegrationTest {
 
     @Test
     public void testUpdateAccountBook() {
-        AccountBookCreateRequest createRequest = new AccountBookCreateRequest("Test AccountBook", AccountBookRole.OWNER, AccountBookType.PRIVATE);
+        AccountBookCreateRequest createRequest = new AccountBookCreateRequest("Test AccountBook", AccountBookType.PRIVATE);
         Long accountBookId = accountBookService.create(createRequest);
 
         accountBookService.update(accountBookId, "Updated Name");
@@ -53,7 +52,7 @@ public class AccountBookServiceIntegrationTest {
 
     @Test
     public void testDeleteAccountBook() {
-        AccountBookCreateRequest createRequest = new AccountBookCreateRequest("Test AccountBook", AccountBookRole.OWNER, AccountBookType.PRIVATE);
+        AccountBookCreateRequest createRequest = new AccountBookCreateRequest("Test AccountBook", AccountBookType.PRIVATE);
         Long accountBookId = accountBookService.create(createRequest);
 
         accountBookService.delete(accountBookId);

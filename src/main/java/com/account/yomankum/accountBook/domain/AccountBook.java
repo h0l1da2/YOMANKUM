@@ -5,7 +5,6 @@ import com.account.yomankum.accountBook.domain.tag.Tag;
 import com.account.yomankum.common.domain.UserBaseEntity;
 import com.account.yomankum.common.exception.BadRequestException;
 import com.account.yomankum.common.exception.Exception;
-import com.account.yomankum.user.domain.User;
 import jakarta.persistence.*;
 import jdk.jfr.Name;
 import lombok.AllArgsConstructor;
@@ -100,16 +99,4 @@ public class AccountBook extends UserBaseEntity {
         accountBookUsers.add(accountBookUser);
     }
 
-    public void addNewUser(User user, AccountBookRole role) {
-        AccountBookUser accountBookUser = AccountBookUser.builder()
-                .accountBook(this)
-                .user(user)
-                .nickname(user.getNickname())
-                .accountBookRole(role)
-                .status(UserStatus.PARTICIPATING)
-                .build();
-
-        addAccountBookUser(accountBookUser);
-        user.addAccountBook(accountBookUser);
-    }
 }

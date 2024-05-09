@@ -33,7 +33,7 @@ public class AccountBookService {
         User user = userService.findById(sessionUserId);
 
         AccountBook accountBook = accountBookWriteDto.toAccountBookEntity();
-        accountBook.addNewUser(user, accountBookWriteDto.role());
+        addNewUser(accountBook, user);
         accountBookRepository.save(accountBook);
 
         List<Tag> defaultTags = DefaultTag.getDefaultMainTags();
@@ -53,12 +53,14 @@ public class AccountBookService {
         accountBookRepository.deleteById(id);
     }
 
+    // TODO 공유 가계부 초대 개발
     public void invite(Long id, AccountBookInviteRequest accountBookInviteRequest) {
         AccountBook accountBook = accountBookFinder.findById(id);
         accountBook.checkAuthorizedUser(sessionService.getSessionUserId());
 
         User user = userService.findByEmail(accountBookInviteRequest.email());
 
+        addNewUser(accountBook, user);
         AccountBookUser accountBookUser = accountBookUserService.save(
                 AccountBookUser.builder()
                         .nickname(user.getNickname())
@@ -69,7 +71,25 @@ public class AccountBookService {
 
         user.addAccountBook(accountBookUser);
         accountBook.addAccountBookUser(accountBookUser);
+
         // 알림 메시지
         noticeService.save(user, accountBook.getName() + "에 초대되셨습니다.");
     }
+
+    public void addNewUser(AccountBook accountBook, User user) {
+        AccountBookRole role = accountBook.getCreateUserId() == null ?
+                AccountBookRole.OWNER : AccountBookRole.READ_ONLY;
+
+        AccountBookUser accountBookUser = AccountBookUser.builder()
+                .accountBook(accountBook)
+                .user(user)
+                .nickname(user.getNickname())
+                .accountBookRole(role)
+                .status(UserStatus.PARTICIPATING)
+                .build();
+
+        accountBook.addAccountBookUser(accountBookUser);
+        user.addAccountBook(accountBookUser);
+    }
+
 }
