@@ -34,9 +34,9 @@ public class PasswordAuthCodeRepositoryImpl implements PasswordAuthCodeRepositor
     }
 
     @Override
-    public Optional<String> findByEmail(String mail) {
+    public String findByEmail(String mail) {
         String key = getKeyByEmail(mail);
-        return Optional.ofNullable(redisTemplate.opsForValue().get(key));
+        return redisTemplate.opsForValue().get(key);
     }
 
     @Override

@@ -4,6 +4,6 @@ import java.util.Optional;
 
 public interface PasswordAuthCodeRepository {
     void saveCodeByEmail(String mail, String randomCode);
-    Optional<String> findByEmail(String mail);
+    String findByEmail(String mail);
     void deleteCodeByEmail(String mail);
 }
