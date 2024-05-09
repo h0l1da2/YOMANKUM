@@ -4,7 +4,7 @@ import com.account.yomankum.auth.local.dto.request.PasswordChangeRequest;
 import com.account.yomankum.auth.local.repository.PasswordAuthCodeRepository;
 import com.account.yomankum.common.exception.BadRequestException;
 import com.account.yomankum.common.exception.Exception;
-import com.account.yomankum.mail.SendMailRequest;
+import com.account.yomankum.mail.domain.Mail;
 import com.account.yomankum.mail.service.MailService;
 import com.account.yomankum.user.service.UserService;
 import com.account.yomankum.util.RandomCodeGenerator;
@@ -23,30 +23,34 @@ public class PasswordChangeService {
     @Value("${mail.template.password}")
     private String changePasswordMailTemplate;
 
+    @Value("${mail.title.password}")
+    private String changePasswordMailTitle;
+
     public void sendAuthCodeMail(String email) {
         String randomCode = RandomCodeGenerator.generateFiveDigitsCode();
         passwordAuthCodeRepository.saveCodeByEmail(email, randomCode);
-        SendMailRequest request = SendMailRequest.passwordMailRequest(changePasswordMailTemplate, email, randomCode);
-        mailService.sendMail(request);
+        Mail changePasswordMail = createChangePasswordMail(email, randomCode);
+        mailService.sendMail(changePasswordMail);
     }
 
     public boolean isValidCode(String email, String inputCode) {
-        String originalCode = passwordAuthCodeRepository.findByEmail(email)
-                .orElseThrow(()->new BadRequestException(Exception.AUTH_CODE_NOT_EXIST));
-        if(inputCode.equals(originalCode)){
-            passwordAuthCodeRepository.deleteCodeByEmail(email);
-            return true;
-        }
-        return false;
+        String originalCode = passwordAuthCodeRepository.findByEmail(email);
+        return inputCode.equals(originalCode);
     }
 
     public void updatePassword(PasswordChangeRequest request) {
-        String originCode = passwordAuthCodeRepository.findByEmail(request.email())
-                .orElseThrow(()->new BadRequestException(Exception.AUTH_CODE_NOT_EXIST));
-
-        if(!request.code().equals(originCode)){
-            throw new BadRequestException(Exception.AUTH_CODE_UN_MATCHED);
+        String originalCode = passwordAuthCodeRepository.findByEmail(request.email());
+        if(!request.code().equals(originalCode)){
+            throw new BadRequestException(Exception.AUTH_CODE_NOT_VALID);
         }
-        userService.updatePassword(request.email(), request.password());
+        userService.updatePasswordByEmail(request.email(), request.password());
     }
+
+    private Mail createChangePasswordMail(String email, String randomCode) {
+        Mail mail = new Mail(changePasswordMailTitle, changePasswordMailTemplate, email);
+        mail.addAttribute("email", email);
+        mail.addAttribute("code", randomCode);
+        return mail;
+    }
+
 }
