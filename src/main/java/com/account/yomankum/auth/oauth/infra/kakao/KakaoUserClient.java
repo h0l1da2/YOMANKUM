@@ -1,9 +1,10 @@
-package com.account.yomankum.auth.oauth.infra.oauth.kakao;
+package com.account.yomankum.auth.oauth.infra.kakao;
 
-import com.account.yomankum.auth.oauth.domain.userClient.OauthUserClient;
-import com.account.yomankum.auth.oauth.infra.oauth.kakao.config.KakaoAuthConfig;
-import com.account.yomankum.auth.oauth.infra.oauth.kakao.response.KakaoUserResponse;
-import com.account.yomankum.auth.oauth.infra.oauth.kakao.response.KakaoToken;
+import com.account.yomankum.auth.oauth.domain.memberClient.OauthUserClient;
+import com.account.yomankum.auth.oauth.infra.kakao.config.KakaoAuthConfig;
+import com.account.yomankum.auth.oauth.infra.oauth.domain.OauthUserClient;
+import com.account.yomankum.auth.oauth.infra.kakao.response.KakaoUserResponse;
+import com.account.yomankum.auth.oauth.infra.kakao.response.KakaoToken;
 import com.account.yomankum.user.domain.AuthType;
 import com.account.yomankum.user.domain.User;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ public class KakaoUserClient implements OauthUserClient {
         return AuthType.KAKAO;
     }
 
+    @Override
     public User findUser(String code) {
         KakaoToken token = kakaoApiClient.fetchToken(makeRequestTokenParam(code));
         KakaoUserResponse userResponse = kakaoApiClient.fetchUser("Bearer " + token.getAccessToken());
