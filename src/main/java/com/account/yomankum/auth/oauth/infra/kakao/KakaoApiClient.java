@@ -1,8 +1,8 @@
-package com.account.yomankum.auth.oauth.infra.oauth.kakao;
+package com.account.yomankum.auth.oauth.infra.kakao;
 
 
-import com.account.yomankum.auth.oauth.infra.oauth.kakao.response.KakaoUserResponse;
-import com.account.yomankum.auth.oauth.infra.oauth.kakao.response.KakaoToken;
+import com.account.yomankum.auth.oauth.infra.kakao.response.KakaoUserResponse;
+import com.account.yomankum.auth.oauth.infra.kakao.response.KakaoToken;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
