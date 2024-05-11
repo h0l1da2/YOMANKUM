@@ -1,11 +1,19 @@
 package com.account.yomankum.user.domain;
 
 import com.account.yomankum.user.dto.request.UserInfoUpdateRequest;
+import com.account.yomankum.accountBook.domain.AccountBookUser;
+import com.account.yomankum.common.exception.BadRequestException;
+import com.account.yomankum.common.exception.Exception;
+import com.account.yomankum.user.domain.type.Gender;
+import com.account.yomankum.user.dto.request.FirstLoginUserInfoSaveDto;
+import com.account.yomankum.user.dto.request.UserInfoUpdateDto;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.time.LocalDateTime;
 
 @Entity
@@ -32,8 +40,15 @@ public class User {
     private String job;
     private Integer salary;
 
-//    @Embedded
-//    private UserAdditionalInfo additionalInfo;
+    @Builder.Default
+    @OneToMany(mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY)
+    private List<AccountBookUser> accountBooks = new ArrayList<>();
+
+    //    @Embedded
+    //    private UserAdditionalInfo additionalInfo;
 
     private LocalDateTime joinDatetime;
     private LocalDateTime stopDatetime;
@@ -67,5 +82,17 @@ public class User {
 
     public String getOauthId() {
         return authInfo.getOauthId();
+    }
+
+    // 보안을 위해 '접근권한이 없음'이 아닌 '가계부가 없음' 메세지를 준다.
+    public void checkAuthorizedUser(Long requesterId) {
+        if(!id.equals(requesterId)){
+            throw new BadRequestException(Exception.USER_NOT_FOUND);
+        }
+    }
+
+    public void addAccountBook(AccountBookUser accountBookUser) {
+        checkAuthorizedUser(accountBookUser.getUser().getId());
+        accountBooks.add(accountBookUser);
     }
 }

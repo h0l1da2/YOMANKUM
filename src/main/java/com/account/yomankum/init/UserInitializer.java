@@ -4,6 +4,7 @@ import com.account.yomankum.user.domain.AuthInfo;
 import com.account.yomankum.user.domain.User;
 import com.account.yomankum.user.domain.UserType;
 import com.account.yomankum.user.repository.UserRepository;
+import com.account.yomankum.user.service.UserService;
 import jakarta.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;

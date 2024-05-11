@@ -1,7 +1,6 @@
 package com.account.yomankum.common.domain;
 
 import jakarta.persistence.MappedSuperclass;
-import lombok.Getter;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 
@@ -13,10 +12,10 @@ public abstract class UserBaseEntity extends TimeBaseEntity {
     private String lastModifyingUser;
 
     public Long getCreateUserId(){
-        return Long.parseLong(createUser);
+        return createUser != null ? Long.parseLong(createUser) : null;
     }
 
     public Long getLastModifyingUserId(){
-        return Long.parseLong(lastModifyingUser);
+        return lastModifyingUser != null ? Long.parseLong(lastModifyingUser) : null;
     }
 }

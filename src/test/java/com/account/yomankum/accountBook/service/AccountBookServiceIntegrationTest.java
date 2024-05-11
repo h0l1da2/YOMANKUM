@@ -1,7 +1,5 @@
 package com.account.yomankum.accountBook.service;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import com.account.yomankum.accountBook.domain.AccountBook;
 import com.account.yomankum.accountBook.domain.AccountBookRepository;
 import com.account.yomankum.accountBook.domain.AccountBookType;
@@ -15,6 +13,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
