@@ -5,9 +5,12 @@ import com.account.yomankum.accountBook.domain.tag.DefaultTag;
 import com.account.yomankum.accountBook.domain.tag.Tag;
 import com.account.yomankum.accountBook.dto.request.AccountBookCreateRequest;
 import com.account.yomankum.accountBook.dto.request.AccountBookInviteRequest;
+import com.account.yomankum.common.exception.BadRequestException;
+import com.account.yomankum.common.exception.Exception;
 import com.account.yomankum.common.service.SessionService;
 import com.account.yomankum.notice.service.NoticeService;
 import com.account.yomankum.user.domain.User;
+import com.account.yomankum.user.service.UserFinder;
 import com.account.yomankum.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,14 +26,14 @@ public class AccountBookService {
     private final AccountBookRepository accountBookRepository;
     private final AccountBookFinder accountBookFinder;
     private final AccountBookUserService accountBookUserService;
-    private final UserService userService;
     private final SessionService sessionService;
     private final NoticeService noticeService;
+    private final UserFinder userFinder;
 
     public Long create(AccountBookCreateRequest accountBookWriteDto) {
         // 가계부유저 추가
         Long sessionUserId = sessionService.getSessionUserId();
-        User user = userService.findById(sessionUserId);
+        User user = userFinder.findById(sessionUserId).orElseThrow(() -> new BadRequestException(Exception.USER_NOT_FOUND));
 
         AccountBook accountBook = accountBookWriteDto.toAccountBookEntity();
         addNewUser(accountBook, user);
@@ -58,7 +61,7 @@ public class AccountBookService {
         AccountBook accountBook = accountBookFinder.findById(id);
         accountBook.checkAuthorizedUser(sessionService.getSessionUserId());
 
-        User user = userService.findByEmail(accountBookInviteRequest.email());
+        User user = userFinder.findByEmail(accountBookInviteRequest.email()).orElseThrow(() -> new BadRequestException(Exception.USER_NOT_FOUND));
 
         addNewUser(accountBook, user);
         AccountBookUser accountBookUser = accountBookUserService.save(
