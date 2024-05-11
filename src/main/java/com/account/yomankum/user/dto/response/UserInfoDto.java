@@ -1,6 +1,5 @@
 package com.account.yomankum.user.dto.response;
 
-import com.account.yomankum.common.util.DatetimeConverter;
 import com.account.yomankum.user.domain.User;
 import com.account.yomankum.user.domain.UserType;
 import lombok.Builder;

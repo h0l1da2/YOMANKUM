@@ -27,6 +27,12 @@ public class AuthInfo {
         this.oauthId = oauthId;
     }
 
+    public static AuthInfo localUser() {
+        AuthInfo authInfo = new AuthInfo();
+        authInfo.authType = AuthType.LOCAL;
+        return authInfo;
+    }
+
     public void setOauthId(String oauthId) {
         this.oauthId = oauthId;
     }

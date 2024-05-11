@@ -2,7 +2,6 @@ package com.account.yomankum.auth.jwt.filter;
 
 import com.account.yomankum.auth.jwt.domain.JwtAuthenticationException;
 import com.account.yomankum.auth.jwt.service.TokenService;
-import com.account.yomankum.security.service.TokenServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

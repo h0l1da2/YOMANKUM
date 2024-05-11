@@ -2,7 +2,6 @@ package com.account.yomankum.auth.oauth.infra.kakao;
 
 import com.account.yomankum.auth.oauth.domain.memberClient.OauthUserClient;
 import com.account.yomankum.auth.oauth.infra.kakao.config.KakaoAuthConfig;
-import com.account.yomankum.auth.oauth.infra.oauth.domain.OauthUserClient;
 import com.account.yomankum.auth.oauth.infra.kakao.response.KakaoUserResponse;
 import com.account.yomankum.auth.oauth.infra.kakao.response.KakaoToken;
 import com.account.yomankum.user.domain.AuthType;

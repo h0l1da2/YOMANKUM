@@ -4,14 +4,14 @@ import com.account.yomankum.user.domain.User;
 import lombok.Builder;
 
 @Builder
-public record LoginResDto(
+public record LoginResponse(
         String accessToken,
         String refreshToken,
         Long id,
         String nickname
 ) {
-    public static LoginResDto of(String accessToken, String refreshToken, User user) {
-        return LoginResDto.builder()
+    public static LoginResponse of(String accessToken, String refreshToken, User user) {
+        return LoginResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .nickname(user.getNickname())

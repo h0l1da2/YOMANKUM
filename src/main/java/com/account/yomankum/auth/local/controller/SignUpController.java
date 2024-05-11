@@ -5,6 +5,7 @@ import com.account.yomankum.auth.local.service.SignUpService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +31,7 @@ public class SignUpController {
         signUpService.sendAuthCodeMail(email);
     }
 
-    @PostMapping("/check/code/{email}/{code}")
+    @GetMapping("/check/code/{email}/{code}")
     @Operation(summary = "메일 인증 코드 체크", description = "메일 인증 코드 체크")
     public boolean checkEmailCode(@PathVariable String email, @PathVariable String code) {
         return signUpService.verifyEmailCode(email, code);

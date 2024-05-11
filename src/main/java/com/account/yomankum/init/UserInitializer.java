@@ -1,5 +1,6 @@
 package com.account.yomankum.init;
 
+import com.account.yomankum.user.domain.AuthInfo;
 import com.account.yomankum.user.domain.User;
 import com.account.yomankum.user.domain.UserType;
 import com.account.yomankum.user.repository.UserRepository;
@@ -36,6 +37,7 @@ public class UserInitializer {
                 .userType(UserType.ADMIN)
                 .password(passwordEncoder.encode(COMMON_PWD))
                 .pwdChangeDatetime(LocalDateTime.now())
+                .authInfo(AuthInfo.localUser())
                 .build();
     }
 

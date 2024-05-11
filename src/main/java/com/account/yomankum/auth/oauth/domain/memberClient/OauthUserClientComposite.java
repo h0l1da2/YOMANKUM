@@ -2,8 +2,6 @@ package com.account.yomankum.auth.oauth.domain.memberClient;
 
 import com.account.yomankum.user.domain.AuthType;
 import com.account.yomankum.user.domain.User;
-import com.develog.domain.oauth.OauthMember;
-import com.develog.domain.oauth.OauthType;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

@@ -1,6 +1,6 @@
-package com.account.yomankum.auth.oauth.infra.oauth.config;
+package com.account.yomankum.auth.oauth.infra.config;
 
-import com.account.yomankum.auth.oauth.infra.oauth.kakao.KakaoApiClient;
+import com.account.yomankum.auth.oauth.infra.kakao.KakaoApiClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;

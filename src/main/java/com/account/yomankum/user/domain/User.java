@@ -1,10 +1,8 @@
 package com.account.yomankum.user.domain;
 
-import com.account.yomankum.common.annotation.Password;
 import com.account.yomankum.user.dto.request.UserInfoUpdateRequest;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
@@ -13,7 +11,6 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Builder
-@Table(name = "USERS")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class User {
@@ -45,6 +42,7 @@ public class User {
 
 
     public void updateUserInfo(UserInfoUpdateRequest request) {
+        this.nickname = request.nickname();
         this.gender = request.gender();
         this.birthday = request.birthDate();
         this.job = request.job();
@@ -67,4 +65,7 @@ public class User {
         this.authInfo.setRefreshToken(token);
     }
 
+    public String getOauthId() {
+        return authInfo.getOauthId();
+    }
 }

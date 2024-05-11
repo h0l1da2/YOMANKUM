@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class OauthService {
 
@@ -30,7 +31,6 @@ public class OauthService {
         return authCodeRequestUrlProviderComposite.getOauthCodeRequestUrl(type);
     }
 
-    @Transactional
     public LoginResponse login(AuthType type, String code) {
         User user = getUser(type, code);
         String token = tokenService.creatToken(user.getId(), user.getNickname(), user.getUserType());
@@ -39,7 +39,6 @@ public class OauthService {
         return new LoginResponse(token, refreshToken, user.getId(), user.getPicture());
     }
 
-    @Transactional
     public Long signup(OauthSignupRequest request){
         userFinder.findByEmail(request.email())
                 .ifPresent(user -> {throw new BadRequestException(Exception.DUPLICATED_USER);});
@@ -50,7 +49,7 @@ public class OauthService {
 
     private User getUser(AuthType type, String code) {
         User user = oauthUserClientComposite.findOauthUser(type, code);
-        return userFinder.findByAuthTypeAndOauthId(type, code)
+        return userFinder.findByAuthTypeAndOauthId(type, user.getOauthId())
                 .orElseThrow(() -> new BadRequestException(Exception.USER_NOT_FOUND));
     }
 }

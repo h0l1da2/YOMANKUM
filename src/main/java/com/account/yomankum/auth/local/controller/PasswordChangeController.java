@@ -22,7 +22,7 @@ public class PasswordChangeController {
         passwordChangeService.sendAuthCodeMail(email);
     }
 
-    @PostMapping("/check/code/{email}/{code}")
+    @GetMapping("/check/code/{email}/{code}")
     @Operation(summary = "메일 인증 코드 체크", description = "메일 인증 코드 체크")
     public boolean checkEmailCode(@PathVariable String email, @PathVariable String code) {
         return passwordChangeService.isValidCode(email, code);

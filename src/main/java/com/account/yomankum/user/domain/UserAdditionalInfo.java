@@ -1,6 +1,5 @@
 package com.account.yomankum.user.domain;
 
-import com.account.yomankum.user.domain.type.Gender;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
