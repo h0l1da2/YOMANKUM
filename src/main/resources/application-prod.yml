@@ -1,56 +1,42 @@
-spring:
-  datasource:
-    url: ${DATA_URL}
-    username: ${DATA_USERNAME}
-    password: ${DATA_PASSWORD}
-  security:
-    oauth2:
-      client:
-        registration:
-          google: # 도메인 없어서 불가
-            client-id: cliendtId
-            client-secret: cliendtSecret
-            scope:
-              - email
-            redirect-uri: http://localhost:8080/
-          naver:
-            client-id: ${NAVER_CLIENT_ID}
-            client-secret: ${NAVER_CLIENT_SECRET}
-            scope:
-              - name
-              - email
-              - mobile
-            client-name: Naver
-            authorization-grant-type: authorization_code
-            redirect-uri: http://localhost:8080/
-          kakao:
-            client-id: ${KAKAO_CLIENT_ID}
-            client-secret: ${KAKAO_CLIENT_SECRET}
-            scope:
-              - account_email
-            client-name: Kakao
-            authorization-grant-type: authorization_code
-            redirect-uri: http://localhost:8080/
-            client-authentication-method: POST
-
-  mail:
-    host: smtp.naver.com
-    port: 465
-    username: ${MAIL_USERNAME}
-    password: ${MAIL_PASSWORD}
-    properties:
-      mail.smtp.auth: true
-      mail.smtp.ssl.enable: true
-      mail.smtp.ssl.trust: smtp.naver.com
-  redis:
-    host: ${REDIS_HOST}
-    port: ${REDIS_PORT}
-
-jasypt:
-  encryptor:
-    password: ${JASYPT_ENCRYPTOR_PASSWORD}
-    algorithm: PBEWithMD5AndDES
-    ivGeneratorClassname: org.jasypt.iv.NoIvGenerator
-
-mail:
-  id: ${MAIL_ID}
+oauth:
+  google:
+    client_id: ${GOOGLE_CLIENT_ID}
+    client_secret: ${GOOGLE_CLIENT_ID}
+    scope:
+      - profile
+      - email
+  kakao:
+    client_id: ${KAKAO_CLIENT_ID}
+    client_secret: ${KAKAO_CLIENT_ID}
+    redirect_uri: http://localhost:3000/oauth/redirect/kakao
+    authorization_grant_type: authorization_code
+    client_authentication_method: client_secret_post
+    scope:
+      - account_email
+  naver:
+    client_id: ${NAVER_CLIENT_ID}
+    client_secret: ${NAVER_CLIENT_ID}
+    redirect_uri: http://localhost:3000/oauth/redirect/naver
+    authorization_grant_type: authorization_code
+    client_authentication_method: client_secret_basic
+    scope:
+      - name
+      - email
+      - mobile
+    client_name: Naver
+  provider:
+    google:
+      authorization_uri: https://kauth.google.com/oauth/authorize
+      token_uri: https://kauth.google.com/oauth/token
+      user_info_uri: https://kapi.google.com/v2/user/me
+      user_name_attribute: id
+    kakao:
+      authorization_uri: https://kauth.kakao.com/oauth/authorize
+      token_uri: https://kauth.kakao.com/oauth/token
+      user_info_uri: https://kapi.kakao.com/v2/user/me
+      user_name_attribute: id
+    naver:
+      authorization_uri: https://nid.naver.com/oauth2.0/authorize
+      token_uri: https://nid.naver.com/oauth2.0/token
+      user_info_uri: https://openapi.naver.com/v1/nid/me
+      user_name_attribute: response
