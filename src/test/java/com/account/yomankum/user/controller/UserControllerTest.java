@@ -1,10 +1,7 @@
 package com.account.yomankum.user.controller;
 
-import com.account.yomankum.auth.common.AuthArgumentResolver;
-import com.account.yomankum.auth.common.LoginUser;
 import com.account.yomankum.auth.jwt.service.TokenService;
-import com.account.yomankum.auth.local.controller.LoginController;
-import com.account.yomankum.common.AbstractRestDocsTests;
+import com.account.yomankum.common.ControllerTest;
 import com.account.yomankum.user.domain.Gender;
 import com.account.yomankum.user.dto.request.UserInfoUpdateRequest;
 import com.account.yomankum.user.dto.response.UserInfoDto;
@@ -28,12 +25,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(UserController.class)
-class UserControllerTest extends AbstractRestDocsTests {
+class UserControllerTest extends ControllerTest {
 
     @Autowired private ObjectMapper objectMapper;
     @MockBean private UserService userService;
     @MockBean private UserFinder userFinder;
-    @MockBean private TokenService tokenService;
 
     private final Long userId = 1L;
 

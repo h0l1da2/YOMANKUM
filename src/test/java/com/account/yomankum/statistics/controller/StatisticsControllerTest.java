@@ -1,6 +1,5 @@
 package com.account.yomankum.statistics.controller;
-import com.account.yomankum.common.AbstractRestDocsTests;
-import com.account.yomankum.statistics.dto.StatisticsResponse;
+import com.account.yomankum.common.ControllerTest;
 import com.account.yomankum.statistics.service.StatisticsService;
 import com.account.yomankum.statistics.service.impl.monthly.MonthlyTotalStatisticRequest;
 import com.account.yomankum.statistics.service.impl.monthly.vo.MonthlyTotal;
@@ -27,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(StatisticsController.class)
-class StatisticsControllerTest extends AbstractRestDocsTests {
+class StatisticsControllerTest extends ControllerTest {
 
     @MockBean
     private StatisticsService statisticsService;

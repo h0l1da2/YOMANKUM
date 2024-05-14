@@ -3,7 +3,7 @@ package com.account.yomankum.auth.oauth.controller;
 import com.account.yomankum.auth.local.dto.response.LoginResponse;
 import com.account.yomankum.auth.oauth.dto.OauthSignupRequest;
 import com.account.yomankum.auth.oauth.service.OauthService;
-import com.account.yomankum.common.AbstractRestDocsTests;
+import com.account.yomankum.common.ControllerTest;
 import com.account.yomankum.user.domain.AuthType;
 import com.account.yomankum.user.domain.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(OauthController.class)
-class OauthControllerTest extends AbstractRestDocsTests {
+class OauthControllerTest extends ControllerTest {
 
     @MockBean
     private OauthService oauthService;
