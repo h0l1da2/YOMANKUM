@@ -1,4 +1,4 @@
-package com.account.yomankum.config;
+package com.account.yomankum.mail.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -10,7 +10,6 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import java.util.Properties;
 
 @Configuration(proxyBeanMethods = false)
-@PropertySource("classpath:application.yml")
 public class MailConfig {
 
     @Value("${spring.mail.username}")

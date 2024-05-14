@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@PropertySource("classpath:application.yml")
 @RequestMapping("/api/v1/ci-cd")
 @Tag(name = "CI/CD 체크", description = "CI/CD 체크 api")
 public class CiCdCheckController {
