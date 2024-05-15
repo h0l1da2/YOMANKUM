@@ -5,6 +5,7 @@ import com.account.yomankum.notice.domain.NoticeStatus;
 import com.account.yomankum.notice.domain.UserNotice;
 import com.account.yomankum.notice.repository.UserNoticeRepository;
 import com.account.yomankum.user.domain.User;
+import com.account.yomankum.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,8 +16,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class NoticeService {
 
     private final UserNoticeRepository userNoticeRepository;
+    private final UserService userService;
 
-    public Notice save(User user, String content) {
+    public Notice save(Long userId, String content) {
+        User user = userService.findById(userId);
+
         Notice notice = Notice.builder()
                 .noticeStatus(NoticeStatus.UN_READ)
                 .content(content)

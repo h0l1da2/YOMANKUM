@@ -22,7 +22,6 @@ public class AccountBookService {
 
     private final AccountBookRepository accountBookRepository;
     private final AccountBookFinder accountBookFinder;
-    private final AccountBookUserService accountBookUserService;
     private final UserService userService;
     private final SessionService sessionService;
     private final NoticeService noticeService;
@@ -53,7 +52,6 @@ public class AccountBookService {
         accountBookRepository.deleteById(id);
     }
 
-    // TODO 공유 가계부 초대 개발
     public void invite(Long id, AccountBookInviteRequest accountBookInviteRequest) {
         AccountBook accountBook = accountBookFinder.findById(id);
         accountBook.checkAuthorizedUser(sessionService.getSessionUserId());
@@ -61,31 +59,24 @@ public class AccountBookService {
         User user = userService.findByEmail(accountBookInviteRequest.email());
 
         addNewUser(accountBook, user);
-        AccountBookUser accountBookUser = accountBookUserService.save(
-                AccountBookUser.builder()
-                        .nickname(user.getNickname())
-                        .accountBookRole(AccountBookRole.READ_ONLY)
-                        .status(UserStatus.INVITING)
-                        .accountBook(accountBook)
-                        .build());
 
-        user.addAccountBook(accountBookUser);
-        accountBook.addAccountBookUser(accountBookUser);
-
-        // 알림 메시지
-        noticeService.save(user, accountBook.getName() + "에 초대되셨습니다.");
+        noticeService.save(user.getId(), accountBook.getName() + "에 초대되셨습니다.");
+        // SSE 또는 소켓 추가 필요..
     }
 
     public void addNewUser(AccountBook accountBook, User user) {
         AccountBookRole role = accountBook.getCreateUserId() == null ?
                 AccountBookRole.OWNER : AccountBookRole.READ_ONLY;
 
+        UserStatus userStatus = role == AccountBookRole.OWNER ?
+                UserStatus.PARTICIPATING : UserStatus.INVITING;
+
         AccountBookUser accountBookUser = AccountBookUser.builder()
                 .accountBook(accountBook)
                 .user(user)
                 .nickname(user.getNickname())
                 .accountBookRole(role)
-                .status(UserStatus.PARTICIPATING)
+                .status(userStatus)
                 .build();
 
         accountBook.addAccountBookUser(accountBookUser);
