@@ -19,7 +19,6 @@ import java.util.Map;
 
 @Slf4j
 @Component
-@PropertySource("classpath:application.yml")
 public class TokenParser {
 
     private final JwtParser jwtParser;

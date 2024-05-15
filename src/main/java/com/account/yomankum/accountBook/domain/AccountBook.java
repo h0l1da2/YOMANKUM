@@ -30,22 +30,13 @@ public class AccountBook extends UserBaseEntity {
     private String name;
     private AccountBookType type;
     @Default
-    @OneToMany(mappedBy = "accountBook",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true,
-            fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "accountBook", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Record> records = new ArrayList<>();
     @Default
-    @OneToMany(mappedBy = "accountBook",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true,
-            fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "accountBook", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Tag> mainTags = new ArrayList<>();
     @Default
-    @OneToMany(mappedBy = "accountBook",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true,
-            fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "accountBook", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<AccountBookUser> accountBookUsers = new ArrayList<>();
 
     public void updateName(String name, Long requesterId) {

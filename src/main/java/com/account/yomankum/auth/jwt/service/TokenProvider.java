@@ -15,7 +15,6 @@ import java.security.Key;
 import java.util.Date;
 
 @Component
-@PropertySource("classpath:application.yml")
 public class TokenProvider {
 
     @Value("${token.valid.time}")

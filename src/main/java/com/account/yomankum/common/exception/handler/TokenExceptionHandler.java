@@ -19,7 +19,6 @@ public class TokenExceptionHandler {
     @ExceptionHandler(ExpiredJwtException.class)
     @ResponseBody
     public Map<String, String> invalidRequestHandler(ExpiredJwtException e) {
-        e.printStackTrace();
         log.error("토큰 시간 초과 : {}", e.getMessage());
         Map<String, String> invalid = new HashMap<>();
         invalid.put("code", "401");
