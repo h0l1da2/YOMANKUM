@@ -6,6 +6,7 @@ import com.account.yomankum.accountBook.domain.AccountBookType;
 import com.account.yomankum.accountBook.domain.tag.DefaultTag;
 import com.account.yomankum.accountBook.domain.tag.MainTagRepository;
 import com.account.yomankum.accountBook.dto.request.AccountBookCreateRequest;
+import com.account.yomankum.common.IntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
-@Transactional
-@WithMockUser(username = "1")
-public class AccountBookServiceIntegrationTest {
+public class AccountBookServiceIntegrationTest extends IntegrationTest {
 
     @Autowired private AccountBookService accountBookService;
     @Autowired private AccountBookRepository accountBookRepository;
