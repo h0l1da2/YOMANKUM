@@ -4,7 +4,6 @@ import com.account.yomankum.auth.local.dto.request.LoginRequest;
 import com.account.yomankum.auth.local.dto.response.LoginResponse;
 import com.account.yomankum.auth.local.service.LoginService;
 import com.account.yomankum.common.ControllerTest;
-import com.account.yomankum.user.controller.UserController;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
