@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/sign-up")
-@Tag(name = "(NORMAL) SIGN UP", description = "일반 회원가입 API 명세서")
+@Tag(name = "Local Sign up", description = "일반 회원가입 API 명세서")
 public class SignUpController {
 
     private final SignUpService signUpService;

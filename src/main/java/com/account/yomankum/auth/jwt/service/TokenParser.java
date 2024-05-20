@@ -1,6 +1,7 @@
 package com.account.yomankum.auth.jwt.service;
 
 import com.account.yomankum.auth.jwt.domain.TokenProperty;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -19,7 +20,6 @@ import java.util.Map;
 
 @Slf4j
 @Component
-@PropertySource("classpath:application.yml")
 public class TokenParser {
 
     private final JwtParser jwtParser;
@@ -30,14 +30,18 @@ public class TokenParser {
     }
 
     public boolean isValid(String token) {
-        Map<String, Object> payload = getPayload(token);
-        if (!payload.isEmpty()) {
-            Long exp = (Long) payload.get("exp");
-            Instant instant = Instant.ofEpochSecond(exp);
-            LocalDateTime expLocalDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
-            return !expLocalDateTime.isBefore(LocalDateTime.now());
+        try{
+            Map<String, Object> payload = getPayload(token);
+            if (!payload.isEmpty()) {
+                Long exp = (Long) payload.get("exp");
+                Instant instant = Instant.ofEpochSecond(exp);
+                LocalDateTime expLocalDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+                return !expLocalDateTime.isBefore(LocalDateTime.now());
+            }
+            return false;
+        }catch (ExpiredJwtException e){
+            return false;
         }
-        return false;
     }
 
     public Long getUserId(String token) {

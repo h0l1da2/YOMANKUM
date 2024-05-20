@@ -6,10 +6,9 @@ import com.account.yomankum.accountBook.domain.tag.Tag;
 import com.account.yomankum.accountBook.dto.request.MainTagRequest;
 import com.account.yomankum.accountBook.service.MainTagFinder;
 import com.account.yomankum.accountBook.service.MainTagService;
-import com.account.yomankum.common.AbstractRestDocsTests;
+import com.account.yomankum.common.ControllerTest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -23,16 +22,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.mockito.BDDMockito.*;
 
 @WebMvcTest(MainTagController.class)
-class MainTagControllerTest extends AbstractRestDocsTests {
-
-    @Autowired
-    private ObjectMapper objectMapper;
+class MainTagControllerTest extends ControllerTest {
 
     @MockBean
     private MainTagFinder mainTagFinder;
 
     @MockBean
     private MainTagService mainTagService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Test
     public void get_mainTags() throws Exception {

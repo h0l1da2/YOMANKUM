@@ -1,6 +1,7 @@
 package com.account.yomankum.auth.oauth.infra.kakao.response;
 
 import com.account.yomankum.user.domain.AuthInfo;
+import com.account.yomankum.user.domain.AuthType;
 import com.account.yomankum.user.domain.User;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -14,7 +15,7 @@ public class KakaoUserResponse {
     private KakaoAccount kakaoAccount;
 
     public User toEntity(){
-        AuthInfo authInfo = new AuthInfo();
+        AuthInfo authInfo = AuthInfo.oauthUser(AuthType.KAKAO, id.toString());
         return User.builder()
                 .authInfo(authInfo)
                 .nickname(kakaoAccount.profile.nickname)
