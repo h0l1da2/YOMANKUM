@@ -5,6 +5,7 @@ import com.account.yomankum.auth.local.dto.response.LoginResponse;
 import com.account.yomankum.auth.oauth.domain.memberClient.OauthUserClientComposite;
 import com.account.yomankum.auth.oauth.domain.oauthCodeRequest.AuthCodeRequestUrlProviderComposite;
 import com.account.yomankum.auth.oauth.dto.OauthSignupRequest;
+import com.account.yomankum.auth.oauth.exception.OauthLoginFailException;
 import com.account.yomankum.common.exception.BadRequestException;
 import com.account.yomankum.common.exception.Exception;
 import com.account.yomankum.user.domain.AuthType;
@@ -48,9 +49,10 @@ public class OauthService {
     }
 
     private User getUser(AuthType type, String code) {
-        User user = oauthUserClientComposite.findOauthUser(type, code);
-        return userFinder.findByAuthTypeAndOauthId(type, user.getOauthId())
-                .orElseThrow(() -> new BadRequestException(Exception.USER_NOT_FOUND));
+        User oauthUser = oauthUserClientComposite.findOauthUser(type, code);
+        return userFinder.findByAuthTypeAndOauthId(type, oauthUser.getOauthId())
+                .orElseThrow(() -> new OauthLoginFailException(oauthUser.getAuthType(), oauthUser.getOauthId()));
     }
+
 }
 

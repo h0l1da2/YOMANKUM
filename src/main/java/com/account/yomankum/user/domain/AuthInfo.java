@@ -33,7 +33,10 @@ public class AuthInfo {
         return authInfo;
     }
 
-    public void setOauthId(String oauthId) {
-        this.oauthId = oauthId;
+    public static AuthInfo oauthUser(AuthType authType, String oauthId) {
+        AuthInfo authInfo = new AuthInfo();
+        authInfo.authType = authType;
+        authInfo.oauthId = oauthId;
+        return authInfo;
     }
 }
