@@ -1,5 +1,8 @@
 package com.account.yomankum.common.exception;
 
+import lombok.Getter;
+
+@Getter
 public class BadRequestException extends RuntimeException{
 
     private final int code;

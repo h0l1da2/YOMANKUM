@@ -7,7 +7,6 @@ import lombok.Getter;
 
 import java.time.LocalDate;
 
-// 통계 등을 위한 필수가 아닌 추가정보
 @Getter
 @Embeddable
 public class UserAdditionalInfo {

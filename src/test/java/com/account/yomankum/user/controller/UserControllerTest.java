@@ -1,6 +1,5 @@
 package com.account.yomankum.user.controller;
 
-import com.account.yomankum.auth.jwt.service.TokenService;
 import com.account.yomankum.common.ControllerTest;
 import com.account.yomankum.user.domain.Gender;
 import com.account.yomankum.user.dto.request.UserInfoUpdateRequest;

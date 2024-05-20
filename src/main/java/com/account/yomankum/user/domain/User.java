@@ -46,8 +46,8 @@ public class User {
             fetch = FetchType.LAZY)
     private List<AccountBookUser> accountBooks = new ArrayList<>();
 
-    //    @Embedded
-    //    private UserAdditionalInfo additionalInfo;
+//    @Embedded
+//    private UserAdditionalInfo additionalInfo;
 
     private LocalDateTime joinDatetime;
     private LocalDateTime stopDatetime;
@@ -82,6 +82,8 @@ public class User {
     public String getOauthId() {
         return authInfo.getOauthId();
     }
+
+    public AuthType getAuthType() { return authInfo.getAuthType(); }
 
     // 보안을 위해 '접근권한이 없음'이 아닌 '가계부가 없음' 메세지를 준다.
     public void checkAuthorizedUser(Long requesterId) {
