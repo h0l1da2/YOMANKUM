@@ -49,19 +49,46 @@ public class AccountBook extends UserBaseEntity {
     private List<AccountBookUser> accountBookUsers = new ArrayList<>();
 
     public void updateName(String name, Long requesterId) {
-        checkAuthorizedUser(requesterId);
+        checkCreatedUser(requesterId);
+        AccountBookRole accountBookRole = getAccountBookRole(requesterId);
+
+        if (!accountBookRole.equals(AccountBookRole.OWNER)) {
+            throw new BadRequestException(Exception.ACCESS_DENIED);
+        }
+
         this.name = name;
     }
 
     public void addRecord(Record record, Long requesterId) {
         checkAuthorizedUser(requesterId);
+        AccountBookRole accountBookRole = getAccountBookRole(requesterId);
+
+        if (accountBookRole.equals(AccountBookRole.READ_ONLY) || accountBookRole.equals(AccountBookRole.GENERAL)) {
+            throw new BadRequestException(Exception.ACCESS_DENIED);
+        }
+
         records.add(record);
         record.appointAccountBook(this);
     }
 
     public void delete(Long requesterId) {
         checkAuthorizedUser(requesterId);
+        for (AccountBookUser bookUser : accountBookUsers) {
+            if (bookUser.getUser().getId().equals(requesterId)) {
+                bookUser.getUser().getAccountBooks().remove(this);
+                break;
+            }
+        }
         accountBookUsers.removeIf(accountBookUser -> accountBookUser.getUser().getId().equals(requesterId));
+    }
+
+    public AccountBookRole getAccountBookRole(Long requesterId) {
+        checkAuthorizedUser(requesterId);
+        return accountBookUsers.stream()
+                .filter(accountBookUser -> accountBookUser.getUser().getId().equals(requesterId))
+                .map(AccountBookUser::getAccountBookRole)
+                .findFirst()
+                .orElseThrow(() -> new BadRequestException(Exception.USER_NOT_FOUND));
     }
 
     public void deleteRecord(Record record, Long requesterId) {
@@ -81,6 +108,12 @@ public class AccountBook extends UserBaseEntity {
                 .anyMatch(accountBookUser ->
                         accountBookUser.getUser().getId().equals(requesterId));
         if(!checkUser){
+            throw new BadRequestException(Exception.ACCOUNT_BOOK_NOT_FOUND);
+        }
+    }
+
+    private void checkCreatedUser(Long requesterId) {
+        if (!this.getCreateUserId().equals(requesterId)) {
             throw new BadRequestException(Exception.ACCOUNT_BOOK_NOT_FOUND);
         }
     }

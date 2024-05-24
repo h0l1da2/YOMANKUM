@@ -1,9 +1,6 @@
 package com.account.yomankum.accountBook.service;
 
-import com.account.yomankum.accountBook.domain.AccountBook;
-import com.account.yomankum.accountBook.domain.AccountBookRepository;
-import com.account.yomankum.accountBook.domain.AccountBookRole;
-import com.account.yomankum.accountBook.domain.AccountBookType;
+import com.account.yomankum.accountBook.domain.*;
 import com.account.yomankum.accountBook.domain.record.Record;
 import com.account.yomankum.accountBook.domain.record.RecordSearchCondition;
 import com.account.yomankum.accountBook.domain.record.RecordType;
@@ -58,10 +55,24 @@ public class RecordFinderIntegrationTest {
 
     @BeforeEach
     void setup() {
+        // FIXME account book user 추가 필요.
         User user = userRepository.save(User.builder().id(1L).build());
         accountBook = accountBook();
+
+        AccountBookUser accountBookUser = AccountBookUser.builder()
+                .id(1L)
+                .accountBook(accountBook)
+                .user(user)
+                .nickname(user.getNickname())
+                .accountBookRole(AccountBookRole.OWNER)
+                .status(UserStatus.PARTICIPATING)
+                .build();
+
         accountBookRepository.save(accountBook);
-        accountBookService.addNewUser(accountBook, user);
+
+        accountBook.addAccountBookUser(accountBookUser);
+        user.addAccountBook(accountBookUser);
+
 
         mainTag = Tag.of(DefaultTag.FOOD.getName());
         mainTagRepository.save(mainTag);
@@ -92,6 +103,7 @@ public class RecordFinderIntegrationTest {
 
     private AccountBook accountBook() {
         return AccountBook.builder()
+                .id(1L)
                 .type(AccountBookType.PRIVATE)
                 .name("test account book")
                 .build();

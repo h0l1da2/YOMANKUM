@@ -13,6 +13,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -23,29 +24,42 @@ class AccountBookTest {
     private AccountBook accountBook;
     private Long ownerId;
     private Long otherUserId;
+    private Long readOnlyUserId;
+    private Long notAuthUserId;
     private Tag tag;
 
     @BeforeEach
     void setUp() {
         ownerId = 1L;
         otherUserId = 2L;
+        notAuthUserId = 3L;
+        readOnlyUserId = 4L;
+
         List<Tag> tags = new ArrayList<>();
         tag = new Tag(1L,"main tag 1", accountBook, new Color());
         tags.add(tag);
 
         User user = User.builder().id(ownerId).build();
+        User otherUser = User.builder().id(otherUserId).build();
+        User readOnlyUser = User.builder().id(readOnlyUserId).build();
+
         AccountBookUser accountBookUser = AccountBookUser.builder().id(1L).user(user).build();
+        AccountBookUser accountBookOtherUser = AccountBookUser.builder().id(2L).user(otherUser).build();
+        AccountBookUser accountBookReadOnlyUser = AccountBookUser.builder().id(3L).user(readOnlyUser).accountBookRole(AccountBookRole.READ_ONLY).build();
 
         List<AccountBookUser> accountBookUsers = new ArrayList<>();
         accountBookUsers.add(accountBookUser);
+        accountBookUsers.add(accountBookOtherUser);
+        accountBookUsers.add(accountBookReadOnlyUser);
+
         user.addAccountBook(accountBookUser);
+        otherUser.addAccountBook(accountBookOtherUser);
         accountBook = AccountBook.builder()
                 .id(1L)
                 .name(ACCOUNT_BOOK_NAME)
                 .mainTags(tags)
                 .accountBookUsers(accountBookUsers)
                 .build();
-        accountBook.addAccountBookUser(accountBookUser);
 
         setUserAsCreator(accountBook, ownerId);
     }
@@ -79,11 +93,20 @@ class AccountBookTest {
     }
 
     @Test
-    @DisplayName("권한이 없는 사용자가 가계부에 내역을 추가 시도하면 에러가 발생한다.")
+    @DisplayName("가계부에 포함되어 있지만 OWNER 권한이 아닌 사용자가 가계부에 내역을 추가 시도하면 에러가 발생한다.")
+    void addRecord_fail_not_owner() {
+        Record newRecord = createNewRecord();
+        assertThrows(BadRequestException.class, ()
+                -> accountBook.addRecord(newRecord, readOnlyUserId));
+        assertFalse(accountBook.getRecords().contains(newRecord));
+    }
+
+    @Test
+    @DisplayName("가계부에 권한이 없는 사용자가 가계부에 내역을 추가 시도하면 에러가 발생한다.")
     void addRecord_fail() {
         Record newRecord = createNewRecord();
         assertThrows(BadRequestException.class, ()
-                -> accountBook.addRecord(newRecord, otherUserId));
+                -> accountBook.addRecord(newRecord, notAuthUserId));
         assertFalse(accountBook.getRecords().contains(newRecord));
     }
 
@@ -106,7 +129,7 @@ class AccountBookTest {
     @DisplayName("가계부에 대한 사용자의 권한을 검사한다. (권한이 없는 유저의 경우)")
     void checkAuthorizedUser_fail() {
         BadRequestException exception = assertThrows(BadRequestException.class, () ->
-                accountBook.checkAuthorizedUser(otherUserId));
+                accountBook.checkAuthorizedUser(notAuthUserId));
         assertEquals(Exception.ACCOUNT_BOOK_NOT_FOUND.getMessage(), exception.getMessage());
     }
 
@@ -129,6 +152,25 @@ class AccountBookTest {
 
         assertNotEquals(originMainTagSize, accountBook.getMainTags().size());
         assertTrue(accountBook.getMainTags().isEmpty());
+    }
+
+    @Test
+    @DisplayName("오너가 아닌 가계부 유저가 가계부를 삭제한다.")
+    void remove_accountBook(){
+        accountBook.delete(otherUserId);
+
+        assertEquals(accountBook.getAccountBookUsers().size(), 1);
+        assertEquals(accountBook.getAccountBookUsers().stream()
+                .filter(accountBookUser -> accountBookUser.getUser().getId().equals(ownerId))
+                .map(AccountBookUser::getId)
+                .findFirst()
+                .orElse(null), ownerId);
+        assertThrows(NoSuchElementException.class,
+                () -> accountBook.getAccountBookUsers().stream()
+                        .filter(accountBookUser -> accountBookUser.getUser().getId().equals(otherUserId))
+                        .map(AccountBookUser::getId)
+                        .findFirst()
+                        .orElseThrow());
     }
 
     private Record createNewRecord() {

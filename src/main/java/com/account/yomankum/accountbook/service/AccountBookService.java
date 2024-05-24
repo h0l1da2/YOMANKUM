@@ -21,6 +21,7 @@ import java.util.List;
 public class AccountBookService {
 
     private final AccountBookRepository accountBookRepository;
+    private final AccountBookUserRepository accountBookUserRepository;
     private final AccountBookFinder accountBookFinder;
     private final UserService userService;
     private final SessionService sessionService;
@@ -48,8 +49,15 @@ public class AccountBookService {
 
     public void delete(Long id) {
         AccountBook accountBook = accountBookFinder.findById(id);
-        accountBook.delete(sessionService.getSessionUserId());
-        accountBookRepository.deleteById(id);
+        Long sessionUserId = sessionService.getSessionUserId();
+        AccountBookRole accountBookRole = accountBook.getAccountBookRole(sessionUserId);
+
+        if (accountBookRole.equals(AccountBookRole.OWNER)) {
+            accountBookRepository.deleteById(id);
+        } else {
+            accountBook.delete(sessionUserId);
+            accountBookUserRepository.deleteByUserId(sessionUserId);
+        }
     }
 
     public void invite(Long id, AccountBookInviteRequest accountBookInviteRequest) {
@@ -65,22 +73,7 @@ public class AccountBookService {
     }
 
     public void addNewUser(AccountBook accountBook, User user) {
-        AccountBookRole role = accountBook.getCreateUserId() == null ?
-                AccountBookRole.OWNER : AccountBookRole.READ_ONLY;
 
-        UserStatus userStatus = role == AccountBookRole.OWNER ?
-                UserStatus.PARTICIPATING : UserStatus.INVITING;
-
-        AccountBookUser accountBookUser = AccountBookUser.builder()
-                .accountBook(accountBook)
-                .user(user)
-                .nickname(user.getNickname())
-                .accountBookRole(role)
-                .status(userStatus)
-                .build();
-
-        accountBook.addAccountBookUser(accountBookUser);
-        user.addAccountBook(accountBookUser);
     }
 
 }
