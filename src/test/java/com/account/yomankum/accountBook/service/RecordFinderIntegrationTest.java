@@ -7,6 +7,7 @@ import com.account.yomankum.accountBook.domain.record.RecordType;
 import com.account.yomankum.accountBook.domain.tag.DefaultTag;
 import com.account.yomankum.accountBook.domain.tag.MainTagRepository;
 import com.account.yomankum.accountBook.domain.tag.Tag;
+import com.account.yomankum.accountBook.dto.request.AccountBookCreateRequest;
 import com.account.yomankum.accountBook.dto.request.RecordCreateRequest;
 import com.account.yomankum.user.domain.User;
 import com.account.yomankum.user.repository.UserRepository;
@@ -47,6 +48,7 @@ public class RecordFinderIntegrationTest {
     @Autowired
     private AccountBookService accountBookService;
 
+    private Long accountBookId;
     private AccountBook accountBook;
     private Tag mainTag;
     private LocalDate today;
@@ -57,22 +59,10 @@ public class RecordFinderIntegrationTest {
     void setup() {
         // FIXME account book user 추가 필요.
         User user = userRepository.save(User.builder().id(1L).build());
-        accountBook = accountBook();
-
-        AccountBookUser accountBookUser = AccountBookUser.builder()
-                .id(1L)
-                .accountBook(accountBook)
-                .user(user)
-                .nickname(user.getNickname())
-                .accountBookRole(AccountBookRole.OWNER)
-                .status(UserStatus.PARTICIPATING)
-                .build();
-
-        accountBookRepository.save(accountBook);
-
-        accountBook.addAccountBookUser(accountBookUser);
-        user.addAccountBook(accountBookUser);
-
+        accountBookId = accountBookService.create(
+                new AccountBookCreateRequest("AccountBookName", AccountBookType.PRIVATE)
+        );
+        accountBook = accountBookRepository.findById(accountBookId).orElseThrow();
 
         mainTag = Tag.of(DefaultTag.FOOD.getName());
         mainTagRepository.save(mainTag);

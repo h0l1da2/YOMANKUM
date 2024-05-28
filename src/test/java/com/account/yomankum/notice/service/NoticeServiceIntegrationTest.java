@@ -22,15 +22,17 @@ public class NoticeServiceIntegrationTest {
     @Autowired private NoticeService noticeService;
     @Autowired private UserRepository userRepository;
     private Long userId;
+    private User user;
+
     @BeforeEach
     void setup(){
         userId = 1L;
-        userRepository.save(User.builder().id(userId).build());
+        user = userRepository.save(User.builder().id(userId).build());
     }
 
     @Test
     public void testCreateNotice() {
-        Notice notice = noticeService.save(userId, "content");
+        Notice notice = noticeService.save(user.getId(), "content");
 
         assertNotNull(notice);
         assertEquals(notice.getContent(), "content");

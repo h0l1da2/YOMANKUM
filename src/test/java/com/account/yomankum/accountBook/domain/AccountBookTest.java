@@ -13,7 +13,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -43,8 +42,8 @@ class AccountBookTest {
         User otherUser = User.builder().id(otherUserId).build();
         User readOnlyUser = User.builder().id(readOnlyUserId).build();
 
-        AccountBookUser accountBookUser = AccountBookUser.builder().id(1L).user(user).build();
-        AccountBookUser accountBookOtherUser = AccountBookUser.builder().id(2L).user(otherUser).build();
+        AccountBookUser accountBookUser = AccountBookUser.builder().id(1L).user(user).accountBookRole(AccountBookRole.OWNER).build();
+        AccountBookUser accountBookOtherUser = AccountBookUser.builder().id(2L).user(otherUser).accountBookRole(AccountBookRole.GENERAL).build();
         AccountBookUser accountBookReadOnlyUser = AccountBookUser.builder().id(3L).user(readOnlyUser).accountBookRole(AccountBookRole.READ_ONLY).build();
 
         List<AccountBookUser> accountBookUsers = new ArrayList<>();
@@ -157,20 +156,7 @@ class AccountBookTest {
     @Test
     @DisplayName("오너가 아닌 가계부 유저가 가계부를 삭제한다.")
     void remove_accountBook(){
-        accountBook.delete(otherUserId);
-
-        assertEquals(accountBook.getAccountBookUsers().size(), 1);
-        assertEquals(accountBook.getAccountBookUsers().stream()
-                .filter(accountBookUser -> accountBookUser.getUser().getId().equals(ownerId))
-                .map(AccountBookUser::getId)
-                .findFirst()
-                .orElse(null), ownerId);
-        assertThrows(NoSuchElementException.class,
-                () -> accountBook.getAccountBookUsers().stream()
-                        .filter(accountBookUser -> accountBookUser.getUser().getId().equals(otherUserId))
-                        .map(AccountBookUser::getId)
-                        .findFirst()
-                        .orElseThrow());
+        assertThrows(BadRequestException.class, () ->accountBook.delete(otherUserId));
     }
 
     private Record createNewRecord() {
