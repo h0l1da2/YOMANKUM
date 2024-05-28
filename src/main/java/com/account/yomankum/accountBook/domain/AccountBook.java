@@ -72,7 +72,7 @@ public class AccountBook extends UserBaseEntity {
     }
 
     public void delete(Long requesterId) {
-        checkAuthorizedUser(requesterId);
+        checkCreatedUser(requesterId);
         for (AccountBookUser bookUser : accountBookUsers) {
             if (bookUser.getUser().getId().equals(requesterId)) {
                 bookUser.getUser().getAccountBooks().remove(this);
