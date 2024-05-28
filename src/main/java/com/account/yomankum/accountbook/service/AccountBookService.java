@@ -73,7 +73,22 @@ public class AccountBookService {
     }
 
     public void addNewUser(AccountBook accountBook, User user) {
+        AccountBookRole role = accountBook.getCreateUserId() == null ?
+                AccountBookRole.OWNER : AccountBookRole.READ_ONLY;
 
+        UserStatus userStatus = role == AccountBookRole.OWNER ?
+                UserStatus.PARTICIPATING : UserStatus.INVITING;
+
+        AccountBookUser accountBookUser = AccountBookUser.builder()
+                .accountBook(accountBook)
+                .user(user)
+                .nickname(user.getNickname())
+                .accountBookRole(role)
+                .status(userStatus)
+                .build();
+
+        accountBook.addAccountBookUser(accountBookUser);
+        user.addAccountBook(accountBookUser);
     }
 
 }
