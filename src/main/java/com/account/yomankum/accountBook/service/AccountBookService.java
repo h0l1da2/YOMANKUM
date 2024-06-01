@@ -24,8 +24,8 @@ import java.util.List;
 public class AccountBookService {
 
     private final AccountBookRepository accountBookRepository;
+    private final AccountBookUserRepository accountBookUserRepository;
     private final AccountBookFinder accountBookFinder;
-    private final AccountBookUserService accountBookUserService;
     private final SessionService sessionService;
     private final NoticeService noticeService;
     private final UserFinder userFinder;
@@ -52,11 +52,17 @@ public class AccountBookService {
 
     public void delete(Long id) {
         AccountBook accountBook = accountBookFinder.findById(id);
-        accountBook.delete(sessionService.getSessionUserId());
-        accountBookRepository.deleteById(id);
+        Long sessionUserId = sessionService.getSessionUserId();
+        AccountBookRole accountBookRole = accountBook.getAccountBookRole(sessionUserId);
+
+        if (accountBookRole.equals(AccountBookRole.OWNER)) {
+            accountBookRepository.deleteById(id);
+        } else {
+            accountBook.delete(sessionUserId);
+            accountBookUserRepository.deleteByUserId(sessionUserId);
+        }
     }
 
-    // TODO 공유 가계부 초대 개발
     public void invite(Long id, AccountBookInviteRequest accountBookInviteRequest) {
         AccountBook accountBook = accountBookFinder.findById(id);
         accountBook.checkAuthorizedUser(sessionService.getSessionUserId());
@@ -64,31 +70,24 @@ public class AccountBookService {
         User user = userFinder.findByEmail(accountBookInviteRequest.email()).orElseThrow(() -> new BadRequestException(Exception.USER_NOT_FOUND));
 
         addNewUser(accountBook, user);
-        AccountBookUser accountBookUser = accountBookUserService.save(
-                AccountBookUser.builder()
-                        .nickname(user.getNickname())
-                        .accountBookRole(AccountBookRole.READ_ONLY)
-                        .status(UserStatus.INVITING)
-                        .accountBook(accountBook)
-                        .build());
 
-        user.addAccountBook(accountBookUser);
-        accountBook.addAccountBookUser(accountBookUser);
-
-        // 알림 메시지
-        noticeService.save(user, accountBook.getName() + "에 초대되셨습니다.");
+        noticeService.save(user.getId(), accountBook.getName() + "에 초대되셨습니다.");
+        // SSE 또는 소켓 추가 필요..
     }
 
     public void addNewUser(AccountBook accountBook, User user) {
         AccountBookRole role = accountBook.getCreateUserId() == null ?
                 AccountBookRole.OWNER : AccountBookRole.READ_ONLY;
 
+        UserStatus userStatus = role == AccountBookRole.OWNER ?
+                UserStatus.PARTICIPATING : UserStatus.INVITING;
+
         AccountBookUser accountBookUser = AccountBookUser.builder()
                 .accountBook(accountBook)
                 .user(user)
                 .nickname(user.getNickname())
                 .accountBookRole(role)
-                .status(UserStatus.PARTICIPATING)
+                .status(userStatus)
                 .build();
 
         accountBook.addAccountBookUser(accountBookUser);

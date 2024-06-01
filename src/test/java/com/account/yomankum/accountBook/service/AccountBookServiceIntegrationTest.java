@@ -6,6 +6,9 @@ import com.account.yomankum.accountBook.domain.AccountBookType;
 import com.account.yomankum.accountBook.domain.tag.DefaultTag;
 import com.account.yomankum.accountBook.domain.tag.MainTagRepository;
 import com.account.yomankum.accountBook.dto.request.AccountBookCreateRequest;
+import com.account.yomankum.accountBook.dto.request.AccountBookInviteRequest;
+import com.account.yomankum.user.domain.User;
+import com.account.yomankum.user.repository.UserRepository;
 import com.account.yomankum.common.IntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,6 +25,7 @@ public class AccountBookServiceIntegrationTest extends IntegrationTest {
     @Autowired private AccountBookService accountBookService;
     @Autowired private AccountBookRepository accountBookRepository;
     @Autowired private MainTagRepository mainTagRepository;
+    @Autowired private UserRepository userRepository;
 
     @Test
     public void testCreateAccountBook() {
@@ -56,6 +60,23 @@ public class AccountBookServiceIntegrationTest extends IntegrationTest {
 
         AccountBook foundAccountBook = accountBookRepository.findById(accountBookId).orElse(null);
         assertNull(foundAccountBook);
+    }
+
+    @Test
+    public void testInviteAccountBook() {
+        AccountBookCreateRequest createRequest = new AccountBookCreateRequest("Test AccountBook", AccountBookType.PRIVATE);
+        Long accountBookId = accountBookService.create(createRequest);
+        String inviteEmail = "testInviteUser@test.com";
+        userRepository.save(User.builder().email(inviteEmail).build());
+
+        AccountBookInviteRequest inviteRequest = new AccountBookInviteRequest(inviteEmail);
+        accountBookService.invite(accountBookId, inviteRequest);
+
+        AccountBook accountBook = accountBookRepository.findById(accountBookId).orElse(null);
+        assertNotNull(accountBook);
+        boolean isInviteUser = accountBook.getAccountBookUsers().stream()
+                .anyMatch(accountBookUser -> accountBookUser.getUser().getEmail().equals(inviteEmail));
+        assertTrue(isInviteUser);
     }
 }
 

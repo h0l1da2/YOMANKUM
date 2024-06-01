@@ -1,15 +1,13 @@
 package com.account.yomankum.accountBook.service;
 
-import com.account.yomankum.accountBook.domain.AccountBook;
-import com.account.yomankum.accountBook.domain.AccountBookRepository;
-import com.account.yomankum.accountBook.domain.AccountBookRole;
-import com.account.yomankum.accountBook.domain.AccountBookType;
+import com.account.yomankum.accountBook.domain.*;
 import com.account.yomankum.accountBook.domain.record.Record;
 import com.account.yomankum.accountBook.domain.record.RecordSearchCondition;
 import com.account.yomankum.accountBook.domain.record.RecordType;
 import com.account.yomankum.accountBook.domain.tag.DefaultTag;
 import com.account.yomankum.accountBook.domain.tag.MainTagRepository;
 import com.account.yomankum.accountBook.domain.tag.Tag;
+import com.account.yomankum.accountBook.dto.request.AccountBookCreateRequest;
 import com.account.yomankum.accountBook.dto.request.RecordCreateRequest;
 import com.account.yomankum.common.IntegrationTest;
 import com.account.yomankum.user.domain.User;
@@ -47,6 +45,7 @@ public class RecordFinderIntegrationTest extends IntegrationTest {
     @Autowired
     private AccountBookService accountBookService;
 
+    private Long accountBookId;
     private AccountBook accountBook;
     private Tag mainTag;
     private LocalDate today;
@@ -55,10 +54,12 @@ public class RecordFinderIntegrationTest extends IntegrationTest {
 
     @BeforeEach
     void setup() {
+        // FIXME account book user 추가 필요.
         User user = userRepository.save(User.builder().id(1L).build());
-        accountBook = accountBook();
-        accountBookRepository.save(accountBook);
-        accountBookService.addNewUser(accountBook, user);
+        accountBookId = accountBookService.create(
+                new AccountBookCreateRequest("AccountBookName", AccountBookType.PRIVATE)
+        );
+        accountBook = accountBookRepository.findById(accountBookId).orElseThrow();
 
         mainTag = Tag.of(DefaultTag.FOOD.getName());
         mainTagRepository.save(mainTag);
@@ -89,6 +90,7 @@ public class RecordFinderIntegrationTest extends IntegrationTest {
 
     private AccountBook accountBook() {
         return AccountBook.builder()
+                .id(1L)
                 .type(AccountBookType.PRIVATE)
                 .name("test account book")
                 .build();
