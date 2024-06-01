@@ -9,6 +9,7 @@ import com.account.yomankum.accountBook.domain.tag.MainTagRepository;
 import com.account.yomankum.accountBook.domain.tag.Tag;
 import com.account.yomankum.accountBook.dto.request.AccountBookCreateRequest;
 import com.account.yomankum.accountBook.dto.request.RecordCreateRequest;
+import com.account.yomankum.common.IntegrationTest;
 import com.account.yomankum.user.domain.User;
 import com.account.yomankum.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,11 +30,7 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest
-@ExtendWith(SpringExtension.class)
-@Transactional
-@WithMockUser(username = "1")
-public class RecordFinderIntegrationTest {
+public class RecordFinderIntegrationTest extends IntegrationTest {
 
     @Autowired
     private RecordFinder recordFinder;

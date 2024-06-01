@@ -6,6 +6,7 @@ import com.account.yomankum.accountBook.domain.tag.Color;
 import com.account.yomankum.accountBook.domain.tag.MainTagRepository;
 import com.account.yomankum.accountBook.domain.tag.Tag;
 import com.account.yomankum.accountBook.dto.request.MainTagRequest;
+import com.account.yomankum.common.IntegrationTest;
 import com.account.yomankum.user.domain.User;
 import com.account.yomankum.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,11 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
-@Transactional
-@WithMockUser(username = "1")
-class MainTagServiceIntegrationTest {
+class MainTagServiceIntegrationTest extends IntegrationTest {
 
     @Autowired private MainTagService mainTagService;
     @Autowired private MainTagRepository mainTagRepository;
