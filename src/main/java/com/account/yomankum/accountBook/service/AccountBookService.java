@@ -10,6 +10,7 @@ import com.account.yomankum.common.exception.Exception;
 import com.account.yomankum.common.service.SessionService;
 import com.account.yomankum.notice.service.NoticeService;
 import com.account.yomankum.user.domain.User;
+import com.account.yomankum.user.service.UserFinder;
 import com.account.yomankum.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
