@@ -7,6 +7,6 @@ import java.util.List;
 public interface StatisticsHandler {
 
     StatisticsType getSupportType();
-    List<StatisticsResponse> getData(StatisticsRequest request);
+    List<StatisticsResponse> getData(StatisticsRequest request, Long requesterId);
 
 }

@@ -11,12 +11,7 @@ import com.account.yomankum.user.domain.User;
 import com.account.yomankum.user.repository.UserRepository;
 import com.account.yomankum.common.IntegrationTest;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -27,10 +22,12 @@ public class AccountBookServiceIntegrationTest extends IntegrationTest {
     @Autowired private MainTagRepository mainTagRepository;
     @Autowired private UserRepository userRepository;
 
+    private static final Long USER_ID = 1L;
+
     @Test
     public void testCreateAccountBook() {
         AccountBookCreateRequest createRequest = new AccountBookCreateRequest("Test AccountBook", AccountBookType.PRIVATE);
-        Long accountBookId = accountBookService.create(createRequest);
+        Long accountBookId = accountBookService.create(createRequest, USER_ID);
 
         AccountBook foundAccountBook = accountBookRepository.findById(accountBookId).orElse(null);
         assertNotNull(foundAccountBook);
@@ -42,9 +39,9 @@ public class AccountBookServiceIntegrationTest extends IntegrationTest {
     @Test
     public void testUpdateAccountBook() {
         AccountBookCreateRequest createRequest = new AccountBookCreateRequest("Test AccountBook", AccountBookType.PRIVATE);
-        Long accountBookId = accountBookService.create(createRequest);
+        Long accountBookId = accountBookService.create(createRequest, USER_ID);
 
-        accountBookService.update(accountBookId, "Updated Name");
+        accountBookService.update(accountBookId, "Updated Name", USER_ID);
 
         AccountBook updatedAccountBook = accountBookRepository.findById(accountBookId).orElse(null);
         assertNotNull(updatedAccountBook);
@@ -54,9 +51,9 @@ public class AccountBookServiceIntegrationTest extends IntegrationTest {
     @Test
     public void testDeleteAccountBook() {
         AccountBookCreateRequest createRequest = new AccountBookCreateRequest("Test AccountBook", AccountBookType.PRIVATE);
-        Long accountBookId = accountBookService.create(createRequest);
+        Long accountBookId = accountBookService.create(createRequest, USER_ID);
 
-        accountBookService.delete(accountBookId);
+        accountBookService.delete(accountBookId, USER_ID);
 
         AccountBook foundAccountBook = accountBookRepository.findById(accountBookId).orElse(null);
         assertNull(foundAccountBook);
@@ -65,12 +62,12 @@ public class AccountBookServiceIntegrationTest extends IntegrationTest {
     @Test
     public void testInviteAccountBook() {
         AccountBookCreateRequest createRequest = new AccountBookCreateRequest("Test AccountBook", AccountBookType.PRIVATE);
-        Long accountBookId = accountBookService.create(createRequest);
+        Long accountBookId = accountBookService.create(createRequest, USER_ID);
         String inviteEmail = "testInviteUser@test.com";
         userRepository.save(User.builder().email(inviteEmail).build());
 
         AccountBookInviteRequest inviteRequest = new AccountBookInviteRequest(inviteEmail);
-        accountBookService.invite(accountBookId, inviteRequest);
+        accountBookService.invite(accountBookId, inviteRequest, USER_ID);
 
         AccountBook accountBook = accountBookRepository.findById(accountBookId).orElse(null);
         assertNotNull(accountBook);

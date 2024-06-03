@@ -26,7 +26,7 @@ public class SubTagRateStatisticsHandler implements StatisticsHandler {
     }
 
     @Override
-    public List<StatisticsResponse> getData(StatisticsRequest request) {
+    public List<StatisticsResponse> getData(StatisticsRequest request, Long requesterId) {
         SubTagRateStatisticsRequest param = (SubTagRateStatisticsRequest) request;
         YearMonth yearMonth = param.yearMonth();
         RecordType recordType = param.recordType();
@@ -34,7 +34,7 @@ public class SubTagRateStatisticsHandler implements StatisticsHandler {
         Long mainTagId = param.mainTagId();
 
         RecordSearchCondition condition = RecordSearchCondition.of(yearMonth, recordType, mainTagId);
-        List<Record> records = recordFinder.searchRecords(accountBookId, condition);
+        List<Record> records = recordFinder.searchRecords(accountBookId, condition, requesterId);
         return SubTagRateDataMaker.createSubTagRateData(records)
                 .stream().map(data -> (StatisticsResponse) data).collect(Collectors.toList());
     }

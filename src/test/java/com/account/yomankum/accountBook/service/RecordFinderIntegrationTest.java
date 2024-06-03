@@ -1,6 +1,6 @@
 package com.account.yomankum.accountBook.service;
 
-import com.account.yomankum.accountBook.domain.*;
+import com.account.yomankum.accountBook.domain.AccountBookType;
 import com.account.yomankum.accountBook.domain.record.Record;
 import com.account.yomankum.accountBook.domain.record.RecordSearchCondition;
 import com.account.yomankum.accountBook.domain.record.RecordType;
@@ -10,17 +10,10 @@ import com.account.yomankum.accountBook.domain.tag.Tag;
 import com.account.yomankum.accountBook.dto.request.AccountBookCreateRequest;
 import com.account.yomankum.accountBook.dto.request.RecordCreateRequest;
 import com.account.yomankum.common.IntegrationTest;
-import com.account.yomankum.user.domain.User;
-import com.account.yomankum.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -37,16 +30,12 @@ public class RecordFinderIntegrationTest extends IntegrationTest {
     @Autowired
     private RecordService recordService;
     @Autowired
-    private AccountBookRepository accountBookRepository;
-    @Autowired
     private MainTagRepository mainTagRepository;
-    @Autowired
-    private UserRepository userRepository;
     @Autowired
     private AccountBookService accountBookService;
 
+    private final Long userId = 1L;
     private Long accountBookId;
-    private AccountBook accountBook;
     private Tag mainTag;
     private LocalDate today;
     private LocalDate yesterday;
@@ -54,12 +43,7 @@ public class RecordFinderIntegrationTest extends IntegrationTest {
 
     @BeforeEach
     void setup() {
-        // FIXME account book user 추가 필요.
-        User user = userRepository.save(User.builder().id(1L).build());
-        accountBookId = accountBookService.create(
-                new AccountBookCreateRequest("AccountBookName", AccountBookType.PRIVATE)
-        );
-        accountBook = accountBookRepository.findById(accountBookId).orElseThrow();
+        accountBookId = accountBookService.create(accountBookRequest(), userId);
 
         mainTag = Tag.of(DefaultTag.FOOD.getName());
         mainTagRepository.save(mainTag);
@@ -70,12 +54,12 @@ public class RecordFinderIntegrationTest extends IntegrationTest {
     }
 
     private void addRecord(){
-        recordService.addRecord(accountBook.getId(),
-                makeRecordRequest("지출 내역1", today, mainTag.getId(), RecordType.EXPENDITURE, 10000, "소분류1", "소분류2"));
-        recordService.addRecord(accountBook.getId(),
-                makeRecordRequest("지출 내역2", yesterday, mainTag.getId(), RecordType.EXPENDITURE, 20000, "소분류2", "소분류3"));
-        recordService.addRecord(accountBook.getId(),
-                makeRecordRequest("수입 내역1", twoDaysAgo, mainTag.getId(), RecordType.INCOME, 30000, "소분류3","소분류4"));
+        recordService.addRecord(accountBookId,
+                makeRecordRequest("지출 내역1", today, mainTag.getId(), RecordType.EXPENDITURE, 10000, "소분류1", "소분류2"), userId);
+        recordService.addRecord(accountBookId,
+                makeRecordRequest("지출 내역2", yesterday, mainTag.getId(), RecordType.EXPENDITURE, 20000, "소분류2", "소분류3"), userId);
+        recordService.addRecord(accountBookId,
+                makeRecordRequest("수입 내역1", twoDaysAgo, mainTag.getId(), RecordType.INCOME, 30000, "소분류3","소분류4"), userId);
     }
 
     private RecordCreateRequest makeRecordRequest(
@@ -88,12 +72,8 @@ public class RecordFinderIntegrationTest extends IntegrationTest {
         return new RecordCreateRequest(content, mainTagId, Arrays.stream(subTags).collect(Collectors.toSet()), recordType, money, date);
     }
 
-    private AccountBook accountBook() {
-        return AccountBook.builder()
-                .id(1L)
-                .type(AccountBookType.PRIVATE)
-                .name("test account book")
-                .build();
+    private AccountBookCreateRequest accountBookRequest() {
+        return new AccountBookCreateRequest("test 가계부", AccountBookType.PRIVATE);
     }
 
     @Test
@@ -102,7 +82,7 @@ public class RecordFinderIntegrationTest extends IntegrationTest {
                 .content("지출")
                 .pageSize(100)
                 .build();
-        List<Record> records = recordFinder.searchRecords(accountBook.getId(), recordSearchCondition);
+        List<Record> records = recordFinder.searchRecords(accountBookId, recordSearchCondition, userId);
 
         assertEquals(2, records.size());
         assertTrue(records.get(0).getContent().contains("지출"));
@@ -116,7 +96,7 @@ public class RecordFinderIntegrationTest extends IntegrationTest {
                 .recordType(RecordType.EXPENDITURE)
                 .pageSize(100)
                 .build();
-        List<Record> records = recordFinder.searchRecords(accountBook.getId(), recordSearchCondition);
+        List<Record> records = recordFinder.searchRecords(accountBookId, recordSearchCondition, userId);
 
         assertEquals(2, records.size());
         assertTrue(records.get(0).getContent().contains("지출") && records.get(0).getRecordType() == RecordType.EXPENDITURE);
@@ -130,7 +110,7 @@ public class RecordFinderIntegrationTest extends IntegrationTest {
                 .minMoney(15000)
                 .pageSize(100)
                 .build();
-        List<Record> records = recordFinder.searchRecords(accountBook.getId(), recordSearchCondition);
+        List<Record> records = recordFinder.searchRecords(accountBookId, recordSearchCondition, userId);
 
         assertEquals(1, records.size());
         assertTrue(15000 <= records.get(0).getAmount() &&records.get(0).getRecordType() == RecordType.EXPENDITURE);
@@ -142,7 +122,7 @@ public class RecordFinderIntegrationTest extends IntegrationTest {
                 .minMoney(15000)
                 .pageSize(100)
                 .build();
-        List<Record> records = recordFinder.searchRecords(accountBook.getId(), recordSearchCondition);
+        List<Record> records = recordFinder.searchRecords(accountBookId, recordSearchCondition, userId);
 
         assertEquals(2, records.size());
         assertTrue(15000 <= records.get(0).getAmount());
@@ -155,7 +135,7 @@ public class RecordFinderIntegrationTest extends IntegrationTest {
                 .subTagName("소분류3")
                 .pageSize(100)
                 .build();
-        List<Record> records = recordFinder.searchRecords(accountBook.getId(), recordSearchCondition);
+        List<Record> records = recordFinder.searchRecords(accountBookId, recordSearchCondition, userId);
 
         assertEquals(2, records.size());
     }
@@ -167,7 +147,7 @@ public class RecordFinderIntegrationTest extends IntegrationTest {
                 .from(twoDaysAgo.plusDays(1))
                 .pageSize(100)
                 .build();
-        List<Record> records = recordFinder.searchRecords(accountBook.getId(), recordSearchCondition);
+        List<Record> records = recordFinder.searchRecords(accountBookId, recordSearchCondition, userId);
 
         assertEquals(2, records.size());
         assertTrue(records.get(0).getDate().isAfter(twoDaysAgo));
@@ -180,7 +160,7 @@ public class RecordFinderIntegrationTest extends IntegrationTest {
                 .to(today.minusDays(1))
                 .pageSize(100)
                 .build();
-        List<Record> records = recordFinder.searchRecords(accountBook.getId(), recordSearchCondition);
+        List<Record> records = recordFinder.searchRecords(accountBookId, recordSearchCondition, userId);
 
         assertEquals(2, records.size());
         assertTrue(records.get(0).getDate().isBefore(today));
@@ -194,7 +174,7 @@ public class RecordFinderIntegrationTest extends IntegrationTest {
                 .to(today.minusDays(1))
                 .pageSize(100)
                 .build();
-        List<Record> records = recordFinder.searchRecords(accountBook.getId(), recordSearchCondition);
+        List<Record> records = recordFinder.searchRecords(accountBookId, recordSearchCondition, userId);
 
         assertEquals(1, records.size());
         assertTrue(records.get(0).getDate().isAfter(twoDaysAgo) && records.get(0).getDate().isBefore(today));

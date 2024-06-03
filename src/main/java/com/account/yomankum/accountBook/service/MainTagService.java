@@ -6,7 +6,6 @@ import com.account.yomankum.accountBook.domain.tag.Tag;
 import com.account.yomankum.accountBook.dto.request.MainTagRequest;
 import com.account.yomankum.common.exception.BadRequestException;
 import com.account.yomankum.common.exception.Exception;
-import com.account.yomankum.common.service.SessionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,25 +15,24 @@ public class MainTagService {
 
     private final AccountBookFinder accountBookFinder;
     private final MainTagRepository mainTagRepository;
-    private final SessionService sessionService;
 
-    public Tag create(Long accountBookId, MainTagRequest mainTagCreateRequest) {
+    public Tag create(Long accountBookId, MainTagRequest mainTagCreateRequest, Long requesterId) {
         Tag tag = mainTagCreateRequest.toEntity();
         mainTagRepository.save(tag);
         AccountBook accountBook = accountBookFinder.findById(accountBookId);
-        accountBook.addTag(tag, sessionService.getSessionUserId());
+        accountBook.addTag(tag, requesterId);
         return tag;
     }
 
-    public void delete(Long tagId) {
+    public void delete(Long tagId, Long requesterId) {
         Tag tag = findTag(tagId);
-        tag.delete(sessionService.getSessionUserId());
+        tag.delete(requesterId);
         mainTagRepository.delete(tag);
     }
 
-    public Tag update(Long tagId, MainTagRequest mainTagRequest) {
+    public Tag update(Long tagId, MainTagRequest mainTagRequest, Long requesterId) {
         Tag tag = findTag(tagId);
-        tag.update(mainTagRequest.tagName(), sessionService.getSessionUserId());
+        tag.update(mainTagRequest.tagName(), requesterId);
         return tag;
     }
 

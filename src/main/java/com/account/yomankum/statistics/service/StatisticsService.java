@@ -22,18 +22,18 @@ public class StatisticsService {
                 .collect(Collectors.toMap(StatisticsHandler::getSupportType, service -> service));
     }
 
-    public List<MonthlyTotal> getMonthlyTotalData(MonthlyTotalStatisticRequest request) {
-        return services.get(StatisticsType.MONTHLY_TOTAL).getData(request).stream()
+    public List<MonthlyTotal> getMonthlyTotalData(MonthlyTotalStatisticRequest request, Long requesterId) {
+        return services.get(StatisticsType.MONTHLY_TOTAL).getData(request, requesterId).stream()
                 .map(response -> (MonthlyTotal) response).collect(Collectors.toList());
     }
 
-    public List<TagRate> getMonthlyMainTagRate(MainTagRateStatisticsRequest request) {
-        return services.get(StatisticsType.MAIN_TAG_RATE).getData(request).stream()
+    public List<TagRate> getMonthlyMainTagRate(MainTagRateStatisticsRequest request, Long requesterId) {
+        return services.get(StatisticsType.MAIN_TAG_RATE).getData(request, requesterId).stream()
                 .map(response -> (TagRate) response).collect(Collectors.toList());
     }
 
-    public List<TagRate> getMonthlySubTagRate(SubTagRateStatisticsRequest request) {
-        return services.get(StatisticsType.SUB_TAG_RATE).getData(request).stream()
+    public List<TagRate> getMonthlySubTagRate(SubTagRateStatisticsRequest request, Long requesterId) {
+        return services.get(StatisticsType.SUB_TAG_RATE).getData(request, requesterId).stream()
                 .map(response -> (TagRate) response).collect(Collectors.toList());
     }
 

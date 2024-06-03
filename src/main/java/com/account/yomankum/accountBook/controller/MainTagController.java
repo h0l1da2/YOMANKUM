@@ -1,11 +1,11 @@
 package com.account.yomankum.accountBook.controller;
 
-import com.account.yomankum.accountBook.domain.tag.Tag;
 import com.account.yomankum.accountBook.dto.request.MainTagRequest;
 import com.account.yomankum.accountBook.dto.response.TagResponse;
 import com.account.yomankum.accountBook.service.MainTagFinder;
 import com.account.yomankum.accountBook.service.MainTagService;
-import com.account.yomankum.statistics.service.impl.monthly.vo.MonthlyTotal;
+import com.account.yomankum.auth.common.Auth;
+import com.account.yomankum.auth.common.LoginUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -40,20 +40,20 @@ public class MainTagController {
 
     @PostMapping("/{accountBookId}")
     @Operation(summary = "대분류 태그 등록")
-    public void registerMainTag(@PathVariable Long accountBookId, @RequestBody MainTagRequest mainTagRequest){
-        tagService.create(accountBookId, mainTagRequest);
+    public void registerMainTag(@PathVariable Long accountBookId, @RequestBody MainTagRequest mainTagRequest, @Auth LoginUser loginUser){
+        tagService.create(accountBookId, mainTagRequest, loginUser.getUserId());
     }
 
     @PutMapping("/{tagId}")
     @Operation(summary = "태그 변경")
-    public void updateTag(@PathVariable Long tagId, @RequestBody MainTagRequest mainTagRequest){
-        tagService.update(tagId, mainTagRequest);
+    public void updateTag(@PathVariable Long tagId, @RequestBody MainTagRequest mainTagRequest, @Auth LoginUser loginUser){
+        tagService.update(tagId, mainTagRequest, loginUser.getUserId());
     }
 
     @DeleteMapping("/{tagId}")
     @Operation(summary = "태그 삭제")
-    public void deleteTag(@PathVariable Long tagId){
-        tagService.delete(tagId);
+    public void deleteTag(@PathVariable Long tagId, @Auth LoginUser loginUser){
+        tagService.delete(tagId, loginUser.getUserId());
     }
 
 

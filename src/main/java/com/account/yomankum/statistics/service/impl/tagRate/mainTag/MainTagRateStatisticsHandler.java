@@ -26,14 +26,14 @@ public class MainTagRateStatisticsHandler implements StatisticsHandler {
     }
 
     @Override
-    public List<StatisticsResponse> getData(StatisticsRequest request) {
+    public List<StatisticsResponse> getData(StatisticsRequest request, Long requesterId) {
         MainTagRateStatisticsRequest param = (MainTagRateStatisticsRequest) request;
         YearMonth yearMonth = param.yearMonth();
         RecordType recordType = param.recordType();
         Long accountBookId = param.accountBookId();
 
         RecordSearchCondition condition = RecordSearchCondition.of(yearMonth, recordType);
-        List<Record> records = recordFinder.searchRecords(accountBookId, condition);
+        List<Record> records = recordFinder.searchRecords(accountBookId, condition, requesterId);
         return MainTagRateDataMaker.createMainTagRateData(records)
                 .stream().map(data -> (StatisticsResponse) data).collect(Collectors.toList());
     }

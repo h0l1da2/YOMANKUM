@@ -55,7 +55,7 @@ class MainTagControllerTest extends ControllerTest {
                         .content(objectMapper.writeValueAsString(mainTagRequest)))
                 .andExpect(status().isOk());
 
-        verify(mainTagService).create(eq(1L), any(MainTagRequest.class));
+        verify(mainTagService).create(eq(1L), any(MainTagRequest.class), any(Long.class));
     }
 
     @Test
@@ -67,7 +67,7 @@ class MainTagControllerTest extends ControllerTest {
                         .content(objectMapper.writeValueAsString(mainTagRequest)))
                 .andExpect(status().isOk());
 
-        verify(mainTagService).update(eq(1L), any(MainTagRequest.class));
+        verify(mainTagService).update(eq(1L), any(MainTagRequest.class), any(Long.class));
     }
 
     @Test
@@ -75,7 +75,7 @@ class MainTagControllerTest extends ControllerTest {
         mockMvc.perform(delete("/api/v1/mainTag/{tagId}", 1L))
                 .andExpect(status().isOk());
 
-        verify(mainTagService).delete(1L);
+        verify(mainTagService).delete(eq(1L), any(Long.class));
     }
 
 }
