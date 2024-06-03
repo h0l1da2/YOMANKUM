@@ -28,6 +28,9 @@ class MainTagServiceIntegrationTest extends IntegrationTest {
     @Autowired private AccountBookRepository accountBookRepository;
     @Autowired private UserRepository userRepository;
     @Autowired private AccountBookService accountBookService;
+
+    private static final Long USER_ID = 1L;
+
     private AccountBook accountBook;
     private Tag tag;
 
@@ -49,7 +52,7 @@ class MainTagServiceIntegrationTest extends IntegrationTest {
     public void create_mainTag(){
         int previousTagSize = accountBook.getMainTags().size();
         MainTagRequest createRequest = new MainTagRequest("new tag");
-        Tag createdTag = mainTagService.create(accountBook.getId(), createRequest);
+        Tag createdTag = mainTagService.create(accountBook.getId(), createRequest, USER_ID);
         int currentTagSize = accountBook.getMainTags().size();
 
         assertEquals(createdTag, mainTagRepository.findById(createdTag.getId()).orElse(null));
@@ -61,7 +64,7 @@ class MainTagServiceIntegrationTest extends IntegrationTest {
     @DisplayName("대분류 태그 수정")
     public void update_mainTag(){
         String newName = "new name";
-        mainTagService.update(tag.getId(), new MainTagRequest("new name"));
+        mainTagService.update(tag.getId(), new MainTagRequest("new name"), USER_ID);
 
         assertEquals(newName, mainTagRepository.findById(tag.getId()).orElse(new Tag()).getName());
     }
@@ -70,7 +73,7 @@ class MainTagServiceIntegrationTest extends IntegrationTest {
     @DisplayName("대분류 태그 삭제.")
     public void delete_mainTag(){
         int previousTagSize = accountBook.getMainTags().size();
-        mainTagService.delete(tag.getId());
+        mainTagService.delete(tag.getId(), USER_ID);
         int currentTagSize = accountBook.getMainTags().size();
 
         assertNotEquals(previousTagSize, currentTagSize);

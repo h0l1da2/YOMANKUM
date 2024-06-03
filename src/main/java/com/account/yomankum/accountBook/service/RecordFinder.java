@@ -4,7 +4,6 @@ import com.account.yomankum.accountBook.domain.AccountBook;
 import com.account.yomankum.accountBook.domain.record.Record;
 import com.account.yomankum.accountBook.domain.record.RecordRepository;
 import com.account.yomankum.accountBook.domain.record.RecordSearchCondition;
-import com.account.yomankum.common.service.SessionService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,11 +16,10 @@ public class RecordFinder {
 
     private final RecordRepository repository;
     private final AccountBookFinder accountBookFinder;
-    private final SessionService sessionService;
 
-    public List<Record> searchRecords(Long accountBookId, RecordSearchCondition condition) {
+    public List<Record> searchRecords(Long accountBookId, RecordSearchCondition condition, Long requesterId) {
         AccountBook accountBook = accountBookFinder.findById(accountBookId);
-        accountBook.checkAuthorizedUser(sessionService.getSessionUserId());
+        accountBook.checkAuthorizedUser(requesterId);
         return repository.searchRecords(accountBookId, condition);
     }
 

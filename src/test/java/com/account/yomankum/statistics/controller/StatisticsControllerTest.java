@@ -35,7 +35,7 @@ class StatisticsControllerTest extends ControllerTest {
     @WithMockUser
     public void getMonthlyTotalDataTest() throws Exception {
         List<MonthlyTotal> sampleResponse = List.of(new MonthlyTotal(YearMonth.of(2023,1), 410_000L, 250_000L));
-        given(this.statisticsService.getMonthlyTotalData(any(MonthlyTotalStatisticRequest.class))).willReturn((sampleResponse));
+        given(this.statisticsService.getMonthlyTotalData(any(MonthlyTotalStatisticRequest.class), any(Long.class))).willReturn((sampleResponse));
 
         mockMvc.perform(get("/api/v1/statistics/monthly/total")
                         .param("accountBookId", "11")
@@ -51,7 +51,7 @@ class StatisticsControllerTest extends ControllerTest {
     @WithMockUser
     public void getMonthlyExpenditureMainTagRate() throws Exception {
         List<TagRate> sampleResponse = List.of(new TagRate("식사", 500_000L, 250_000L));
-        given(this.statisticsService.getMonthlyMainTagRate(any(MainTagRateStatisticsRequest.class))).willReturn((sampleResponse));
+        given(this.statisticsService.getMonthlyMainTagRate(any(MainTagRateStatisticsRequest.class), any(Long.class))).willReturn((sampleResponse));
 
         mockMvc.perform(get("/api/v1/statistics/monthly/expenditure/mainTagRate")
                         .param("accountBookId", "11")
@@ -67,7 +67,7 @@ class StatisticsControllerTest extends ControllerTest {
     @WithMockUser
     public void getMonthlyExpenditureSubTagRate() throws Exception {
         List<TagRate> sampleResponse = List.of(new TagRate("보너스", 5_000_000L, 500_000L));
-        given(this.statisticsService.getMonthlySubTagRate(any(SubTagRateStatisticsRequest.class))).willReturn((sampleResponse));
+        given(this.statisticsService.getMonthlySubTagRate(any(SubTagRateStatisticsRequest.class), any(Long.class))).willReturn((sampleResponse));
 
         mockMvc.perform(get("/api/v1/statistics/monthly/expenditure/subTagRate")
                         .param("accountBookId", "11")
