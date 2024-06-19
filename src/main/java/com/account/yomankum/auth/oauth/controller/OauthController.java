@@ -1,6 +1,7 @@
 package com.account.yomankum.auth.oauth.controller;
 
 import com.account.yomankum.auth.local.dto.response.LoginResponse;
+import com.account.yomankum.auth.oauth.dto.OauthLoginRequest;
 import com.account.yomankum.auth.oauth.dto.OauthSignupRequest;
 import com.account.yomankum.auth.oauth.service.OauthService;
 import com.account.yomankum.user.domain.AuthType;
@@ -31,8 +32,8 @@ public class OauthController {
 
     @PostMapping("/login")
     @Operation(summary = "oauth 로그인")
-    public LoginResponse login(AuthType type, String code){
-        return oauthService.login(type, code);
+    public LoginResponse login(@RequestBody OauthLoginRequest loginRequest){
+        return oauthService.login(loginRequest.type(), loginRequest.code());
     }
 
     @PostMapping("/signup")

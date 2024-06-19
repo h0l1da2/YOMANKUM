@@ -15,5 +15,4 @@ public class KakaoAuthConfig {
     private String authorizationGrantType;
     private String clientAuthenticationMethod;
 
-    private String authorizationUri; // code요청 url
 }
