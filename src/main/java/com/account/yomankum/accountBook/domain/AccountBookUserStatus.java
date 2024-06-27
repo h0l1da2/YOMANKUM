@@ -1,6 +1,6 @@
 package com.account.yomankum.accountBook.domain;
 
-public enum UserStatus {
+public enum AccountBookUserStatus {
     PARTICIPATING,
     INVITING
 }
