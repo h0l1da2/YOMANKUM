@@ -17,7 +17,6 @@ class TagTest {
     @BeforeEach
     void setUp(){
         accountBook = mock(AccountBook.class);
-        doNothing().when(accountBook).checkAuthorizedUser(ownerId);
     }
 
     @Test
