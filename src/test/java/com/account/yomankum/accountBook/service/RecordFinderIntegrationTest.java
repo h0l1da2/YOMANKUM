@@ -1,6 +1,5 @@
 package com.account.yomankum.accountBook.service;
 
-import com.account.yomankum.accountBook.domain.AccountBookType;
 import com.account.yomankum.accountBook.domain.record.Record;
 import com.account.yomankum.accountBook.domain.record.RecordSearchCondition;
 import com.account.yomankum.accountBook.domain.record.RecordType;
@@ -73,7 +72,7 @@ public class RecordFinderIntegrationTest extends IntegrationTest {
     }
 
     private AccountBookCreateRequest accountBookRequest() {
-        return new AccountBookCreateRequest("test 가계부", AccountBookType.PRIVATE);
+        return new AccountBookCreateRequest("test 가계부");
     }
 
     @Test
