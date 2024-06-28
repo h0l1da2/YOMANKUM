@@ -51,12 +51,13 @@ public class Tag {
     }
 
     public void update(String name, Long requesterId) {
-        accountBook.checkAuthorizedUser(requesterId);
+        accountBook.checkHasGeneralAuth(requesterId);
         this.name = name;
     }
 
     public void delete(Long sessionUserId) {
         accountBook.deleteTag(this, sessionUserId);
+        accountBook = null;
     }
 
 }

@@ -14,17 +14,16 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class AccountBookFinder {
 
     private final AccountBookRepository accountBookRepository;
 
-    @Transactional(readOnly = true)
     public List<AccountBookSimpleDto> findByUser(Long userId) {
         return accountBookRepository.findByCreateUser(userId.toString())
                 .stream().map(AccountBookSimpleDto::from).collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
     public AccountBook findById(Long accountBookId){
         return accountBookRepository.findById(accountBookId)
                 .orElseThrow(() -> new BadRequestException(Exception.ACCOUNT_BOOK_NOT_FOUND));

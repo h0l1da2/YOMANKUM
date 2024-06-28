@@ -85,15 +85,7 @@ public class User {
 
     public AuthType getAuthType() { return authInfo.getAuthType(); }
 
-    // 보안을 위해 '접근권한이 없음'이 아닌 '가계부가 없음' 메세지를 준다.
-    public void checkAuthorizedUser(Long requesterId) {
-        if(!id.equals(requesterId)){
-            throw new BadRequestException(Exception.USER_NOT_FOUND);
-        }
-    }
-
     public void addAccountBook(AccountBookUser accountBookUser) {
-        checkAuthorizedUser(accountBookUser.getUser().getId());
         accountBooks.add(accountBookUser);
     }
 }

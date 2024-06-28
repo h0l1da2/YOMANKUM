@@ -1,21 +1,23 @@
 package com.account.yomankum.accountBook.dto.request;
 
 import com.account.yomankum.accountBook.domain.AccountBook;
-import com.account.yomankum.accountBook.domain.AccountBookType;
+import com.account.yomankum.accountBook.domain.tag.DefaultTag;
+import com.account.yomankum.accountBook.domain.tag.Tag;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+
+import java.util.List;
 
 public record AccountBookCreateRequest (
         @NotBlank
-        String name,
-        @NotNull
-        AccountBookType type
+        String name
 ){
     public AccountBook toAccountBookEntity(){
-        return AccountBook.builder()
+        AccountBook accountBook = AccountBook.builder()
                 .name(name)
-                .type(type)
                 .build();
+        List<Tag> defaultTags = DefaultTag.getDefaultMainTags();
+        accountBook.addTags(defaultTags);
+        return accountBook;
     }
 
 }

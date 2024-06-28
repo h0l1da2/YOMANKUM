@@ -19,7 +19,7 @@ public class RecordFinder {
 
     public List<Record> searchRecords(Long accountBookId, RecordSearchCondition condition, Long requesterId) {
         AccountBook accountBook = accountBookFinder.findById(accountBookId);
-        accountBook.checkAuthorizedUser(requesterId);
+        accountBook.checkHasReadAuth(requesterId);
         return repository.searchRecords(accountBookId, condition);
     }
 

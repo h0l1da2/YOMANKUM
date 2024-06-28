@@ -37,6 +37,11 @@ public class AccountBookController {
         accountBookService.delete(id, loginUser.getUserId());
     }
 
+    @PostMapping("/{id}/{userId}")
+    public void removeAccountBookUser(@Auth LoginUser loginUser, @PathVariable Long accountBookId, @PathVariable Long userId){
+        accountBookService.removeAccountBookUser(accountBookId ,userId ,loginUser.getUserId());
+    }
+
     @GetMapping
     public List<AccountBookSimpleDto> get(@Auth LoginUser loginUser){
         return accountBookFinder.findByUser(loginUser.getUserId());

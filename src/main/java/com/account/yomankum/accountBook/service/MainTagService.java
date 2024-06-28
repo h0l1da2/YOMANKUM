@@ -8,8 +8,10 @@ import com.account.yomankum.common.exception.BadRequestException;
 import com.account.yomankum.common.exception.Exception;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class MainTagService {
 
