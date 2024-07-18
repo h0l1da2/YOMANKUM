@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class KafkaService {
 
-    @KafkaListener(topics = "accountBook_input_love", groupId = "accountServiceConsumers")
+    @KafkaListener(topics = "accountBook_input", groupId = "accountServiceConsumers")
     public void listenAccountNotifications(AccountBookInputNotice notice) {
         // 처리 로직
         System.out.println("Received Account Notification: " + notice.nickname());
