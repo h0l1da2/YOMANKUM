@@ -1,6 +1,7 @@
 package com.account.yomankum.auth.oauth.controller;
 
 import com.account.yomankum.auth.local.dto.response.LoginResponse;
+import com.account.yomankum.auth.oauth.dto.OauthLoginRequest;
 import com.account.yomankum.auth.oauth.dto.OauthSignupRequest;
 import com.account.yomankum.auth.oauth.service.OauthService;
 import com.account.yomankum.common.ControllerTest;
@@ -47,12 +48,13 @@ class OauthControllerTest extends ControllerTest {
         String code = "authCode";
         User user = User.builder().id(1L).nickname("jungnam").build();
         LoginResponse expectedResponse = LoginResponse.of("token", "refreshToken", user);
+        OauthLoginRequest request = new OauthLoginRequest(type, code);
 
         given(oauthService.login(type, code)).willReturn(expectedResponse);
 
         mockMvc.perform(post("/api/v1/oauth/login")
-                        .param("type", type.name())
-                        .param("code", code))
+                        .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.accessToken").value(expectedResponse.accessToken()))
                 .andExpect(jsonPath("$.refreshToken").value(expectedResponse.refreshToken()))
