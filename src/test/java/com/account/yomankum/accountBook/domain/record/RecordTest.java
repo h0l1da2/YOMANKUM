@@ -27,9 +27,8 @@ class RecordTest {
         otherUserId = 2L;
 
         accountBook = mock(AccountBook.class);
-        doNothing().when(accountBook).checkAuthorizedUser(ownerId);
         doThrow(new BadRequestException(Exception.ACCOUNT_BOOK_NOT_FOUND)).when(accountBook)
-                .checkAuthorizedUser(otherUserId);
+                .checkHasGeneralAuth(otherUserId);
         doThrow(new BadRequestException(Exception.ACCOUNT_BOOK_NOT_FOUND)).when(accountBook)
                 .deleteRecord(record, otherUserId);
 
@@ -52,7 +51,7 @@ class RecordTest {
     }
 
     @Test
-    @DisplayName("권한이 있는 사용자가 가계부 내역을 수정하면 에러가 발생한다.")
+    @DisplayName("권한이 없는 사용자가 가계부 내역을 수정하면 에러가 발생한다.")
     void update_fail_unauthorizedUser() {
         Tag newTag = makeTag(2L, DefaultTag.BONUS.getName());
 

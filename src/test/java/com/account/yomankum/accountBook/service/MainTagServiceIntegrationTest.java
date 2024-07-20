@@ -5,43 +5,32 @@ import com.account.yomankum.accountBook.domain.AccountBookRepository;
 import com.account.yomankum.accountBook.domain.tag.Color;
 import com.account.yomankum.accountBook.domain.tag.MainTagRepository;
 import com.account.yomankum.accountBook.domain.tag.Tag;
+import com.account.yomankum.accountBook.dto.request.AccountBookCreateRequest;
 import com.account.yomankum.accountBook.dto.request.MainTagRequest;
-import com.account.yomankum.user.domain.User;
-import com.account.yomankum.user.repository.UserRepository;
+import com.account.yomankum.common.IntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
-@Transactional
-@WithMockUser(username = "1")
-class MainTagServiceIntegrationTest {
+class MainTagServiceIntegrationTest extends IntegrationTest {
 
     @Autowired private MainTagService mainTagService;
     @Autowired private MainTagRepository mainTagRepository;
     @Autowired private AccountBookRepository accountBookRepository;
-    @Autowired private UserRepository userRepository;
     @Autowired private AccountBookService accountBookService;
+
     private AccountBook accountBook;
     private Tag tag;
 
     @BeforeEach
     void setup(){
-        User user = userRepository.save(User.builder().id(1L).build());
-        accountBook = AccountBook.builder()
-                .name("new account book")
-                .build();
-        accountBookRepository.save(accountBook);
-        accountBookService.addNewUser(accountBook, user);
+        AccountBookCreateRequest request = new AccountBookCreateRequest("test account book");
+        Long accountBookId = accountBookService.create(request, testUser.getId());
+        accountBook = accountBookRepository.findById(accountBookId).get();
+
         tag = new Tag(null, "main tag1", accountBook, new Color());
         mainTagRepository.save(tag);
         accountBook.getMainTags().add(tag);
@@ -52,7 +41,7 @@ class MainTagServiceIntegrationTest {
     public void create_mainTag(){
         int previousTagSize = accountBook.getMainTags().size();
         MainTagRequest createRequest = new MainTagRequest("new tag");
-        Tag createdTag = mainTagService.create(accountBook.getId(), createRequest);
+        Tag createdTag = mainTagService.create(accountBook.getId(), createRequest, testUser.getId());
         int currentTagSize = accountBook.getMainTags().size();
 
         assertEquals(createdTag, mainTagRepository.findById(createdTag.getId()).orElse(null));
@@ -64,7 +53,7 @@ class MainTagServiceIntegrationTest {
     @DisplayName("대분류 태그 수정")
     public void update_mainTag(){
         String newName = "new name";
-        mainTagService.update(tag.getId(), new MainTagRequest("new name"));
+        mainTagService.update(tag.getId(), new MainTagRequest("new name"), testUser.getId());
 
         assertEquals(newName, mainTagRepository.findById(tag.getId()).orElse(new Tag()).getName());
     }
@@ -73,7 +62,7 @@ class MainTagServiceIntegrationTest {
     @DisplayName("대분류 태그 삭제.")
     public void delete_mainTag(){
         int previousTagSize = accountBook.getMainTags().size();
-        mainTagService.delete(tag.getId());
+        mainTagService.delete(tag.getId(), testUser.getId());
         int currentTagSize = accountBook.getMainTags().size();
 
         assertNotEquals(previousTagSize, currentTagSize);

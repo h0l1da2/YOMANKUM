@@ -22,30 +22,44 @@ class AccountBookTest {
 
     private AccountBook accountBook;
     private Long ownerId;
-    private Long otherUserId;
+    private Long generalUserId;
+    private Long readOnlyUserId;
+    private Long notAuthUserId;
     private Tag tag;
 
     @BeforeEach
     void setUp() {
         ownerId = 1L;
-        otherUserId = 2L;
+        generalUserId = 2L;
+        readOnlyUserId = 3L;
+        notAuthUserId = 4L;
+
         List<Tag> tags = new ArrayList<>();
         tag = new Tag(1L,"main tag 1", accountBook, new Color());
         tags.add(tag);
 
         User user = User.builder().id(ownerId).build();
-        AccountBookUser accountBookUser = AccountBookUser.builder().id(1L).user(user).build();
+        User generalUser = User.builder().id(generalUserId).build();
+        User readOnlyUser = User.builder().id(readOnlyUserId).build();
+
+        AccountBookUser accountBookOwner = AccountBookUser.builder().id(1L).user(user).accountBookRole(AccountBookRole.OWNER).build();
+        AccountBookUser generalAccountBookUser = AccountBookUser.builder().id(2L).user(generalUser).accountBookRole(AccountBookRole.GENERAL).build();
+        AccountBookUser readOnlyAccountBookUser = AccountBookUser.builder().id(3L).user(readOnlyUser).accountBookRole(AccountBookRole.READ_ONLY).build();
 
         List<AccountBookUser> accountBookUsers = new ArrayList<>();
-        accountBookUsers.add(accountBookUser);
-        user.addAccountBook(accountBookUser);
+        accountBookUsers.add(accountBookOwner);
+        accountBookUsers.add(generalAccountBookUser);
+        accountBookUsers.add(readOnlyAccountBookUser);
+
+        user.addAccountBook(accountBookOwner);
+        generalUser.addAccountBook(generalAccountBookUser);
+        readOnlyUser.addAccountBook(readOnlyAccountBookUser);
         accountBook = AccountBook.builder()
                 .id(1L)
                 .name(ACCOUNT_BOOK_NAME)
                 .mainTags(tags)
                 .accountBookUsers(accountBookUsers)
                 .build();
-        accountBook.addAccountBookUser(accountBookUser);
 
         setUserAsCreator(accountBook, ownerId);
     }
@@ -62,16 +76,24 @@ class AccountBookTest {
     }
 
     @Test
-    @DisplayName("권한이 없는 사용자가 가계부 수정 시 에러가 발생하며 가계부 이름은 그대로 유지된다.")
-    void updateName_fail() {
+    @DisplayName("권한이 없는 사용자가 가계부 수정 시 에러가 발생하며 가계부 이름은 그대로 유지된다. (general user)")
+    void updateName_fail_general() {
         assertThrows(BadRequestException.class, ()
-                -> accountBook.updateName("Updated Name", otherUserId));
+                -> accountBook.updateName("Updated Name", generalUserId));
         assertEquals(ACCOUNT_BOOK_NAME, accountBook.getName());
     }
 
     @Test
-    @DisplayName("권한이 있는 사용자가 가계부에 내역을 추가한다.")
-    void addRecord_success() {
+    @DisplayName("권한이 없는 사용자가 가계부 수정 시 에러가 발생하며 가계부 이름은 그대로 유지된다. (readonly user)")
+    void updateName_fail_readonly() {
+        assertThrows(BadRequestException.class, ()
+                -> accountBook.updateName("Updated Name", readOnlyUserId));
+        assertEquals(ACCOUNT_BOOK_NAME, accountBook.getName());
+    }
+
+    @Test
+    @DisplayName("권한이 있는 사용자가 가계부에 내역을 추가한다. (OWNER)")
+    void addRecord_success_owner() {
         Record newRecord = createNewRecord();
         accountBook.addRecord(newRecord, ownerId);
         assertTrue(accountBook.getRecords().contains(newRecord));
@@ -79,11 +101,29 @@ class AccountBookTest {
     }
 
     @Test
-    @DisplayName("권한이 없는 사용자가 가계부에 내역을 추가 시도하면 에러가 발생한다.")
+    @DisplayName("권한이 있는 사용자가 가계부에 내역을 추가한다. (OWNER)")
+    void addRecord_success_general() {
+        Record newRecord = createNewRecord();
+        accountBook.addRecord(newRecord, generalUserId);
+        assertTrue(accountBook.getRecords().contains(newRecord));
+        assertEquals(accountBook, newRecord.getAccountBook());
+    }
+
+    @Test
+    @DisplayName("가계부에 포함되어 있지만 GENERAL 권한이 아닌 사용자가 가계부에 내역을 추가 시도하면 에러가 발생한다.")
+    void addRecord_fail_not_general() {
+        Record newRecord = createNewRecord();
+        assertThrows(BadRequestException.class, ()
+                -> accountBook.addRecord(newRecord, readOnlyUserId));
+        assertFalse(accountBook.getRecords().contains(newRecord));
+    }
+
+    @Test
+    @DisplayName("가계부에 권한이 없는 사용자가 가계부에 내역을 추가 시도하면 에러가 발생한다.")
     void addRecord_fail() {
         Record newRecord = createNewRecord();
         assertThrows(BadRequestException.class, ()
-                -> accountBook.addRecord(newRecord, otherUserId));
+                -> accountBook.addRecord(newRecord, notAuthUserId));
         assertFalse(accountBook.getRecords().contains(newRecord));
     }
 
@@ -94,20 +134,6 @@ class AccountBookTest {
         accountBook.addRecord(record, ownerId);
         accountBook.deleteRecord(record, ownerId);
         assertFalse(accountBook.getRecords().contains(record));
-    }
-
-    @Test
-    @DisplayName("가계부에 대한 사용자의 권한을 검사한다. (권한이 있는 유저의 경우)")
-    void checkAuthorizedUser_success() {
-        assertDoesNotThrow(() -> accountBook.checkAuthorizedUser(ownerId));
-    }
-
-    @Test
-    @DisplayName("가계부에 대한 사용자의 권한을 검사한다. (권한이 없는 유저의 경우)")
-    void checkAuthorizedUser_fail() {
-        BadRequestException exception = assertThrows(BadRequestException.class, () ->
-                accountBook.checkAuthorizedUser(otherUserId));
-        assertEquals(Exception.ACCOUNT_BOOK_NOT_FOUND.getMessage(), exception.getMessage());
     }
 
     @Test
@@ -129,6 +155,38 @@ class AccountBookTest {
 
         assertNotEquals(originMainTagSize, accountBook.getMainTags().size());
         assertTrue(accountBook.getMainTags().isEmpty());
+    }
+
+    @Test
+    @DisplayName("가계부에 유저를 추가한다")
+    public void add_accountBookUser() {
+        AccountBook accountBook = new AccountBook();
+        User user = makeTestUser();
+        accountBook.addAccountBookUser(user, AccountBookRole.OWNER, AccountBookUserStatus.PARTICIPATING);
+
+        assertEquals(1, accountBook.getAccountBookUsers().size());
+        assertTrue(accountBook.getAccountBookUsers().stream()
+                .anyMatch(accountBookUser -> accountBookUser.getUser().getId().equals(1L)));
+    }
+
+    @Test
+    @DisplayName("가계부에서 유저를 제거한다")
+    public void remove_User() {
+        AccountBook accountBook = new AccountBook();
+        User user = makeTestUser();
+        accountBook.addAccountBookUser(user, AccountBookRole.OWNER, AccountBookUserStatus.PARTICIPATING);
+
+        accountBook.removeUser(1L, 1L);
+
+        assertFalse(accountBook.getAccountBookUsers().stream()
+                .anyMatch(accountBookUser -> accountBookUser.getUser().getId().equals(1L)));
+    }
+
+    private User makeTestUser() {
+        return User.builder()
+                .id(1L)
+                .email("testUser@test.com")
+                .build();
     }
 
     private Record createNewRecord() {

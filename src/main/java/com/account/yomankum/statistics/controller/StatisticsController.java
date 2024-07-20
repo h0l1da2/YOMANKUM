@@ -1,5 +1,7 @@
 package com.account.yomankum.statistics.controller;
 
+import com.account.yomankum.auth.common.Auth;
+import com.account.yomankum.auth.common.LoginUser;
 import com.account.yomankum.statistics.dto.StatisticsResponse;
 import com.account.yomankum.statistics.service.StatisticsService;
 import com.account.yomankum.statistics.service.impl.monthly.MonthlyTotalStatisticRequest;
@@ -30,20 +32,20 @@ public class StatisticsController {
 
     @GetMapping(value = "/monthly/total", produces = "application/json")
     @Operation(summary = "월별 지출입 총합 통계", responses = {@ApiResponse(responseCode = "200", content = @Content(array = @ArraySchema(schema = @Schema(implementation = MonthlyTotal.class))))})
-    public List<MonthlyTotal> getMonthlyTotalData(@Valid MonthlyTotalStatisticRequest request){
-        return statisticsService.getMonthlyTotalData(request);
+    public List<MonthlyTotal> getMonthlyTotalData(@Auth LoginUser loginUser,  @Valid MonthlyTotalStatisticRequest request){
+        return statisticsService.getMonthlyTotalData(request, loginUser.getUserId());
     }
 
     @GetMapping(value = "/monthly/expenditure/mainTagRate", produces = "application/json")
     @Operation(summary = "한 달 동안의 대분류 비율 통계", responses = {@ApiResponse(responseCode = "200", content = @Content(array = @ArraySchema(schema = @Schema(implementation = TagRate.class))))})
-    public List<TagRate> getMonthlyExpenditureMainTagRate(@Valid MainTagRateStatisticsRequest request){
-        return statisticsService.getMonthlyMainTagRate(request);
+    public List<TagRate> getMonthlyExpenditureMainTagRate(@Auth LoginUser loginUser, @Valid MainTagRateStatisticsRequest request){
+        return statisticsService.getMonthlyMainTagRate(request, loginUser.getUserId());
     }
 
     @GetMapping(value = "/monthly/expenditure/subTagRate", produces = "application/json")
     @Operation(summary = "(한 달 동안의) 하나의 대분류 내 소분류 비율", responses = {@ApiResponse(responseCode = "200", content = @Content(array = @ArraySchema(schema = @Schema(implementation = TagRate.class))))})
-    public List<TagRate> getMonthlyExpenditureSubTagRate(@Valid SubTagRateStatisticsRequest request){
-        return statisticsService.getMonthlySubTagRate(request);
+    public List<TagRate> getMonthlyExpenditureSubTagRate(@Auth LoginUser loginUser, @Valid SubTagRateStatisticsRequest request){
+        return statisticsService.getMonthlySubTagRate(request, loginUser.getUserId());
     }
 
 }

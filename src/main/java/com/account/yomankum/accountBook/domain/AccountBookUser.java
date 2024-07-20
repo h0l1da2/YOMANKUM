@@ -30,5 +30,25 @@ public class AccountBookUser extends UserBaseEntity {
     @Enumerated(EnumType.STRING)
     private AccountBookRole accountBookRole;
     @Enumerated(EnumType.STRING)
-    private UserStatus status;
+    private AccountBookUserStatus status;
+
+    public AccountBookUser(User user, AccountBook accountBook, AccountBookRole role, AccountBookUserStatus status){
+        this.user = user;
+        this.accountBook = accountBook;
+        this.nickname = user.getNickname();
+        this.accountBookRole = role;
+        this.status = status;
+    }
+
+    public boolean isUser(Long userId){
+        return user.getId().equals(userId);
+    }
+
+    public boolean isOwner() {
+        return accountBookRole == AccountBookRole.OWNER;
+    }
+
+    public boolean isGeneralUser() {
+        return accountBookRole == AccountBookRole.GENERAL;
+    }
 }

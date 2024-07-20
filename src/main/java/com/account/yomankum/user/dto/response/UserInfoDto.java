@@ -1,6 +1,5 @@
 package com.account.yomankum.user.dto.response;
 
-import com.account.yomankum.common.util.DatetimeConverter;
 import com.account.yomankum.user.domain.User;
 import com.account.yomankum.user.domain.UserType;
 import lombok.Builder;
@@ -21,8 +20,8 @@ public record UserInfoDto(
         return UserInfoDto.builder()
                 .email(user.getEmail())
                 .nickname(user.getNickname())
-                .joinDate(DatetimeConverter.instantToLocalDate(user.getJoinDatetime()))
-                .pwdChangeDate(DatetimeConverter.instantToLocalDate(user.getPwdChangeDatetime()))
+                .joinDate(user.getJoinDatetime().toLocalDate())
+                .pwdChangeDate(user.getPwdChangeDatetime().toLocalDate())
                 .job(user.getJob())
                 .salary(user.getSalary())
                 .userType(user.getUserType())

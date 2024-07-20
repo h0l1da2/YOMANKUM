@@ -9,14 +9,12 @@ import lombok.Getter;
 public record AccountBookSimpleDto (
         Long id,
         String name,
-        String type,
         String createdDateTime
 ) {
     public static AccountBookSimpleDto from(AccountBook entity){
         return AccountBookSimpleDto.builder()
                 .id(entity.getId())
                 .name(entity.getName())
-                .type(entity.getType().getTitle())
                 .build();
     }
 }

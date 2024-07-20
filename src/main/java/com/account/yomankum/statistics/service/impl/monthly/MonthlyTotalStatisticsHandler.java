@@ -25,14 +25,14 @@ public class MonthlyTotalStatisticsHandler implements StatisticsHandler {
     }
 
     @Override
-    public List<StatisticsResponse> getData(StatisticsRequest request) {
+    public List<StatisticsResponse> getData(StatisticsRequest request, Long requesterId) {
         MonthlyTotalStatisticRequest param = (MonthlyTotalStatisticRequest) request;
         YearMonth from = param.from();
         YearMonth to = param.to();
         Long accountBookId = param.accountBookId();
 
         RecordSearchCondition condition = RecordSearchCondition.of(from.atDay(1), to.atEndOfMonth());
-        List<Record> records = recordFinder.searchRecords(accountBookId, condition);
+        List<Record> records = recordFinder.searchRecords(accountBookId, condition, requesterId);
         return MonthlyTotalDataMaker.createMonthlyTotalData(records, from, to)
                 .stream().map(data -> (StatisticsResponse) data).collect(Collectors.toList());
     }

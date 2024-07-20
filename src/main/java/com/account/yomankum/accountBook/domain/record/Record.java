@@ -47,7 +47,7 @@ public class Record extends UserBaseEntity {
       엔티티가 requestDto 를 알게 하는 것이 설계 관점에서는 지저분하게 보이나 코드 관리 측면에서 더 좋다고 판단하였음.
     */
     public void update(RecordUpdateRequest request, Tag tag, Long requesterId) {
-        accountBook.checkAuthorizedUser(requesterId);
+        accountBook.checkHasGeneralAuth(requesterId);
         this.content = request.content();
         this.mainTag = tag;
         this.subTags = request.subTags();
