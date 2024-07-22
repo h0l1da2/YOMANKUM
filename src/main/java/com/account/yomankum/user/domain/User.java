@@ -1,17 +1,15 @@
 package com.account.yomankum.user.domain;
 
-import com.account.yomankum.user.dto.request.UserInfoUpdateRequest;
 import com.account.yomankum.accountBook.domain.AccountBookUser;
-import com.account.yomankum.common.exception.BadRequestException;
-import com.account.yomankum.common.exception.Exception;
+import com.account.yomankum.user.dto.request.UserInfoUpdateRequest;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -87,5 +85,11 @@ public class User {
 
     public void addAccountBook(AccountBookUser accountBookUser) {
         accountBooks.add(accountBookUser);
+    }
+
+    public boolean isUsersAccountBook(Long accountBookId) {
+        return accountBooks.stream()
+                .anyMatch(accountBook ->
+                        accountBookId.equals(accountBook.getAccountBook().getId()));
     }
 }
