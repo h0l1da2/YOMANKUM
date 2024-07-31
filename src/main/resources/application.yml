@@ -65,4 +65,4 @@ auth:
 kafka:
   bootstrap-server: localhost:29092
   group-id: accountBook
-  type-mappings: yomankum.kafka.producer.yomankum.api.dto.AccountBookCreateNotice:com.account.yomankum.kafka.dto.AccountBookCreateNotice, yomankum.kafka.producer.yomankum.api.dto.AccountBookUpdateNotice:com.account.yomankum.kafka.dto.AccountBookUpdateNotice
+  type-mappings: yomankum.kafka.producer.yomankum.api.dto.AccountBookCreateNotice:com.account.yomankum.kafka.dto.AccountBookCreateNotice, yomankum.kafka.producer.yomankum.api.dto.AccountBookUpdateNotice:com.account.yomankum.kafka.dto.AccountBookUpdateNotice, yomankum.kafka.producer.yomankum.api.dto.AccountBookInputNotice:com.account.yomankum.kafka.dto.AccountBookInputNotice
