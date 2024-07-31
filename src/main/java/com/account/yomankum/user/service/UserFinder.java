@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -37,4 +38,7 @@ public class UserFinder {
         return userRepository.findByAuthInfoAuthTypeAndAuthInfoOauthId(type, oauthId);
     }
 
+    public List<User> findAllById(List<Long> userIdList) {
+        return userRepository.findAllById(userIdList);
+    }
 }
