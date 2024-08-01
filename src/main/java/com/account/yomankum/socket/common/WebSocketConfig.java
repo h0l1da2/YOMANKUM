@@ -16,7 +16,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(customWebSocketHandler, "/ws")
-                .setAllowedOrigins("*") // FE Server 오리진 추가..
+                .setAllowedOrigins("https://www.yomankum.com") // FE Server 오리진 추가..
                 .addInterceptors(new CustomHttpSessionHandshakeInterceptor())
                 .withSockJS();
     }
