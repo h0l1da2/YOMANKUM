@@ -2,7 +2,7 @@ package com.account.yomankum.socket.common;
 
 import com.account.yomankum.common.exception.BadRequestException;
 import com.account.yomankum.common.exception.Exception;
-import com.account.yomankum.kafka.dto.AccountBookInputNotice;
+import com.account.yomankum.socket.dto.AccountBookWebSocketNotice;
 import com.account.yomankum.user.domain.User;
 import com.account.yomankum.user.service.UserFinder;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -64,7 +64,7 @@ public class CustomWebSocketHandler extends TextWebSocketHandler {
     }
 
     // 클라이언트에게 메시지 보내기
-    public void sendAccountBookInputMessage(AccountBookInputNotice notice) {
+    public void sendAccountBookMessage(AccountBookWebSocketNotice notice) {
         List<Long> userIdList = new ArrayList<>(userIdSessionMap.keySet());
         List<User> userList = userFinder.findAllById(userIdList);
 

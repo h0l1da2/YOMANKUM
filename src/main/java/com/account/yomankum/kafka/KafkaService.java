@@ -8,6 +8,7 @@ import com.account.yomankum.kafka.dto.AccountBookCreateNotice;
 import com.account.yomankum.kafka.dto.AccountBookInputNotice;
 import com.account.yomankum.kafka.dto.AccountBookUpdateNotice;
 import com.account.yomankum.socket.common.CustomWebSocketHandler;
+import com.account.yomankum.socket.dto.AccountBookWebSocketNotice;
 import com.account.yomankum.user.domain.User;
 import com.account.yomankum.user.service.UserFinder;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,7 @@ public class KafkaService {
 
     @KafkaListener(topics = "input", groupId = "accountBook")
     public void inputAccountBookNotification(AccountBookInputNotice notice) {
-        customWebSocketHandler.sendAccountBookInputMessage(notice);
+        customWebSocketHandler.sendAccountBookMessage(AccountBookWebSocketNotice.from(notice));
         log.info("[Kafka] input 메시지 수신 - accountBookId : {}", notice.accountBookId());
     }
 
